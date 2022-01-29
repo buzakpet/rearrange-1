@@ -1,0 +1,492 @@
+Kenny Suleman
+
+COURSE INTRODUCTION
+In this course we will focus on how to keep track of the different versions of code,and configuration files using Version Control Systems(VCS). It will help roll back when mistakes happen and easily collaborate with others.
+You may have already heard of version control systems in the context of managing configuration files, or maintaining the source code of programs and scripts.
+In this course we will introduce to a popular VCS called Git and show some of the ways we can use it. We will also go through how to setup and account witht the service known as GitHub, so that we can create our very own remote repository to store our code and configuration.
+By the end of this course, we should be able to store our code history in git and collaborate with others on github, were we will also start creating our own portfolio, because nowadays, many employers will ask to see your git portfolio when interviewing for IT roles.  GitHub portfolios give companies an idea of what projects you've worked on and what code you can write.
+As a technical program manager, your  main challenge is making sure that everyone involved is aligned on a shared vision. To ensure that the project is a success, his team creates a narative, figures out all the stakeholders, and make sure that everyone is on the same page. After that comes the hardest part, which is executing the project till completion. To do that it is essential we have a version control system where each engineer can store and share the code the create. This lets us track different revisions, rollback problematic changes and work together effectively.
+There is a lot to learn with git as a version control We will break it down step-by-step so that we will fully understand why how it works and why its so important in our IT role, whether you're and IT support specialist, a systems administrator or looking to expand your skill in other roles towards IT. Throughout this course we will learn abour Gits core functionality, so that we can understand how and why it is used in organizations.
+We will look at basic and more advance features like branching and merging.
+We will demonstrate how having a working knowledge of a VCS like git could be a life saver in emetgency situations or when debugging.
+We will also explore how to use a VCS to work with others through a remote repository like the one provided by github. This is would help us interact with gihub and upload our codet there.
+
+INTRODUCTION TO MODULE1
+When we work in IT, we manage information across a lot of different files. We write automation scripts that might evolve over time. For example, we might add new features to our scripts, or take into account additional conditions, or modify the scope of systems where the scripts will be executed. You also manage configuration related to your infrastructure like the default setting on an application or the IP addresses assigned to the computers in your fleet. This information changes overtime as the security requirements increase. The fleet grows or new versions of software gets deployed. When trying to manage change in IT, its super important to have detailed historical information for our organization systems configuration files and automation code. This lets the administrator see what was modified and when. This can be critical to trouble shooting. It also provides a documentation trail that would let future IT specialist know why the infrastructure is the way it is, and provides a mechanism for undoing changes completely. This way we don't have to undo changes from memory and there is less chance of human error.
+Imagine this, our team has added a new feature to the script that checks the health of all the computers that your responsible for. The new check verifies that the firmware of the computer also know as the UEFI, is updated to the latest version.
+When we role this out we suddenly realize that half of the computers now say they're broken. After some investigation, we now realize that the check needs to take into account the different computer modules. You might be tempted to do a quick code fix and push it to the effective machines right a way, especially if it seems like a easy fix, but more often than not, quick fixes includes their own bugs, because we don't take the time to test the new code properly. This means after the first fix, we might end up doing a second, or a third emergency push until things are really working.
+To acoid this headaches, we could use a version control system to easily role back our code to the previous version. Since we know that this version was working before the previous change was made, It could be safe to go back to that one until we've had time to fix the code, run some test and make sure that everything works correctly for all machines models.
+By releasing code only after properly testing, we avoid quick fix after quick fix.
+VCS are crucial in maintaining a healthy base of all IT resource, and for letting multiple people collaborate on the same coding project.
+Lets now take our first step in learning this new tool, which would let us keep track of the changes that we make to our scripts, our configuration files and any other document that needs to be tracked.
+We will start by what people tend to do when they don't know about version control and then check out some related tools, like diff and patch. Once we have a clearer idea of why we need proper version control, we will jump into our first git experience.
+We will talk about git and how it does what it does. 
+
+KEEPING HISTORICAL COPIES
+Hve you ever worked on project that was developing over time, so you occasionally created copies of the work incase we wanted to back to an earlier version?
+Maybe you were working on a project with a team, and everyday you emailed a part of the work to the team, and then the other memebers of that team would add their own work and then send it out to the whole team too. Or meaybe you worked a very complex project that kept changing directions, and you felt that some of the thing that were removed would have to be added to the work someday, so anytime you were going to delete a significant part, you made a copy of the whole thing just in case. If you've done any of this, then you've already worked on the most promitive form of version control, keeping historical copies. This copies help you see what the project was like before and go back to that version if yu end up deciding that the later changes were wrong.
+The also help you see the progress of changes over time and maybe even help you understand why a change was made.
+We say that this is primitive because it is manual and not very detailed:
+First, we need to remember to make the copy,  
+Second, you need to make a copy of the whole thing even if we are changing just one small part.
+Thirdly, even when we are emailing our changes to our colleagues, it is hard to tell who did what and why they did it in the first place.
+Hence, the principle behind version control is the same. It lets us keep track of the changes in our files. This files can be code, images, configurations, or even a video editing project. 
+We will see the many ways git helps us keep track of our changes, and also how we can use it to collaborate with others and revert changes. We will use a bunch of terms that have special meaning in the world of VCS.
+So, if we have two copies of a code made at different points in time, how can we compare them?
+
+DIFFING FILES
+Imagine that we have two copies of some code and we wanted to see what the difference was between both of them, how do we do this? We could open the too files in an editor and place them side by side to look one then look at the other and spotthe differences. But this is super error prone. We are human and comparing with our eyes we are bound to make errors. FOrtunately there is a better way, we can use some nifty tools that can do this for us. we can use the 'diff' commandline tool that can take two files or even two directories and show the differences between them in a few formats.
+We have rearange1.py and rearange2.py which are two different versions of the same function. Can you spot the difference? Lets use the 'diff' command so that we dont strain our eyes.
+
+diff rearrange1.py rearrange2.py
+
+When we call the 'diff' command we call only the line that is different between two files. 
+See the symbols at the beginning of the two lines (< and > respectively). The less than symbol(<) tells us that the line was removed from the first file and the greater than symbol (>) tells us the line was added to the second line. 
+This is a common change with modifying code, but not the only possibility.
+
+diff validations1.py validations2.py
+
+There is a lot more going on here.Wwe see that the diff split the changes into two seperate sections. The section that starts with '4c4,5' shows a line the file that was replaced by two different lines in the second file. The number at the beginning of the section (4) indicates the line number in the first and second files. the 'c' in between the numbers indicate that the line was changed. 
+The section that starts with '9a11,13', shows 3 lines that are new in the second file. The 'a' stands for added. But the block looks a bit strange, because it looks like we are adding a return and an if block with no body. To understand this better we use 'u' flag to tell the diff to show the differences in another format. Lets look at that.
+
+diff -u validations1.py validations2.py
+
+This unified format is different from the one we used before. It shows the changed lines with some context, using the minus sign to add lines that were removed and the plus sign to mark lines that were added.
+The extra context help us better know what is going on with the change that we are diffing. We can see that the new file has a completely new if block thats part of a chain of conditionals that look very similar. And thats why with the diff that we saw before, it was a little confusing which lines had been added.
+There are a lot of tools to compare files. 'diff' is the most popular one but not the only one available for example, 'wdiff' highlights the words that have changed in a file, instead of working line by line like diff does. To help us even more, there are bunch of graphical tools that display files side by side and highlight the differences by using color  example meld, KDiff3 or vimdiff. We can use this tools to get better context to the changes that we see.
+Now how can we use this differences to apply changes?
+APPLYING CHANGES
+Imagine you colleague sent you a script with a bug and asked you to help him fix the issue. Once you undestood what was wrong with the script you cn describe to them what the need to change, something like: "Well, you can only return values inside functions. I think you meant to use sys.exit instead. Also, you're converting to gigabytes twice, so your script will alway fail." But this can still be hard for them to understand if the cide was complex. To make the change clear, you send them a 'diff'with the changes so that the can see what the modified code looks like.
+To do this, we typically use a command like:
+
+diff -u old_file new_file > change.diff
+
+As a reminder, the greater than(>) redirects the ouput of the command to a file. So with this command, we are generating a file called 'change.diff' with the contents of 'diff -u command. By using the -u flag we include more context which helps the person reading the file understand whats going on with the change. The generated file is usually referend to as a diff file, or sometimes a patch file and includes all the changes between the new file and the old file plus the additional context needed to understand the changes and apply the changes back in the original file.
+Say for example you are the one receiving a diff file and we want to apply the changes to a script of your own. You can read the diff file you received carefully and manually go throught the file that needs to be changed and apply the modifications. But that sounds like a lot of manual work that can be automated. Well there is a way to do this. 
+There is a command called 'patch' that does this for us. 'patch' takes the changes generated by diff and applies it to the original file. Lets check this out with an example. Say we have a small script that checkes whether the computer is on too much load,like this one.
+
+cat cpu_usage.py
+
+#!/usr/bin/env python3
+import psutil
+
+def check_cpu_usage(percent):
+    usage = psutil.cpu_percent()
+    return usage < percent
+
+if not check_cpu_usage(75):
+    print("ERROR! CPU is overloaded")
+else:
+    print("Everything ok")
+
+This script uses the psutil module to check the percentage of the cpu that is currently in use. When the load is above a threshold in this case 75%, in prints a message with an error, when it is under the threshold it say that "Everything is ok".
+Now, we have shared this script with a few colleagues and one of the them say the script does not work right. Even if the completely overloaded, the script would say it ok. Our colleague is so helpful that the sent us a diff for our problem. Lets check it out
+
+cat cpu_usage.diff
+
+--- cpu_usage.py        2022-01-13 13:27:37.191954531 +0100
++++ cpu_usage_fixed.py  2022-01-13 13:49:21.423899682 +0100
+@@ -2,7 +2,8 @@
+ import psutil
+ 
+ def check_cpu_usage(percent):
+-    usage = psutil.cpu_percent()
++    usage = psutil.cpu_percent(1)
++    print("DEBUG: usage: {}".format(usage))
+     return usage < percent
+ 
+ if not check_cpu_usage(75):
+ 
+We can see that our colleague made two changes, they added a 1 as a parameter to the cpy_percent() function, and the added a debugging line that prints the value returned by the function.
+Our colleague explains that by calling the cpu_percent function without a parameter, we were not averaging over a period of time so the call always returned 0.
+Now we have the diff file and we want to apply it to our scripts. How do we do this? We use the 'patch' command, we pass the name of the file we want to to patch in this case 'cpu_usage.py' as the first parameter to the command, and then we provide the diff file through standard input. Do you remember how to do this?
+
+patch cpu_usage.py < cpu_usage.diff
+
+We use the less than symbol(<) to redirect cpu_usage.diff to standard input of cpu_usage.py file. We get one single line which says the file was patched, this means we have succesfully applied the changes.
+Lets verify that by looking at the content of our script.
+
+cat cpu_usage.py
+
+Nice! We see that our file was modified with the changes we got from our colleague. The cpu_percent function is being called with the parameter 1 and the debugging line is printed. We might remove the debugging line when the script is finished, but for now we leave it there.
+You might be wondering why go through all the diffing and patching and not sending the whole file instead? There are a few reasons for this, but the main reason is that the original code might have changed. In our example, it might be possible that the code our colleague was using to prepare the fix was not the latest version of the code. By using a diff instead of the whole file, we ca clearly see what the changed no matter which version they were using. The patch command will detect that there were changes made to the file and would do its best to apply those changes. It won't always succeed, but in many cases it would.
+Another reason is structure, we are patching a single small file, but sometimes we might be modifying a bunch of large files inside of a huge project. Say you were changing 4 files inside a project tree that contain 100 different files arranged in different directories according to what they do. If we were to send the whole files, we need to specify were those files are supposed to be placed. As we called out we ca diff whole directory structures and in that case, the diff file can specify where each change file should be without us having to do any manual juggling.
+
+PRACTICAL APPLICATIO OF DIFF AND PATCH
+Imagine a colleague is asking our help to fix a script disk_usage.py. The goal is to check how much disk space is currently used and print an error if it is too little space for normal operation, but the script is currently broken because it contains a few bugs. We will help our colleague fix those bugs to demonstrate how to use 'diff' and 'patch'. Lets make a copy of the script before changing anything. We will add '_original' to one copy which we will keep unmodified and use for comparison and '_fixed to the other cop which we will use to prepare our fix.
+
+#!/usr/bin/env python3
+
+import shutil
+
+def check_disk_usage(disk, min_absolute, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if percent_free < min_percent or gigabytes_free < min_absolute:
+        return False
+    return True
+
+# check for at least 2GB and 10% percent_free
+if not check_disk_usage("/", 2*2**30, 10):
+    print("ERROR: Not enough disk space")
+    return 1
+
+print("Everything ok")
+return 0
+
+
+cp disk_usage.py disk_usage_original.py
+cp disk_usage.py disk_usage_fixed.py
+
+Now that we have our copies, let us edit the '_fixed' version and actually fix it.
+
+./disk_usage_fixed.py
+
+The interpreter is not too happy with this code. It is complaining that there is a 'return' outside function, and if we look at the code,we can comfirm that. Recall that in python, we can only use return statement inside functions.
+We can fix this by turning it into a function and calling that funtion in the main part of our script, or we could use 'sys.exit' to make the return number the exit code of our script which is a code that causes a program to exit with the corresponding exit value. We will go with the second option
+
+#!/usr/bin/env python3
+
+import shutil
+import sys
+
+def check_disk_usage(disk, min_absolute, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if percent_free < min_percent or gigabytes_free < min_absolute:
+        return False
+    return True
+
+# check for at least 2GB and 10% percent_free
+if not check_disk_usage("/", 2*2**30, 10):
+    print("ERROR: Not enough disk space")
+    sys.exit(1)
+
+print("Everything ok")
+sys.exit(0)
+
+Now that we've fixed the error, the interpreter is telling us that there is not enough space. But we know that we actually do have some free space, so why the error? 
+If we look at our script closely, we observe that the code is converting to gigabytes twice. The function call to check_disk_usage, is passing the argument 2*2**30. 2**30 is how many bytes are in a gigabyte, so this will be 2 gigabytes. But that would be if the check_disk_usage function was expecting a value in bytes. If we look at the code in the function, we see that for gigabytes_free, we have already divided the du.free by 2*30, we are doing the gigabyte conversion twice, once wh calling the function and once inside the function. Converting it to gigabytes, so our input must be in gigabytes and not in bytes. We need to get rid of one of them. Lets change how we call the function.
+
+#!/usr/bin/env python3
+
+import shutil
+import sys
+
+def check_disk_usage(disk, min_absolute, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if percent_free < min_percent or gigabytes_free < min_absolute:
+        return False
+    return True
+
+# check for at least 2GB and 10% percent_free
+if not check_disk_usage("/", 2, 10):
+    print("ERROR: Not enough disk space")
+    sys.exit(1)
+
+print("Everything ok")
+sys.exit(0)
+
+Lets try it out again.
+
+./disk_usage_fixed.py
+
+It works now. Now we need to send the fix to our colleague so the can fix their script. To do that,we use the texhnique we have learnt to generate a diff file like this;
+
+diff -u disk_usage_original.py disk_usage_fixed.py > disk_usage.diff
+
+Awesome, this seems to have what we want. So this is what we want to send to our colleague to help them patch their file. How would they do that? They would run the patch command like this.
+
+patch disk_usage.py < disk_usage.diff
+
+By calling patch like this, we have applied the neccessary changes needed to fix the bug.
+So we've now seen how to look at differences between files, generate diff files to gather our changes and then apply those changes using patch. But this is still a manual process where VCS can really help.
+
+WHAT IS VERSION CONTROL
+The tools we have learnt so far is very helpful, but most of the time, we won't be using them directly instead we use them through VCS.
+VCS: Keeps track of the changes we make to our files. By using a VCS, we can know when changes were made and who made them. It also helps us reverse our change if turns out not to be a good idea, and it makes collaboration easier by allowing us to merge changes from lots of other sources.
+A VCS is just a file saver, but unlike regular file savers that saves only the most recent version of a file. VCS keeps track of all the different versions that we create as we save our changes.
+There are many version control system each with their own implementation and their own advantages and disadvantages, but the all help us save our files, the let us retrieve past versions of the file or directory and save the changes to files, how each file was changed and when the file was changed.
+Ontop of this we can make edits to multiple files and treat that collection of edits as a single change which is commonly known as 'commit'. A VCS even allows the author of a commit to record why that file was changed, including what bugs, issues, tickets were fixed by the change. This iformation can be a life saver when trying to understand a complex series of changes trying to debug some obscure issue.
+In any company that produces software, a VCS is a key part of managing the code.
+Files are usually organised in repositories whcih contains seperate software project or just group all related code.
+IF there are a lot of people invloved in developing software, some developers may have access to only some of the repository. 
+A single repo can have as little as one person using it and have upto thousands of contributers.
+VCS can be used to store more than just code. We could use it to store config files documentation, data files or any other content that we might need to track. because of the way tools like diff and patch work, a VCS is especially usefull when tracking text files, which can be compare with diff and modified with patch.
+We can also store images, videos or any other complex file format in A VCS, but it won't be easy to check the difference between versions when comparing this file format. And it might not be possible to automatically merge changes older versions of the file. This looks like much, why don't I just continue making back up of my files on my engine? We'll answer this very soon.
+
+VERSION CONTROL AND AUTOMATION
+Can a VCS help even if you dont need to share you script or collaborate with others on a project? Yes. A VCS can be invaluable even in a one person IT department. A VCS stores you code and config, it event stores the history of that code and config. A VCS can function a lot like a time machine giving you insight and decisions of the past. Whenever you write a commit message after making a change, its as if the current version of yourself is explaining your decision to a future you. This can avoid you staring at a piece of code that you or someone else wrote 3 months ago, puzzling over how it works or even why it exists. With VCS you can view track and select snapshots of the history of you project so that nothing you do is lost. And since we can use the VCS to store both the code and the config files, we can make the overall IT system more scalable and reliable.
+For example, say you store a DNS zone file for your company in a VCS. 
+DNS zone file: is a configuration file that specifies the mappings between IP addresses and host names in your network.
+When you update this zone information, alway use good explanatory commit messages. That way you'll have access to meta information about your new IP addresses and host names present in the zone file, like when they were added and for what purpose. If anything breaks after you aded a new entry, you an rely on the VCS to tell you what the file looked like before the change. You an then revert to the old version quickly so you can fix the problem fast and figure out what went wrong later. 
+This functionality enables the reliability of the system you're operating. Because of the audit trail provided by the VCS, we know which zone file to go back to, which reduces the time it takes to fix the problem.
+It is generally better to role back first and stop errors before spending time to fix the figuring out what went wrong. You curb the fix after the bleeding has stopped.Figuring out the bug ca take up valualbe time or worse, your first attempt at a solution ca have its own bugs.
+Lets look at a different example. The config for a DHCP damon can be replicated n two or more machines where one acts as a primary server and the other acts as a standby machine. Standby machines don't do much when the primary is up. But when a primary goes down, a standby can become primary and start responding to the DHCP quaries. For this to work, the configuration files on all machines need to be identical. This is because the DHCP protocol does not provide a way for standby machine to get an up-to-date version of the configuration files the way DNS does. TO do this, we can keep the up-to-date version of the DHCP config files in a version control system and have the machine download the configuration from the VCS. This would mean all the machines will have the exact same files. 
+Say you get a urgent alert over the weekend saying that your DHCP servers isn't responding to any queries. You look at the history of the changes and you find out that one of the changes added on Friday evening included a duplicated entry causing the server to misbehave. By using a VCS you can easily roll back the change and have the servers back to health in no time. You might come across a second benefit when it is time to replace the server with a new one. By having all the configuration files of the servers in a VCS, its much easier to automate the task of deploying a new one. 
+In this course we will use Git.
+
+WHAT IS GIT
+Git is a VCS created by the developer Linus Torvalds. The developer who created the linux kernel. Git is a free open source system available for installation on unix based platforms, windows and mac os. Linus created Git to originally help in the task of developing the linux kernel. This was difficult because a lot of geographically displaced individuals were collaborating to write the code. Linus had a requirement for the way that the system worked and its performance that was not being met by the VCS tools at the time, so he decided to write his own. Now Git is one of the most popular VCS out there and used in millions of projects.
+Unlike some other VCS that are centralized about a single server, git has a distributed architecture. This means that everyone contributing to a repo has a full copy of the repo on their own development machines. Collaborators can share and pull in changes that others had made as they need. And because all repo are local to the machine used to create the files, most operation can be done really fast. If you want to collaborate with others, its usually makes sense to set the repo on a server to act as a kind of hub for everyone to interact with.
+But Git does not rely on any kind of centralized server to provide control or organizations to its work flow. Git can work as a stand-alone program, as a server and as a client. This means thayou can use git on a single machine without even having a network connection, or you can use git as a server on machine were you want to host your repo, then you can use git as client to access the repo from another machine, or even the same one.
+Git clients can communicate with servers over the network using http, ssh, or gits own sepcial protocol. 
+When looking for info online, we might see that the git website is git-scm.com, and so you may be wondering, what is does the scm stand for? Its actually another acronym similar to VCS. It stands for Source Control Management. While both terms mean the same thing, we prefer VCS beacause it can be used to store much more than source code.
+Although we chose VCS for its popularity, there are other VCS like subversion, or mecurial etc.
+
+INSTALLING GIT
+If you use a package management system like apt or yum on linux, chocolatey on windows, or Homebrew on mac os. If you don't have a package manager, yo ucan download the latest executable installer from the website and install it on your machine.
+
+FIRST STEPS WITH GIT
+Lets start by setting some basic configurations, remember when we said that git tracks who made which changes? For this to work, we need to tell Git who we are. We do this using the 'git config' command and setting the user.email and user.name to our email and our name like this:
+
+git config --global user.email "proakpet@gmail.com"
+git config --global user.name "obaji"
+
+We use the --global flag to state that we want to set this value for all git repos that we use. This means that we can also set different values for different repos.
+With that done, there are two ways to start working with a git repo. We can create one from scratch using the 'git init' command or the 'git clone' to make a copy of a repo that already exists somewhere else.
+
+mkdir checks
+cd checks
+git init
+git config --global init.Branch 'master'
+
+When we run 'git init', we initialize an empty git repo in the current directory. The message that we get mentions a directory called '.git' inside the repo. ls -la command displays all files that begin with dot(.)
+
+ls -la
+
+we can also use la -l .git/ command to see the many different things it contain
+
+ls -l .git/ 
+
+This is called a git directory(.git/). We can think about it as a database for your git project that stores the changes and the change history. It contains a bunch of different files and directories. We will not touch any of this files directly, we will only interact with them using git commands. So when ever we clone a repo, this git directory is copied to our computer. When we run 'git init' to create a new repo like we just did, a new git directory is initialized.
+The area outside the git directory is the working tree. The working tree is the current version of your project. You can think of it as a work bench or sand box where you peform all the modification you want to your file. This working tree contains will contain all the files currently tracked by git, and any new files that we haven't yet added to the list of tracked files.
+Right now our working tree is empty. Lets change that by copying our dis usage_file into the working tree
+
+cp ../disk_usage.py 
+ls -l
+
+We now have a file currently in our working tree, but it is untracked by git. to make git track our file, we add it to the project using 'git add' command passing the file that we want as a parameter.
+
+git add disk_usage.py
+
+With that we've added our file to the staging area.
+Staging area(index): A file maintained by Git that contains all of the information about what files and changes are going into your next commit.
+We can use 'git status' to get information about the current working tree and pending changes.
+
+git status
+
+We see that our new file is marked: 'to be committed.' This means that our changes is currently in the staging area. To get it committed into the git direcotry we run the 'git commit' command.
+
+git commit
+
+When we run this command, we tell Git that we want to save our changes. It open a text editor where we write our commit message.
+The text that we get tells us that we need to write a commit message, nad that the change to be committed is the new file that we added.
+Lets add a simple commit message saying that we added just this one file, save and then exit our commit message
+
+Add new disk_usage check.
+
+TRACKING FILES
+We discussed in our last class that any git project will consist of 3 sections: The git directory(.git/), the working tree and the stagging area.
+1. The git directory contains a history of all the files and changes.
+2. The working tree contains the current state of the project, including any changes that we've made, and
+3. The stagging area contains changes that have been marked to be included in the next commit.
+Lets think of git as representing a project, which is the code and the associated files and a series of snapshots. Each time you make a commit, git records a new snapshot of the state of you project. Its a picture of exactly how all this looked in the a certain moment of time. When we combine this snapshots over time, it makes the history of our project and its information that get stored in the git directory. 
+Now lets look at how we track changes to our files.
+When we operate with git, our files maybe either tracked or untracked. Tracked files are part of the snapshots, while untracked files are not part of the snapshots yet. This is the usual cas for new files, each tracked file can be in one of three main states:
+1. Modified: This means we have made changes that we haven't committed yet, the chnages could be adding, modifying or deleting the contents of a file. Git knows when we modify our files, but won't store the changes until we add them to the stagging area.
+2. Stagged: When we do this our modified files become stagged files,i.e the changes of those files are readiy to be committed to the project. All files staged will be part of the next snapshot(commit) we take.
+3. Committed: Finally when we commit, the changes made to it are safely stored in a snapshot and in the git directory.
+Lets see this in action our example git repo. First lets check the contents of our file.
+
+cd checks
+ls -l
+
+And the current status of our files...
+
+git status
+
+When we run git status, git tells us a bunch of things, including that we are on the master branch. Notice it says "Nothing to commit, working tree clean." Lets modify our files to change that, by adding periods at the end of the lines in the print statements.
+
+atom disk_usage.py
+
+#!/usr/bin/env python3
+
+import shutil
+import sys
+
+def check_disk_usage(disk, min_absolute, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if percent_free < min_percent or gigabytes_free < min_absolute:
+        return False
+    return True
+
+# check for at least 2GB and 10% percent_free
+if not check_disk_usage("/", 2, 10):
+    print("ERROR: Not enough disk space.")
+    sys.exit(1)
+
+print("Everything ok.")
+sys.exit(0)
+
+Now that we've made the change, lets call 'git status' again and see the output.
+
+git status
+
+See how the file is changed is now marked as modified and that its currently not stagged for commit? Lets change that by a running the 'git add' command passing the disk_usage.py file as a parameter.
+
+git add 
+
+when we call 'git add' e are telling git that we want to add the current changes in that file to the list of changes to be committed. This means that our file is currently part of the files in the stagging area  and will be committed once we run the next git commit command.
+Now, instead of opening an editor to write our commit message, lets pass our commit message using the '-m' flag, stating that we added periods at the end of the sentences.
+
+git commit -m "Add periods to the end of sentences."
+
+So, we've now committed our stagged changed. This creates a new snapshot in the git directory. The command shows us some stats for the change made.
+Lets do one status check.
+
+git status
+
+We see here that there are no more changes to commit, because the change we made has gone through the full cycle of modified, stagged, and committed.
+Here's the sum. We worked on modified files in our working tree, when there ready, we stage this files by adding them to the stagging area, finally we commit the changes sitting in our stagging area, taking a snapshot of those files and stores them in a database that lives in the git directory(.git/).
+
+THE BASIC GIT WORK FLOW
+Lets review the concept of working tree, stagging area and commits, by going through the work flow when operating with git on a day-to-day basis.
+First all the files we want to manage with git must be part of the git repo.
+We initialize a new git repo by runnig 'git init' in any file system directory.
+For example, lets make a new directory called scripts.
+
+mkdir scripts
+
+cd into it and initialize a new git repo in it.
+
+cd scripts 
+git init
+
+Lets check our config for this repo using the 'git config -l' command
+
+git config -l
+
+A bunch of info there, but pay special attention to the user.email and user.name lines. This info will appear on public commit logs if we use a shared repo.
+For privacy reasons, we might want to use different identities when dealing with private work and when submitting code to public repo.
+Lets create a file in it. We'll start with a basic skeleton for our python scripts which should help demonstrate the git work flow. As with any python script, we'll start with the hasbang line. For now, we add an empy main function which we will fill in later, and at the end, well just call this main function.
+
+atom all_checks.py
+
+#!/usr/bin/env python3
+
+def main():
+  pass
+  
+main()
+
+Lets make it executable and check the status of our repo using git status.
+
+chmod +x all_checks.py
+git status
+
+As we pointed out before, when we create a new file in our repo, it starts of as untracked. We can make all kinds of changes, but until we tell git to track it, git won't do anything with an untracked file. Lets tell git to track our file
+
+git add all_checks.py
+
+This command will immediately move a new file from untracked to stagged status, and we'll see later, it will also change a file in the modified state to stagged. Lets commit the changes that has been added to the stagging area. By committing, untracked files, or modified files will be ignored.
+
+git commit -m
+
+This will open nano. We will say that are change is "Create an empty all_checks.py"
+
+We've just recorded a snapshot of the code in our project which stored in the git directory.
+Remember that every commit is a snapshot annotated with a commit message that we can review later.
+Okay, thats how we add new files, but usually we modify existing ones. So lets add a bit more content to our script to see that in action. We'll add a function 'check_reboot' that will check if the computer is pending a reboot. To do this, we check if the '/run/reboot-required' file exist.
+
+#!/usr/bin/env python3
+import os
+
+def  check_reboot():
+  """Return True if the computer has a pending reboot."""
+  return os.path.exist("/run/reboot-required")
+  
+def main():
+  pass
+  
+main()
+
+This is a file created on our computer when a software requires a reboot.
+So we've a added a function to our file. Lets check the status using 'git status'
+
+git status
+
+Our file is modified but not stagged. To stage we need to run git add again.
+
+git add all_checks.py
+
+Our changes are now stagged. We call git commit to store those changes to git directory.
+
+git commit -m 'Add a check_reboot function'
+
+ANATOMY OF COMMIT MESSAGE
+Lets consider what makes a good Git message. Writing a clear informative commit message is important when using a VCS. Future you, or other developers, or IT specialist who might read the commit message later on will really appreciate the contextual information as the try and figure out other part of the code or config. 
+So, what makes a good commit message? It might be helpful to keep you audience in mind when writing a commit message. What will someone reading a message in weeks or months from now want to know about the changes you've made? What might be especially important or tricky to understand about them? Is there extra information that might help the reader out like links to design documents or tickets in your ticketing system?
+Similar to how style guides exists for writing code, Your company might have specific rules for you to follow when writing commit messages. Even if they don't, it is helpful to use a few guidelines to make our commit message as clear as possible.
+A commit message is generally broken up into a few sections:
+The first line is a short summary of the commit, followed by a black line, this is followed by a full description of the changes, which details why there are neccessary, and anything that might especially interesting about them or difficult to understand. A good commit message might look something like this:
+
+cat example_commit.txt
+
+Provide a good commit message example
+
+The purpose of this commit is to provide and example of a hand-crafted,
+artisanal commit message. The first line is a short, approximately 50 
+character summary, followed by an empty line. The subsequent paragraphs 
+are jam-packed with descriptive information about the change, but each 
+line is kept under 72 characters in length.
+
+If even more information is needed to explain the change, more paragraphs
+can be added after the blank lines, with links to issues, tickets, 
+or bugs. Remember that future you will thank the current you for your 
+thoughtfulness and foresight!
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+#
+# Changes to be committed:
+# new file: super_sript.py
+# new file: cool_config.txt
+#
+
+
+There is a git command used to display Git commit messages called 'git log'. This command won't do any line wrapping for us. This means if we don't stick to the recommended line wrapping of 50 and 72 for summary and body respectively, long commit messages will run off the edge of the screen and be difficult to read.
+Look at the lines in the commit message that start with the pound symbol(#). Just like in python, this symbol indicates that this lines are comments and won't be included in the commit message. 
+Git shows them to use whenever we are writing a commit message as a reminder of what files we are about to commit.
+Following this guidlines can help make your commit message really useful and the investment of work now will really pay off later.
+We said that 'git log' displays the commit messages, lets see git log in action with our example scripts directory where we've performed two commits.
+
+cd scripts
+
+Checkout what git tracks as part of the log. Its packing a lot info in just few lines. The first thing listed for each commit is its identifier which is a long string of letters and numbers that uniquely identify each commit. 
+The first commit in the list also says that the HEAD indicator is pointing to the master branch.
+For each commit, we see the name and email of the person who made the commit, indicated as the 'Author'. 
+Then we get the date and time the commit was made.
+Finally the commit message is displayed.
+
+MODULE WRAP UP

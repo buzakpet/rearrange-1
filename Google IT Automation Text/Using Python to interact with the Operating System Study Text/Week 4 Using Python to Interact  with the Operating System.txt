@@ -1,0 +1,487 @@
+INTRO TO MODULE 4. MANAGING DATA AND PROCESSES
+In this module we would checkout modules that help us interact with the running operating system, and we would look at how we can get the most out of the tools available
+
+READING DATA INTERACTIVELY
+We don't just read data from files, sometimes we need to ask the user directly for pieces of information that just can't be stored in the file. We do this using the input() function that allows the us to prompt the user for certain values we can use in our scripts.
+
+#!/usr/bin/env python3
+
+name = input("Please enter your name: ")
+print("Hello, ", + name)
+
+The input() function always returns a string. If we want the data that we are reading in another data type then we need to convert it to the format that we want.
+
+#!/usr/bin/env python3
+
+def to_seconds(hours, minutes, seconds):
+    return hours*3600+minutes*60+seconds
+
+print("Welcome to this time converter")
+
+cont = "y"
+while (cont.lower() == "y"):
+    hours = int(input("Enter the number of hours:"))
+    minutes = int(input("Enter the number of minutes: "))
+    seconds = int(input("Enter the number of seconds"))
+
+    print("That's {} seconds".format(to_seconds(hours, minutes, seconds)))
+    print()
+    cont = input("Do you want to do another conversion? [y to continue]")
+print("Good bye!")
+
+Interactively asking the user for input might not always be the best appraoch for problem we are trying to solve, but it is a very good tool to have at our disposal.
+
+STANDARD STREAMS
+When we prompt for input, process it and print it to the screen, what exactly is going on behind the scenes? how does a python program connect to both the screen and keyboard? Python uses I/O streams: The basic mechanism for performing input and output operations in your programs. You can think of this streams as pathways between our programs and input sources like keyboard, or output like the screen.
+When we run system commands on our terminal I/O streams are also used to connect that command to the terminal input and output. This way we can see the result of the command or enter data interactively if thats how the program works. We call this streams because data keeps flowing. A program an red input and generate output as long is needs to achieve its goal.
+Most operating system supply three (3) different I/O streams by default. 
+1.STDIN is a channel between a program and a source of input usually in the form text data from the keyboard. When we use input() to accept data in a python script, we're using the STDIN stream.
+2.STDOUT is a pathway between a program and a targeted output like display. STDOUT generally takes the form of text displayed in a terminal as its at play when we use the print function to write data to the screen.
+3.STDERR This displays output like standard out but its used specifically as a channel to show error mesages, and diagnostics from the program. It is usually printed to the screen.
+
+#!/usr/bin/env python3
+
+data = input("This will come from STDIN: ")
+print("Now we would write \"" + data + "\" STDOUT")
+print("Now we generate an error tp STDERR: " + data + 1)
+
+I/O Streams are not restricted to python program. For example we've been using the cat system command to display contents of a file. When we do that those contents are printed to the screen using standard output STDOUT. And when one of this commands generate an error, that error is displayed to STDERR
+
+ENVIROMENT VARIABLE
+When we open a terminal application in a linux computer whether it is local or remote machine, the application that reads and executes our command is called a shell. A shell is a command-line interface used to interact with your operating system. The most commonly used shell on linus is called Bash.
+Python programs get executed inside a shell ocmmand-line enviroment.
+The variable set in that enviroment(enviroment variable) are another source of information that we can use in our scripts.
+Understanding and being able to change an enviroment variable can be really usefull to alter a programs behavior. Usually we can do this by making some slight changes in the eviroment the programs are running in. From the command-line prompt, we can check this variable using the env command.
+
+env
+
+What are all those variables for? Some are more important than others. For example the PATH variable is very improtant. Lets print out the contents of that one using the echo command.
+
+echo $PATH
+
+When we want to access the value of the variable of the shell, we use the prefix $ then the name of the variable. The shell uses this enviroment variable (PATH) to figure out where to look for executable files when we call them without specifying the directory. All the directories specified is where the shell would look for programs. For example, when we call the python3 variable, the shell looks at all the directories in the PATH variable in order, And when it finds it, it executes it.
+As we said we can read the contents of these variables from Python.
+
+#!/usr/bin/env python3
+
+variables.py
+
+import os
+
+print("HOME: " + os.environ.get("HOME", ""))
+print("SHELL: " + os.environ.get("SHELL", ""))
+print("FRUIT: " + os.environ.get("FRUIT", ""))
+
+So to access the enviroment variables, we use the environ dictionary provided by the os module. In this case we are using a dictionary method that we haven't used before. The get() method is a bit similar to how we have been accessing dictionary values up until now. The difference is what happens when the value isn't present. When we retrieve a value from dictionary using the key as in os.environ[FRUIT] we get an error. but if we use the get method instead, we can specify what value to return if the key isn't present. In other words the get method allows us to specify the default value if the value we are looking for in the dicitonary isn't present. So we tell python, try to retrieve the value stored in this key FRUIT, but if the value isn't present, return an empty string instead. We do this for 2 different variables, HOME, SHELL and FRUIT.
+
+./varaibles.py
+
+So when we run this we get the values for HOME and SHELL but not for FRUIT. Well that is because that variable isn't defined in the current enviroment. To define it in a way our script would see it, we need to run this in the command-line.
+
+export FRUIT=Pineapple
+
+We define a variable by just setting a variable using the equal (=) sign and leaving no spaces in between. Along with this, the export tells the shell that we want to value to be seen by commands that we call. 
+
+when we run vriables.py again we see the FRUIT variable.
+
+COMMAND LINE ARGUMENTS AND EXIT STATUS
+Another common way of providing information to our program is through command-line arguments.
+**Command-Line Arguments**: Parameters that are passed to a program when it's started.
+It is common practice to make our scripts recieve certain values by command line arguments. It allows code of scripts to be generic while also letting us run automatically without requiring any interactive user input. This means that this arguments are really usefull for system administration task, thats because we can specify the info that we want our program to use before it even starts. This lets us create more and more automation.
+We can access this values using the **argv list** in the sys module. Lets check this out by coding a script that just prints this value.
+
+parameters.py
+
+#!/usr/bin/env python3
+import sys
+
+print(sys.argv)
+
+# end of script
+
+./parameters.py
+
+Here we called the script without any parameters and so the list contains one single element, the name of the program we just executed. Lets try parsing a few parameters
+
+./parameters.py one two three
+
+Now we see that each of the parameters we parsed is included as a seperate element in the list, including the name of the script. Another source of information between the shell and the programs to get executed inside.
+
+Exit Status (Return Code): A value returned by a program to the shell.
+In all unix-like operating system, the exit status is 0 when the process suceeds, and different from 0 when it fails. The actual number returned gives additional info of what kind of error it encountered. Knowing if a command finished or not is helpful information, which can be used by a program thats calling a command. For example, it can use the info to retry a command if it failed. To check the Exit status of a program we could use a special variable that lets us see what the exit status of the last command was. The variable is the ? variable. So to see the contents we use the $?. We try this out using th wc command which counts the number of words, lines and characters in file. First, we parse in our variable.py script and check the values
+
+wc variables.py
+
+echo $?
+
+First we parsed in the variables.py to the wc command and it printed the values of lines, words and characters for our python script, then we printed the contents of our $? variable and the exit value is 0, which means wc ran sucessfully. 
+
+wc notpresent.py
+
+echo $?
+
+Here we parsed in a script that doesn't exit and so wc returns an error. Printing the contents of the $? variable, we see that it finished with an exit value of 1. This is all for systems file. What about Python scripts? finishes succesfully it exits with an exit value of 0, When it finishes with an error like type error or value error, it finishes with with an exit other than 0. For example.
+
+create_file.py
+#!/usr/bin/env python3
+
+import os
+import sys
+
+filename = sys.argv[1]
+
+if not os.path.exists(file):
+    with open (filename, "w") as f:
+        f.write("Now file created\n")
+else:
+    print("Error, the file {} already exists!".format(filename))
+    sys.exit(1)
+
+This script recieved a filename as a command line argument. It checks whether the filname exits or not when the file doesn't exist, it creates it by writing a line to it. But if the line exists it outputs an error message and gives and exit value of 1. To test this script, let us first try it on a file that doesn't exist.
+
+./create_file.py example
+
+Even though we did not specify the exit value as 0 when the script executes succesfully, thats because thats default behavior.
+When we run the code again, we get an error and an exit value of 1, exactly what we specified.
+
+RUNNING SYSTEM COMMANDS IN PYTHON
+Until now we've been using python to interact with the operating system through baked in functionality. For example we've used file objects to read in the contents of files, used the shutil module to check if the disk is full, and used sys module to process standard input, get parameters or generate an exit code. But what if we wanted to run a system program from a Python script? For example, as part of a python Script, we need to send ICMP packets to a host to check if its responding? We could try to look for an external module that provides this functionality, or we could just run the ping command which would send packets for us. SOMETIME IT IS EASIER OR FASTER TO USE A SYSTEM COMMANDS AS PART OF OUR PYTHON SCRIPTS TO ACCOMPLISH A TASK OR USE SOME FUNCTIONALITY THAT DOESN'T EXIST IN THE PYTHON MODULE NEITHER BUILT IN OR EXTERNAL. For these cases, Python provides a way to execute system command in our script using functions provided by the subprocess module. Lets see an example. First we import the subprocess module and then call the date command which shows the current date using the subprocess.run function
+
+import subprocess
+subprocess.run(["date"])
+
+The run function returns an object of the cCompletedProcess type. This objects include information related to the execution of the command. From the information printed, we can see that the return code of the command was 0. 
+To run the command, a secondary process is created for the child process or subprocess where the command is executed. While the parent process is waiting for the subprocess to finish, its blocked, which means the parent can't do any work unil the child finishes. After the external command completes it's work, the child process exits and the flow of control returns to the parent then the script can continue its normal operation. 
+Lets see this in action by calling the sleep command which waits for a number of seconds we tell it before returning. 
+
+import subprocess
+subprocess.run(["sleep", "2"])
+
+You may have notices that as the sleep command was running the interpreter was blocked and couldn't do interact with it. Thats exactly what we mean by parent process being blocked until the child process is done. 
+LOOK AT HOW WE PERFORMED THE COMMAND. THE RUN FUNCTION RECIEVES A LIST THAT STARTS WITH THE NAME OF THE COMMAND THAT WE WANT TO CALL, FOLLOWED BY ANY OTHER PARAMETERS THAT WE WANT TO PASS TO THAT COMMAND. SO, ANY COMMAND FOLLOWING THE PROGRAM NAME ARE THE COMMAND ARGUMENTS FOR IT. 
+In the last two examples, the return code for the process was 0 because the program ran sucessfully. Lets see an example when the program encounters an error and the exit status isn't 0. If we call ls for a file that doesn't exit ls would print an error and return an exit status that isn't 0. This would be stored in the return code attribute of the CompletedProcess instance.
+
+result = subprocess.run(["ls", "this_file_does_not_exit"])
+print(result.returncode)
+
+We can see that the command failed and the returncode was 2 letting us know that there was an error.
+We can use this information to do something else in the script in the future in case of a failure. USING A RUN COMMAND LIKE THIS IS ONLY USEFUL WHEN WE WANT TO RUN COMMAND AND ONLY CARE WHETHER IT WAS SUCCESFUL OR NOT. The output of the command would be printed to the screen which means our script has no control over it. This can be useful for system commands that do not have useful outputs like, cp, chmod, sleep etc, or when we dont care about processing the output any further. For example, if we are writing a scrip that changes the permisions of a bunch of files in a tree of directories, we don't care about the output of the chmod command, we only want to know if it was succesful or not. 
+
+OBTAINING THE OUTPUT OF THE SYSTEM COMMAND.
+If we want our Python script to manipulate the output of a system command that we are executing, we need to tell the run function to capture it for us. This might be helpful if we need to extract information from a command and use it for something else in our script. For example, say we wanted to create some stats on which user is logged unto a server throughout the day? We could do this with a script that calls the who command which prints the users currently logged into a computer. The script could pass the output of the command storing the list of logged in users once per hour and at the end of the day generate a daily report. 
+To be able to process the output of command, we will set the parameter called capture_output to true when calling the run function. For the next example, we'll call the host command, which can convert a host name to an IP address and vise versa. When calling it, we'll set the capture_output parameter to True, and store the result in variable so we can access it.
+
+result = subprocess.run(["host", "8.8.8.8"], capture_output=True)
+
+We know that the result variable is a completedProcess instance variable that we can access. so we can check the returncode 
+
+print(result.returncode)
+
+We can also print and operate with the output of the command which is stored in the stdout attribute.
+
+print(result.stdout)
+
+In the result, there is a 'b' before the begining of the string which tells us that the following string is not a proper string for python. It's actually an array of bytes. 
+Data in computer is stored and transmitted as bytes which can contain upt to 256 characters, but there are thousands of possible characters used to write in various languages. Chinese for example requires upto 10,000 characters. To be able to write in those languages, several specification called encodings have been created over time to indicate which sequence of bytes represent which characters. Most platforms uses UTF-8 encoding which is part of the unicode standard which list all the possible characters that can be represented. So in our code, when we executed the command using the function run, python does not know which encoding to use to process the output of the command. So it represents it as an array of bytes. If we want it to become a proper string, we use the decode method. This method applies an encoding to transform the bytes into a string. By default it uses a UTF-8 encoding, which is actually what we want. Lets transform our array of bytes into a string.
+
+print(result.stdout.decode().split())
+
+In this way we are working with the output of the command that we ran, and we can do whatever we need to do with it, for example we can choose to keep the last element of the list which is the name that correponds to IP that we are looking for.
+We just looked at STDOUT. But what about STDERR? If we use the capture_output and the command writes any output to STDERR, it will be stored in the stderr atrribute of the CompletedProcess instance. We will use the rm command to try and remove a file name that doesn't exist.
+
+result = subprocess.run(["rm", "does_not_exist"], capture_output=True)
+
+we print the returncode for this process.
+
+print(result.returncode)
+
+Now lets check the contents of the stdout and stderr attributes.
+
+print(result.stdout)
+
+print(result.stderr)
+
+So, in this case, we see that the standard output was empty, but there was an error printed to the standard error which we can access using the stderr attribute.
+This is a great example of how stdout and stderr are actually different streams, and python captures them seperately.
+
+ADVANCED SUBPROCESS MANAGEMENT
+The subprocess module has some extra useful module that we can use in our scripts. For example that one way of providing information to our processess is to modify the enviroment variables. Using this mechacnism, we can modify where the process looks for executable files, which commands it can use to interact with some parts of the system, the kind of output it'll generate and a bunch of other things.
+The usual strategy to modify the enviroment variables is to first copy the enviroment seen by our process do any neccessary changes then pass that as the enviroment so that the child process would see. For example:
+
+import os
+import subprocess
+
+my_env = os.environ.copy()
+my_env["PATH"] = os.pathsep.join(["/opt/myapp/", my_env["PATH"]])
+
+result = subprocess.run(["myapp"], env=my_env)
+
+***os.environ returns the enviroment as a dictionary
+
+In this code we start by calling on the copy method on the os.environ dictionary that contains the current environ variables. This creates a new dictionary that we can modify without changing the original enviroment. The change that we are doin is adding one extra variable to the PATH variable. Remember that the PATH variable contains directories of where the os will look when we try to execute an executable without specifying a directory. By adding one entry to the PATH,we're telling the look for programs in an additional location. To create a new value we use the join method on the os PATH substring (or was it pathsep string he said?). This joins elements of the list we are passing with a path seperator corresponding to the current os. So we're joining "/opt/myapp/" and the old value of the PATH variable to the PATH seperator. FInally we called the "myapp" command setting the env parameter to the new enviroment that we have just prepared.
+By way of recapping, this scrip is modifying the content of the PATH enviroment variable by adding an entry to it, we then called the "myapp" command with that modified variable. Doing it this way, the command will run in the modified enviroment with the updated value of PATH.
+We do other things with the run function, for example we can use the cwd parameter to change the current working directory where the command will be executed. This can be really helpful when we are working with a set of directories where we have to run a command on each of them. We can also set the 'timeout' parameter which will call the run function to kill the given process if it takes longer than a given number of seconds to finish. This can be helpful if you are trying to run a process that can be stuck, for example trying to connect to a network when your computer is offline. We could also set the 'shell' parameter. If we set the 'shell' parameter to True, Python would first execute an instance of the default system shell and then run the given command inside of it. This means our commandline could include variable expansions and other shell operation. For now just understand that if we need to expand variables or globs You'll need to set this parameter.
+Using subprocesses and system commands though useful especially when we need to do a specific task quickly, comes with some draw backs, doing system level commands build assumptions into our scripts about the infrastructure our  scripts will run on, and if those assumptions fails, it could lead to unexpected effects or failures. This assumptions can change in multiple ways, what will happen to our automation if the flags of a terminal command changed, and our scripts continue to use the old flags? What happens if we switch os from linux to windows? Any changes to our scripts increases the chance of something breaking which could be obvious or difficult to detect.
+If we're automating a one-off well defined task where developing a solution quickly is the biggest requirement, then using system commands and subprocesses can help a lot. 
+But if we are doing someting more complex and long running, it is better to use the baked in or external modules that python provides. 
+So before deciding to use a subprocess, its a good idea to check the standard library or pypyth repo to see if we could the task with modules provided there, and to check if someone has already created the automation we want to write. 
+
+WHAT ARE LOG FILES?
+Now let us examine how we can use all the things we've learnt to help us in our day-to-day work. We will spend our time working on how to process large chuncks of data, the type we will find in a syslog file or web request log.
+THE DIFFERENT EVENTS THAT HAPPEN IN PROGRAMS THAT ARE RUNNING ON A SYSTEM THAT AREN'T CONNECTED TO THE TERMINAL ARE USUALLY READ INTO LOG FILES. Log files contain a lot of useful information especially when you are trying to debug a tricky problem that is happening on the computer.
+On the flip-side, sometimes it can be overwhelming when you are trying to find something inside a log file that contains a whole lot of lines with a whole lot of things in them. So it will help a lot to know how to process this files and get what we want out of them. To do this, we will go back to regular expressions which will give us a great deal of flexibilty when processing log files
+
+FILTERING LOG FILES WITH REGULAR EXPRESSIONS
+When working with log in our scripts, our first step is usually to open them so our code can access their contents. We will do so by calling the open function which will return a file object and then iterate through each of its line using a for loop.
+We discssed why we use for loops for large files, because the files can be too large, and may take up space in memory if we read it directly and store in a variable.
+
+cat syslog
+
+The above displays the system log files. The server that generates this log files have startd behaving strangely and we suspect that its due to a CRON job started by one of the system administrators. (CRON jobs are used to scehdule scripts on unix based os). To find out what is wrong with the server, we want ot audit the log files and see who exactly has been launching CRON jobs. By looking at the syslog files, the lines that would be of interest to us are the ones with the CRON substring. The also show the user that started the CRON job wrapped in parenthesis. With this info we can ignore any line without the CRON substring. We will check for this using the 'in' keyword. 
+
+check_cron.py
+#!/usr/bin/env python3
+
+import sys
+
+logfile = sys.argv[1]
+with open(logfile) as f:
+    for line in f:
+        if "CRON" not in line:
+            continue
+        print(line.strip())
+        
+Once we know we are processing the right log line, we can use our knowledge of regular expression to extract the user name. We can do this is a bunch of different ways, but in this example we use escape characters, capturing groups, and the end of string anchor.
+
+import re
+pattern = r"USER \((\w+)\)$"
+
+Lets take a closer look at this expression. Since the user name is at the end of the line, we use the $ anchor to match text found at the end of the line. To find the username, we use the word user followed by a string wrapped in parenthesis. This means we have to escape the parenthesis wrapping the username inside of it. Since we want to extract the user name, we use another parenthesis to create a capturing group. And for the username itself we are matching an alph-numeric character using the \w+. Lets test this out.
+
+line = "Jul 6 14:05:01 computer.name CRON[29440]: USER (naughty_user)"
+result = re.search(pattern, line)
+print(result[1])
+
+The output for this is "naughty_user", which is exactly the output we wanted. now we add this code to our script check_cron.py
+
+check_cron.py
+#!/usr/bin/env python3
+
+import re
+import sys
+
+logfile = sys.argv[1]
+with open(logfile) as f:
+    for line in f:
+        if "CRON" not in line:
+            continue
+        pattern = r"USER \((\w+)\)$"
+        result = re.search(pattern, line)
+        print(result[1])
+
+MAKING SENSE OUT OF DATA
+What we've done in the last example was very helpful, but there's more info that we might need. To imporve our output, it might be a good idea to have an account of how many times each username appeared in our log. We can use a dictionary to achieve this.
+We will store the username as the key to the dictionary and for the value we will count the number times that each usename appeared in the file. 
+To accomplish this in fewer lines, we use the get method that we saw earlier.
+Lets try it out in the interpreter before adding it to our code.
+
+usernames = {}
+name = "good_user"
+usernames[name] = usernames.get(name, 0) + 1
+
+In the above code, the get method is acting on the dictionary called username and uses the name as the key. the second argument 0 is to set the initial count to 0 if that key is not present in the dictionary and add 1 to the existing value when the key is present.
+Now lets see the current contents of the dictionary.
+
+print(usernames)
+
+Let us do the same operation again, and see what the new value would be.
+
+usernames[name] = usernames.get(name, 0) + 1
+
+This will return good_user with a count of 2. Now we know that our dictionay works when there's no key initially and when there is a key. 
+Now let us add it to our script check_cron.py
+
+check_cron.py
+#!/usr/bin/env python3
+
+import re
+import sys
+
+logfile = sys.argv[1]
+usernames = {}
+with open(logfile) as f:
+    for line in f:
+        if "CRON" not in line:
+            continue
+        pattern = r"USER \((\w+)\)$"
+        result = re.search(pattern, line)
+        if result is None:
+            continue
+        name = result[1]
+        usernames[name] = usernames.get(name, 0) + 1
+    print(usernames)
+
+
+
+WEEK 4 ASSIGNMENT. EXTERNAL GRADED TOOLS: WORKING WITH LOG FILES
+View log file
+In the /data directory, there's a file named fishy.log, which contains the system log. Log entries are written in this format:
+
+Month Day hour:minute:second mycomputername "process_name"["random 5 digit number"] "ERROR/INFO/WARN" "Error description"
+
+For every process, the runtime log that's generated contains a timestamp and appropriate message alongside. You can view all logs using the command below:
+
+cat ~/data/fishy.log
+Copied!
+Output:
+
+d695ed11047941c4.png
+
+Find an error
+In this lab, we'll search for the CRON error that failed to start. To do this, we'll use a python script to search log files for a particular type of ERROR log. In this case, we'll search for a CRON error within the fishy.log file that failed to start by narrowing our search to "CRON ERROR Failed to start".
+
+To get started, let's create a python script named find_error.py within scripts directory using nano editor.
+
+cd ~/scripts
+Copied!
+nano find_error.py
+Copied!
+Add the shebang line:
+
+#!/usr/bin/env python3
+Copied!
+Import the necessary Python modules:
+
+import sys
+import os
+import re
+Copied!
+The sys module provides information about the Python interpreter's constants, functions, and methods. The os module provides a portable way of using operating system dependent functionality with Python.
+
+Regular Expression (RegEx) is a sequence of characters that defines a search pattern. We can use regular expressions using re module.
+
+Now, write a function error_search that takes log_file as a parameter and returns returned_errors. Define the error_search function and pass the log file to it as a parameter.
+
+def error_search(log_file):
+Copied!
+To allow us to search all log files for any type of logs, we'll be making our script consistent and dynamic.
+
+Define an input function to receive the type of ERROR that the end-user would like to search and assign to a variable named error.
+
+The input() function takes the input from the user and then evaluates the expression. This means Python automatically identifies whether the user entered a string, a number, or a list. If the input provided isn't correct then Python will raise either a syntax error or exception. The program flow will stop until the user has given an input.
+
+Later in the script, we'll iterate over this user input and the log file to produce results. Following the input function, now initialize the list returned_errors. This will enlist all the ERROR logs as specified by the end-user through the input function.
+
+  error = input("What is the error? ")
+  returned_errors = []
+Copied!
+Use the Python file's handling methods to open the log file in reading mode and use 'UTF-8' encoding.
+
+  with open(log_file, mode='r',encoding='UTF-8') as file:
+Copied!
+We'll now read each log separately from the fishy.log file using the readlines() method. As mentioned earlier, we'll iterate over user input to get the desired search results. For this, we'll create a list to store all the patterns (user input) that will be searched. This list is named error_patterns and, initially it has a pattern "error" to filter out all the ERROR logs only. You can change this to view other types of logs such as INFO and WARN. You can also empty initialize the list to fetch all types of logs, irrespective of their type.
+
+We'll add the whole user input to this list error_patterns.
+
+    for log in  file.readlines():
+      error_patterns = ["error"]
+      for i in range(len(error.split(' '))):
+        error_patterns.append(r"{}".format(error.split(' ')[i].lower()))
+Copied!
+Now, let's use the search() method (present in re module) to check whether the file fishy.log has the user defined pattern and, if it is available, append them to the list returned_errors.
+
+      if all(re.search(error_pattern, log.lower()) for error_pattern in error_patterns):
+        returned_errors.append(log)
+Copied!
+Next, close the file fishy.log and return the results stored in the list returned_errors.
+
+    file.close()
+  return returned_errors
+Copied!
+Great job! You've successfully defined a function to store all the logs defined as a CRON error that fails to start. In the next section, we'll generate a new file consisting of the logs based on your search within /data directory.
+
+Create an output file
+Let's define another function file_output that takes returned_errors, returned by a previous function, as a formal parameter.
+
+def file_output(returned_errors):
+Copied!
+Using Python file handling methods, write returned_errors into the errors_found.log file by opening the file in writing mode. For defining the output file, we'll use the method os.path.expanduser ('~'), which returns the home directory of your system instance. Then, we'll concatenate this path (to the home directory) to the file errors_found.log in /data directory.
+
+  with open(os.path.expanduser('~') + '/data/errors_found.log', 'w') as file:
+Copied!
+Next, write all the logs to the output file by iterating over returned_errors.
+
+    for error in returned_errors:
+      file.write(error)
+Copied!
+And finally, close the file.
+
+    file.close()
+Copied!
+Function call
+Now, let's call the functions and run the script.
+
+Define the main function and call both functions that we defined in the earlier sections.
+
+The variable log_file takes in the path to the log file passed as a parameter. In our case, the file is fishy.log. Call the first function i.e., error_search() and pass the variable log_file to the function. This function will search and return a list of errors that would be stored in the variable returned_errors. Call the second function file_output and pass the variable returned_errors as a parameter.
+
+sys.exit(0) is used to exit from Python, the optional argument passed can be an integer giving the exit status (defaulting to zero), or another type of object. If it is an integer, zero is considered "successful termination" and any nonzero value is considered an "abnormal termination" by shells.
+
+if __name__ == "__main__":
+  log_file = sys.argv[1]
+  returned_errors = error_search(log_file)
+  file_output(returned_errors)
+  sys.exit(0)
+Copied!
+The complete file find_error.py should now look like this:
+
+#!/usr/bin/env python3
+import sys
+import os
+import re
+def error_search(log_file):
+  error = input("What is the error? ")
+  returned_errors = []
+  with open(log_file, mode='r',encoding='UTF-8') as file:
+    for log in  file.readlines():
+      error_patterns = ["error"]
+      for i in range(len(error.split(' '))):
+        error_patterns.append(r"{}".format(error.split(' ')[i].lower()))
+      if all(re.search(error_pattern, log.lower()) for error_pattern in error_patterns):
+        returned_errors.append(log)
+    file.close()
+  return returned_errors
+  
+def file_output(returned_errors):
+  with open(os.path.expanduser('~') + '/data/errors_found.log', 'w') as file:
+    for error in returned_errors:
+      file.write(error)
+    file.close()
+if __name__ == "__main__":
+  log_file = sys.argv[1]
+  returned_errors = error_search(log_file)
+  file_output(returned_errors)
+  sys.exit(0)
+Copied!
+Save the file by clicking Ctrl-o, followed by the Enter key and Ctrl-x.
+
+Make the file executable before running it.
+
+sudo chmod +x find_error.py
+Copied!
+Now, run the file by passing the path to fishy.log as a parameter to the script.
+
+./find_error.py ~/data/fishy.log
+Copied!
+This script will now prompt for the type of error to be searched. Continue by entering the following type of error:
+
+CRON ERROR Failed to start
+Copied!
+On successful execution, this will generate an errors_found.log file, where you will find all the ERROR logs based on your search. You can view the ERROR log using the command below:
+
+cat ~/data/errors_found.log
+Copied!
+This will output the following:
+
+fa35b5be265b9a7b.png
+

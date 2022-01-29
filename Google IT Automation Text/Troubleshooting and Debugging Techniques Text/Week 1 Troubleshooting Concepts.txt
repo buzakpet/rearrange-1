@@ -1,0 +1,487 @@
+
+Amanda Balis
+
+COURSE INTRODUCTION
+In our IT career, we will come across different flavors of technical problems: sometimes we might need to figure out why a program isn't doing what it's suppose to, maybe its crashing unexpectedly, or getting stuck when it should be processing info. Other times, we'll need to find a way to make our scripts run faster, or use less memory, or transmit less data over the network, or we might need to workout why the overall system isn't running as expected, and how to fix it even if you didn't write the code that's causing the problems.
+Through out this cause, we will look at a bunch of different strategies and approaches for tackling problems like those. We'll learn some general ideas that can help us solve any technical problem, and then see how this ideas apply to real life scenerios.
+We picked examples that include general system issues, issues with softwate that someone else wrote, and issues with programs that we wrote.
+We'll talk about problems that can affect any operating system, and we'll also look at problems specific to certain platforms.
+For scripting problems, we'll focus on python programs, but we'll also checkout common issues that can happen with other languages too.
+
+COURSE INTRO TO MODULE 1- TROUBLESHOOTING CONCEPTS
+Whether its an application crashing, a hardware issue or a network outage, as IT specialist we tend to run into problem that need solving pretty regularly.
+When facing this issues, we need to make sure that people affected by the problem can get back to doing their jobs as fast as possible, and we also have to plan for how to prevent against the same problem from happening again in the future.
+The techniques learnt here are reusable and will help us solve almost anykind of technical problem that you might face in the future.
+
+WHAT IS DEBUGGING
+Throughout this course, we'll be talking about debugging and troubleshooting.
+So what is the different between both of them.
+Troubleshooting: The process of identifying, analyzing, and solving problems.
+So, we can use the term troubleshooting to refer to solving any kind of problem.
+In this is course we will focus on troubleshooting IT problems. They could be caused by hardware, software, or the programs running on the computer. The could also be caused by the enviroment and configuration of the software, the services the application is interacting with, or a wide range of other IT problems.
+Debugging: The process of identifying, analyzing, and removing bugs in a system.
+Generallly we say troubleshooting when we are fixing problems in the system running the application, and debugging when we are problems in the actual code of the system.
+There are a lot of tools that we can use to get info out of the system, and what the programs on the system are doing, tools like tcpdump and wireshark can show us ongoing connections, and help us analyze the traffic going over our cables.
+Tools like ps, top, or free can show us the number and types of resources used in the system.
+We can use a tool like strace to look at the systems calls made by a program, or ltrace to look at the library calls made by a software.
+When debugging the code of a program, we can combine this tools with specific debugging tools developed for the programming language you used to write the application.
+Debuggers: Lets us follow the code line by line, inspect changes in the variable assignments, interrupt the program when a specific condition is met, and more.
+On top of that, if we can modify the code, we can change it so that it provides more loging information. This can help us understand what is going on behind the scenes. Troubleshooting and debugging are a bit of an art.
+Most often, figuring out the problem and its solution requires some creativity. We need to come up with new ideas of what could be failing and ways to check for that. And once we know what is failing, we need to imagine how to solve it.
+To take it a step further, once we've solved a problem, we can start thinking of how to prevent it from happening again.
+When troubleshooting or debugging, we come across suprising situations, things aren't working as expected and we need to understand why and figure out how to solve it. So, in this course, we'll look into a bunch of techniques to understand and solve technical problems. While we'll sometimes focus on system side and sometime on the coding side. Most of the techniques we'll cover helps us solve any kinds of problems.
+
+PROBLEM SOLVING STEPS
+Though there's a wide range of problems we can encounter as an IT specialist, fortunately, there is a set of steps we usually take to solve almost any technical problem.
+1. Getting information: This is means gathering as much information we need about the current state of things, what the issue is, when it happened, and what the consequences are for example. To get this information, we might use any existing documentation that might help. This can be internal documentation, manual pages, or even questions asked on the internet.
+One super important resource to solve a problem is the reproduction case.
+Reproduction case: A clear description of how and when the problem appears.
+2. Finding the root cause: This is usually the most difficult step and in this course we'll discuss a lot of possiblities on how to get there. But the key here is to get to the bottom of what is going on, what triggered the problem, and how we can change that. and the final step
+3. Performing the necessary remediation: Depending on the problem, this might include an immediate remediation to getting the system back to health, and then a medium or long term remediation to avoid the problem in the future. And while these are basic steps of problem solving, they don't always happen sequentially.
+It is also possible that while trying to find the root cause, we may even need more info about the current state, and so we gather more info until we find the problem we are looking for. Or we can understand the problem well enough to create a workaround to let our users get back to work quickly. But we still need more time to get to the root cause and prevent the problem from occuring again.
+Preventing the problem avoids us having to solve the problem over and over again.
+Through out the whole process, its important that we document what we do. We should note down the info that we get, the different things we tested to try and figureout the root cause.
+And finally the steps we took to fix the issue.
+This documentation may prove invaluable next time a similar issue comes up.
+Imagine a user ask you for your help because their computer is unexpectedly shuting down. The problem xcould be a hardware issue, a software issue or even a configuration issue. So the first thing to do is get more info. You'll want to know when it happened, what the user was doing when it happened and how regularly it happens. You'll also want to look at the computer logs to check if there are any important errors. And if any logs are not totally clear, you can look them up on the internet to see what they mean.
+In our example, say you found a line in the log that said the temperature threshold was exceeded and so the computer shutdown, thats useful information, so you know why the computer shutdown, but you don't know why it overheated, so you'll need to keep investigating.
+After finding no other interesting thing in the log, you decided to check if its a hardware issue, you find our that the fan that is supposed to cool down the cpu is full of dirt and so it isn't spining properly, that's the root cause of the problem. Now the short term remediation is to clean up the fan so that it can spin again and the computer does not over heat. In this case it would be to deploy monitors so that you get notified when they start overheating.
+Long term remediation would also mean to reduce the amount of dust in your work enviroment so that this won't happen again.
+
+SILENTLY CRASHING APPLICATION
+Say a user contancts us to let us know that a certain application fails to open.
+As we pointed out earlier, the first step is get info about the conditions that caused the failure, what the error is that the user is getting, and then check if we experience the same failure.
+By asking for this details, we discovered that a new version of the software was recently released, and when we upgraded to this new version, we can reproduce the problem on our own computer. Like this.
+
+cd ~/purplebox/
+./purplebox.py
+
+We see that when we try to run the program it prints no error at all, it just exits immediately.
+We need to figure out what is going on even if there's no error message.
+Amongs the bucnh of tools we can use to help us understand what is happening with our system or app, we use strace. 
+With the help of this tools, we could expand our knowledge of a particular problem, view the actions of a program from a different point of view, and get the info we need.
+strace lets us look more deeply at what the program is doing. It will trace the system calls made by the program, and tell us what the result of each of this calls was. So we'll strace the failing app to figure out whatsup with our program.
+
+strace ./purplebox
+
+Whoa! Thats a lot of output. It shows us all the system calls our program made.
+System calls: Calls that the programs running on our computer make to the running kernel.
+There are loads of different system calls, and depending on what we trying to  debug, we might be interested in some more than the others.
+Lets make this output more managable. we can pipe the output to the less command, or we could use the '-o' flag of the 'strace' command, to store the output into a file, and then browse the contents of that file. The -o' file lets us refer back to the file if we need to, so lets go with that.
+
+strace -o failure.strace ./purplebox
+
+Now we can read the generated program using the 'less' command. We'll go to the end of the file using shift G, and scroll up to see if we find anything suspicious.
+
+less failure.strace
+
+Close to the end of the log, we can see that the application tried to a directory called .config/purplebox, which doesn't exist. The name of the system call is 'openat', one of the system calls used to open files and directories, the content of the call shows the parameters passed, including the path being opened(/home/user/.config/purplebox) and a bunch of flags (O_RDONLY|O_NONVLOCK|O_CLOEXE|O_DIRECTORY = -1), in particular, the O_DIRECTORY flag tells us that this program is trying to open this path as a directory. The number after the equal sign shows us the return code the syscall, in this case its -1. So the program is trying to open this directory and it turns out it doesn't exist.
+Since this is happening shortly before the program finishes, it is a likely candidate for the root cause of the issue.
+Lets create the directory and try to start the program again.
+
+mkdir ~/.config/purplebox
+./purplebox 
+
+Success! This time the program works just fine. Now that we've found the root cause of the issue, we can go ahead and remediate the issue. The immediate remediation is to tell the user to create the directory so that the can get back to work quickly. The long term remediation is to contact the developer and tell the that the program will fail to start if the directory is missing.
+This gives them a heads up about the problem so that they can fix it in the next version.
+So, what about the documentation? We should note that this version of the software won't start if that directory doesn't exist, that will help others facing the issue to quickly find out the solution.
+
+IT DOESN'T WORK
+As we pointed out earlier, the first step in troubleshooting is getting enough info to understand the current state of things. To do this, we'll need to know what the actual issue we're solving is. This starts when we first come across the issue, whcih could be through a report by a ticketing system, or by encountering the problem ourselves. When working with users, its pretty common to receive reports of failures that boils down to 'it doesn't work'. This report usually don't include a lot of useful info. But its still important that the problem gets reported and solved.
+Which info is useful or not might depend on the problem, but there are some common questions we can ask a user than simply reporting 'something doesn't work'. Like: 
+What were you trying to do? 
+What steps did you follow?
+What was the expected result?
+What was the actual result?
+If the ticketing system my company use allows this, its a good idea to include this questions in the form that users have to fill out when reporting an issue. This way we save time and can start asking more specific questions right away.
+Another to note is that, when debugging a problem, we want to consider the simplest explanations first and avoid jumping into complex or time consuming solutions first unless we really have to. Thats why when a device does not come on, we first check if its plugged in then if there is electricity coming from the plug before taking it apart or replacing it.
+Say you got a call from a user to tell you that the internal websites used by the sales team to track customer interaction doesn't work. The user is super stressed because they need to access the info on the website for a meeting happening in a few minutes. So you tell them you'll look into the problem right away, but that you need more info: What were they trying to do? The users tells you that they are trying to access the website. What steps did they follow? They tell you that the opened the website url and entered their credentials. What was the expected result? They expected to see a sales system landing page. What did they get instead? The webpage just keeps loading. So now we've gone from 'it doesn't work' to 'when I try to login, they page keeps loading and never shows the landing page'. 
+Now that you know the basic idea of the problem, its time to start figuring out the root cause. For that, you'll apply the process of elimination starting with the simplest explanations first, and testing those until you can isolate the root cause. For example, you check if you can reproduce the issue on your own computer, so you navigate unto the website, enter your credentials, and the page just keeps loading, never showing the landing page. This is enough info to tell the user that you'll investigate and work on it on your own, there's no need to keep them on the line.
+By reproducing the problem on your computer, you've taken a simple and quick action that rules out the user, or the users computer as the cause of the problem.
+This cuts the troubleshooting problem in half as you now no that there's a problem with the service and you can now focus on that, before jumping into the server thats hosting the application you run a few quick checks to verify if the problem is isolated to that specific website or not. You check if your system internet access is working correctly by accessing an external website which loads just fine, then you check if other websites, like the inventory website or ticketing system are working ok. Doing this, you discover that while the ticketing system loads with no issues, the inventory website never finishes loading. It turnsout that both websites are hosted on the same server.
+Again its important to highlight that doing this quick checks to verify that the internet works correctly and which sites are affected by the problem helps you isolate the root cause.
+By looking at possible simple explainations first, you avoid loosing time chasing the wrong problem.
+At this point you know that websites running on a specific server are failing to load, while the rest of the systems and the internet are working correctly.
+Next step you need to checkout whats going on with that server. The server running the websites is a linux machine, so you'll connect to it using SSH. You run the 'top' command which shows the state of the computer and process using the most cpu and see that the computer is super overloaded. The load average in the first line say 40. The load average on linux shows how much time a processor is busy in a given minute, with 1, it means it was busy for the whole minute. So normally, this number should not be above the amount of processors in the computer. A number higher than the amount of processors mean that the computer is overloaded.
+We know that this computer has 4 cores, so 40 is a really high number. We also see that most of the cpu time is spent in waiting. This means that processes are stuck, waiting for the OS to return from system call, this usually happens when processes get stuck gathering data from the harddrive or the network. By looking at the list of processes, you realize that the back-up system is currently running on the server and it seems to be using a lot of processing time. 
+Backing up data on the system is super important, but currently the whole system is unusable, so you decide to stop the back up system by calling 'kill -STOP'. This is will suspend the execution of the program until you decide to continue or terminate, after doing this, you run top again and see that the load is going down until processes are no longer stuck waiting for I/O, then you try logging into the website, and this time the landing page loads. Success. You let the user know that they can now use the website.
+This is a short-term remediation, we'll discuss long-term remediation next.
+Imagine that next week, another user calls us telling us that the sales website doesn't work, remembering the previous incident, we tell them we'll fix it rightaway. You SSH under the server and try to find the back-up process to stop it but its not running. Oops! You forgot to ask the user what they meant when they said it didn't work.
+When you call back to ask them, they tell you that they are trying to generate a monthly sales report, and they get an error saying that the monthly category column doesn't exist. Totally different problem, totally different action to take.
+So remember to always have a clear picture of the problem before you start solving it.
+
+CREATING A REPRODUCTION CASE
+When we are dealing with an issue that is difficult to debug, we would want to have a clear reproduction case for the problem.
+Reproduction case: A way to verify if the problem is present on not. We want to make the reproduction case as simple as possible, that way we clearly understand when it happens, and it make it really clear to know if the problem is really solved or not when we try to solve it.
+Sometime, the reproduction case is obvious. In the example were the purplebox program failed to start because of a missing directory, the reproduction cas was to open that program without that directory on the computer.
+For our overloaded server example, the reproduction case was to try and login to the website and see the loading page.
+Sometimes, the reproduction case might be much more complex to discover.
+Imagine that you're trying to help a user with an application that won't start. This time when you run the same version of the application on your computer, the application works just fine. So you suspect that the problem has something to do with the users enviroment or configuration.
+There could be a bunch of reasons why this is happening. It could be with the network routing, old config files interfering with the new version of the program, a permission blocking the user from accessing some required resource, or even some faulty piece of hardware acting up.
+So how ca yo figure out what is causing the problem? The first step is to read the logs available to you. Which logs to read depends on the operating system and the kind of application you're trying to debug. On Linux, read system logs like: varlog, syslog, and user-specific log like: .xsession-errors file located in the users directory. On MacOs, on top of system logs, you check the logs stored in the Library/Logs directory. On windows, you use the Event Viewer tool to go through the event logs. 
+No matter the OS, you should look at the logs when something isn't behaving as it should.
+Lots of times you'll find an error message that will help you understand what is going on, like, unable to reach server, invalid file format, permissions denied. But what if your unlucky and get no error message, or the error message is something ambigous like: Internal system error.
+The next step is to try to isolate the events that trigger the issue, do other users in the office experience the same problem? Does the same thing happen if the same user logs unto a different computer? Does the problem still happen if the applications config directory is move away?
+Lets say that it is the configs directories fault, you ask the user to move it away without deleting it, and so the app starts to work correctly. So, you ask the user to send you the contents of that directory, you copy them unto your computer and the program fails to start. Bingo! You have your reproduction case. Its starting the program with that config in place. 
+Having a clear reproduction case helps you investigate the issue and quickly see what change it. For example, does the problem go away when we revert the app to a previous version? are there any differences in strace log and ltrace log when running the program with the bad config? and without it.
+On top of that, having a clear reproduction case helps you share it with others when asking for help, as long as you aren't sharing any confidential info ofcourse.
+You could use it to report a bug to app developers, to ask for help from a colleague, or even to ask for help in an internet forum about the application.
+So when trying to find a reproduction case, we want to find the actions that reproduce the issue an we want this to be as simple as possible. The smaller the change in the enviroment, and the shorter the list of steps to follow, the better.
+To get there, we might have to dig deeper into the problem until we have a small enough set of instructions.
+Once we have a reproduction case, we're ready to move to the next step of the problem, finding the root cause.
+
+FINDING THE ROOT CAUSE
+When you first come across this concepts, it might seem that finding the reproduction case you already know the root cause of the problem, but more often than not, its not true.
+In our overloaded server example, we figured out that the backup system was preventing the websites from working, so, we mitigated that immediate problem to unblock the user, but we didn't really look into the root cause of our server being stock. This could be because the network bandwith is saturated, the disk transfer is too slow, the hard drive is faulty, or a bunch of other reasons. We also didn't do anything to make sure that our back-ups will run succesfully in the future.
+Understanding the root cause is essential for performing the long-term remediation.
+So how do we go about finding the root cause of a problem?
+We generally follow a cycle of looking at the information we have, coming up with a hypothesis that could explain the problem and then testing our hypothesis. If we can confirm our theory, then we've found the root cause. But if we don't, then we go back to the beginning and try a different possiblity.
+This is were our problem solving creativity comes into play.
+We need to come up with an idea of a possible cause, check if its correct and if not, come up with a different idea, until we find one that explains the problem.
+Our ideas don't come out of a void. For inspiration, we look at info we currently have and gather more if we need, serching online for error messages we get, or looking at the documentation of the app involve could also help us imagine new possiblities to what might be at fault.
+Whenever possible, we should check our hypothesis in a test enviroment, instead of the production enviroment our users are working with. That way we avoid interferring with what our users our doing, and tinker around without fear of breaking something important.
+Depending on what we are trying to fix, this might mean we have to try our code on a newly installed machine, spinnig up a test server using test data and so on.
+It can take sometime to get this setup, but the extra safety is definitely what it. even when it seems that the problem might be related to the test enviroment, it is always a good idea to see if we can reproduce the problem in a test enviroment before we modify production.
+In our overloaded server example, if the problem was with the hardware, we wouldn't be able to replicate it with a test server. In that case, we will need to wait until the services aren't being used, or bring up a secondary server, migrate the services there, and only then look at whats wrong with the computer. on the filp-side, if the problem is related to some configuration on either the web services or the backup service, we will still see it in the test server. So we'd always start by setting up the test instance of the test service and checking if the problem replicates there before touching the production instance.
+So, say we have a test server running the same websites, when we start the backup, we see that the websites stop responding, this is great because we have a reproduction case and we can debug it properly. How do we find the root cause? One possible culptit may be too much I/O. To get more info about the I/O, we use the command 'iotop', which is a tool similar to 'top', that lets us see which processes are using the most input and output. Other related tools are 'iostat' and 'vmstat'. This tools show statistics on the I/O operations and the virtual memory operations respectively.
+If the issue is that the process generates too much input and output, we could use a command like 'ionice' to make our backup reduce its priority to access the disk and let the webservices use it too.
+What if the input output is not the issue? Another option could be that the service is using too much network, because the network is transmitting data to be backed up on a central server, and that transmittion blocks everything else. We can check this using 'iftop', yet another tool similar to top that shows the current traffic on the network interface.
+If the backup is eating all the network bandwith, we can look at the documentation for the backup software and check whether it already includes an option to limit the bandwith. The 'rsync' command, which is often used for backing up data includes a '-bwlimit' flag just for this purpose of limiting the bandwith. And if that option isn't avaialable, we can use a program like Trickle to limit the band with being used.
+But what if the network isn't the issue either? Remeber we need to put our debugging creativity to work and come up with other possible reasons for why its failing.
+Another option could be that the compression algorithm selected is too aggressive and compressing the backups is using all of the servers processing power. We could solve this by reducing the compression level using the 'nice' command to reduce the priority of the process in accessing the CPU.
+And if that's still not the case, we need to keep looking, check the logs to see if we find anything that we missed before.
+Maybe look online for other people dealing with similar problems related to interactions of the backing up software with the web serving software, and keep doing this until we come up with something that could be causing our problem.
+This is sounds like a lot of work :(
+In general, by using the tools available to us, we can find the righ info to land on the right hypothesis after only a few trials, and with experience, we'll get better at picking the most likely hypothesis the first time around.
+
+DEALING WITH INTERMITENT ISSUES
+Have you ever tried to solve a problem that happened only occasionally? Maybe you've dealt with programs that randomly crashed, laptops that sometimes failed to suspend, web services that unexpectedly stopped replying., or file contents that got corrupted, or only in some cases.
+bugs that come and go are hard to reproduce and are extremly annoying to debug.
+So what can  you do when you're trying to debug an issue like that?
+The first step is to get more info on what is going on, so that you understand when it happens and when it doesn't.
+If you're dealing with a bug and a piece of code that you maintain, you usually modify the program to log more info related to the problem. Since you don't know exactly when the bug will trigger, you need to be thorough with the info that you log.
+For example, I recently had an issue with the service I own, it was crashing sporadically and I was at a loss trying to find out why. Looking at the error message I knew it had something to do with strings that use special characters, but I had no idea where the bug was exactly, so I added more login info to the service around the input and the function calls I suspect could be involved. The next time it crashed, I was able to identify the part of the code where it was missing the prper handling for the encoding and fixed the problem.
+If you can't modify the code of the program to get more info, check if there is login config that you can change. 
+Many applications and services already include a debugging mode, that generates a lot more output than the default mode. By enabling the debug info in advance you can get a better picture of what is going on the next time the problem happens.
+If thats not enough you may need to resort to monitoring the enviroment when next the issue triggers. Depending on what the problem is, you might want to look at different sources of information, like the load on the computer, the processes running at the same time, the usage of the network and so on.
+For bugs that occur at random times, we need to prepare our system to give us as much info as possible when the bug happens. This might involve several iterations until we get enough info to understand the issue.
+Most of the time, you actually get to the point were you find out what is going on. Sometimes, the bug goes away when we add extra login info, or when we follow the code step by step using a debugger.
+This is an specially annoying type of intermitent issue nicknamed Heisenbug in honor of Werner Heisenberg. He is the scientist that first discovered the Observer effect, where just observing a phenomenom alters the phenomenom.
+Heisenbugs are especially hard to understand because when you meddle with them, the bug goes away. These bugs usually point to bad resource management, maybe the memory was wrongly allocated, the network connections were not correctly initialized or the open files were not properly handled. In this cases, we usually need to just spend time in looking at the affected code until we finally figure out whats up.
+Yet another type of intermetent issue is when we turn something off and on again.
+Now its true that in IT a popular solution is turning things off and on again, but in many cases, power cycling a device or restarting a program gets read of the problem we were trying to fix. But why is that? When we reboot a computer or restart a program a bunch of things change. Going back to a clean slate means realeasing all allocated memory, deleting temporary files, reseting the running state of programs, reestablishing network connections, closing open filesnd more. If a problem goes away by turning off and on, there's almost certainly a bug in the software, and the bug has to do with not managing resource correctly. if an issue goes away after a restart its a good idea to try and figure out why that is, and see if there is a way to fix it that doesn't require turning it on and off again. Then in the end, if we can't find the actual reason, scheduling a restart at a time that is not problematic can also be an option.
+
+INTERMITENTLY FAILING SCRIPTS
+A collleague recently develped a small application to send meeting reminders to people in the company because someone kept forgetting to show up, the sales team was the first to test the app last week and it worked fine, but this week, another user is trying to send a meeting reminder and the program keeps terminating with an error. Since the colleague that developed the app is at the other side of the atlantic, the user is asking for our help to figure out what's going on. First lets try running the program ourselves and see if we can reproduce the problem.
+
+cd meeting_reminder
+./meeting_reminder.sh
+
+We are presented with a window, were we can enter the date, the title, and the people that we want to send the reminder to. We fill in the date 13th January, the title of the message: Production Review, and the name: obaji
+Oh oh! It didn't send. Lets try the reminder that the sales team sent last week, the title was: Sales All Hands, the date was 7th January. Lets send the message back to ourselves, obaji.
+Yes! In this case the program succesfully sent the reminder, which parameter do you think is at fault? The title or the date? It could either, but I bet its the date.
+Lets try once more with Jan 13 as the date, and Sales All Hands as the title. Another failure. So we finally have a reproduction case. If we send the message for Jan 7th, it works fine, but if we try to send the same message for Jan 13th we get an error message.
+Now the next step is to find the root cause of the issue. Why would our app work fine for Jan 7 but fail for Jan 13th? There could be a bunch of reasons, but in general, when dates are invloved in a failure, the problem is due to how dates are formated. In some countries, dates are writen as mm/dd/yyyy, while in other countries its dd/mm/yyyy.
+To figureout what is going on, lets add more debugging info to the program, we'll open the meeting_reminder.sh script which is a script written in bash. We see that the script is opeining program called 'zenity'. zenity is the application showing the window to select the date, title, and emails. The output generated by 'zenity' is stored in a variable called 'meeting_info', which is then passed as a parameter to the send_reminders.py. This script then sends the email.
+TO get more info about the output generated by zenity, we'll like to see the value of the meeting info variable before the python scripts get called. Lets add an echo statement to see that.
+
+#!/bin/bash
+
+meeting_info=$(zenity --forms \
+	--title 'Meeting' --text 'Reminder information'\
+	--add-calendar 'Date' --add-entry 'Title'\
+	--add-entry 'Emails'\
+	2>/dev/null)
+
+echo $meeting_info
+
+if [[ -n "$meeting_info" ]]; then
+	python3 send_reminders.py "$meeting_info"
+fi
+
+We'll save and try again, this time we'll just use test as the title since we know the problem is with the date.
+We see that the information generated by zenity is split by pipes, date is formated as mmddyyyy. Thats already valuable information.
+Now the next step is getting a more informative error. To do that, lets open the python scripts that sends the reminders, and see if we can make it print a better error.
+
+atom send_reminders
+
+The file is long, so it makes sense to look at the main() function which states the core functionality of the program. We see that it splits the parameters received in three, then prepares the message to be sent with the function meeting_template, then finally sends it with the function send_message, finally it prints a message saying it sends succesfully, but if anything fails, it prints the error message we have seen already. But the error message is not very useful as its hiding the reasin why things fail.
+Lets make this error more helpful by printing the exception that generated the error.
+
+#!/usr/bin/env python3
+
+# To trigger the error, LANG=en_US.UTF-8
+
+import datetime
+import email
+import smtplib
+import sys
+import csv
+
+def usage():
+	print("send_reminders: Send meeting reminders")
+	print()
+	print("invocation:")
+	print("		send_reminders 'date|Meeting Title|Emails'")
+	return 1
+
+def dow(date):
+	dateobj = datetime.datetime.strptime(date, r"%d/%m/%Y")
+	return dateobj.strftime("%A")
+
+def message_template(date, title, name):
+	message = email.message.EmailMessage()
+	weekday = dow(date)
+	message['Subject'] = f'Meeting reminder: "{title}"'
+	message.set_content(f'''
+	Hi {name}!
+
+	This is a quick mail to remind you all that we have a meeting about:
+	"{title}"
+	the {weekday} {date}.
+
+	See you there.
+	''')
+	return message
+
+def read_names(contacts):
+	names = {}
+	with open(contacts) as csvfile:
+		reader = csv.reader(csvfile)
+		for row in reader:
+			names[row[0]] = row[1]
+	return names
+
+def send_message(date, title, emails, contacts):
+	smtp = smtplib.SMTP('localhost')
+	names = read_names(contacts)
+	for email in emails.split(','):
+		name = names[email]
+		message = message_template(date, title, name)
+		message['From'] = 'noreply@example.com'
+		message['To'] = email
+		smtp.send_message(message)
+	smtp.quit()
+	pass
+
+def main():
+	if len(sys.argv) < 2:
+		return usage()
+
+	try:
+		date, title, emails = sys.argv[1].split('|')
+		message = message_template(date, title)
+		send_message(message, emails)
+		print("Successfully sent reminder to:", emails)
+
+	except Exception as e:
+		print("Failure to send email with: {}". format(e), file=sys.stderr)
+
+if __name__ == "__main__":
+	sys.exit(main())
+
+Ok! Lets save and try again. After filling the form with the date that generated the error, we see that the problem is that the date is puting the month first, but the program is expecting to have the month second, and as there is not month 13, this is an invalid date.
+So we've found the root cause of the problem. The program is trying to convert the date using one specific format, but we are using a different format. Once we know the root cause, the next step is remediation of the issue(long-term).
+What can we do in this case to remediate the problem? We could change the program to use our date format, but then the app will break for people using it in a different location. What we need to do is make sure that no matter where we run the program, the date generated by zenity matches the date expected by python. Fortunately for us, zenity includes a parameter to specify any format we want.
+Sowe change the shell script to use the --forms-date-format and set the format to %Y-%m-%d' which is the internation date format. With that, zenity return the date in the international format.
+Now we need to change the Python script to use the same format. We'll go to the function that has the format specified and change it to the same format.
+
+#!/usr/bin/env python3
+
+# To trigger the error, LANG=en_US.UTF-8
+
+import datetime
+import email
+import smtplib
+import sys
+import csv
+
+def usage():
+	print("send_reminders: Send meeting reminders")
+	print()
+	print("invocation:")
+	print("		send_reminders 'date|Meeting Title|Emails'")
+	return 1
+
+def dow(date):
+	dateobj = datetime.datetime.strptime(date, r"%Y-%m-%d")
+	return dateobj.strftime("%A")
+
+def message_template(date, title, name):
+	message = email.message.EmailMessage()
+	weekday = dow(date)
+	message['Subject'] = f'Meeting reminder: "{title}"'
+	message.set_content(f'''
+	Hi {name}!
+
+	This is a quick mail to remind you all that we have a meeting about:
+	"{title}"
+	the {weekday} {date}.
+
+	See you there.
+	''')
+	return message
+
+def read_names(contacts):
+	names = {}
+	with open(contacts) as csvfile:
+		reader = csv.reader(csvfile)
+		for row in reader:
+			names[row[0]] = row[1]
+	return names
+
+def send_message(date, title, emails, contacts):
+	smtp = smtplib.SMTP('localhost')
+	names = read_names(contacts)
+	for email in emails.split(','):
+		name = names[email]
+		message = message_template(date, title, name)
+		message['From'] = 'noreply@example.com'
+		message['To'] = email
+		smtp.send_message(message)
+	smtp.quit()
+	pass
+
+def main():
+	if len(sys.argv) < 2:
+		return usage()
+
+	try:
+		date, title, emails = sys.argv[1].split('|')
+		message = message_template(date, title)
+		send_message(message, emails)
+		print("Successfully sent reminder to:", emails)
+
+	except Exception as e:
+		print("Failure to send email with: {}". format(e), file=sys.stderr)
+
+if __name__ == "__main__":
+	sys.exit(main())
+
+Great! Now the date format generated by zenity should alway match the one in python, and this script should work in our country and any others.
+Lets try it out and check if its really fixed.
+
+./meeting_reminder.sh
+
+WHAT IS BINARY SEARCH
+Usually when we are trying to find the root cause of a problem, we are looking for one answer in a list of many. Searching for an element in a list is a common problem in computing. There are a bunch of different algorithims that can help find the element that we are looking for.
+Say for example you have a list that contains the data of employees that work in your company, and you want to find one specific employee.
+One possible way is to start from the first entry and the check if the name is one we are looking for. If it doesn't match, move to the second the element and check again, and keep going until we find the employee with the name we're looking for, or we get to the end of the list. This is called a linear search.
+This kind of search works, but the longer the list, the longer the time it will take. i.e, the time it takes to get the result is proportional to the length of the list.
+If the list is sorted, we can use an alternative algorithm of searching called Binary search. Because the list is sorted, we can make decisions about the position of the elements in the list.
+So the first thing we do is compare the name that we are looking for with the element in the middle of the list and check if its equal, smaller or bigger. If its smaller, we know that the element we are looking for is in the first half of the list. On the flip side, if its bigger, we know that its in the second half of the list. This way. with only one comparison, we have eliminated half of the list from possible candidates, where the elements could have been found. Then, we do the same thing again and again, till we find the element.
+So, if the element we are looking for was smaller than the middle element, we then look at the element in the middle of the first half. If our elements is now bigger, we look at the lement in the middle of the second quater and second.
+Using linear search, going through a list of 1000 elements may take 1000 comparsion if the element we are looking for is the last element in the list or not present at all.
+Using binary search for a list of 1000 elements, worse cas is only 10 comparisons. This is calculated as the base 2 logarithm of the lists length, and the benefits get more and more significant the longer the list.
+For a list of 100000 elements will be 17 comparisons instead of 100000 comparisons.
+But remember for this to work, the list needs to be sorted, this can take a chunk of time. It can still make sense to do it if we're going to search through it several times. But it doesn't make sense to sort the list and use binary search to only find one element, in that case, using linear search is simpler and faster.
+Below is an example of linear search
+
+def linear_search(list, key):
+    """If key is in the list returns its position in the list,
+       otherwise returns -1."""
+    for i, item in enumerate(list):
+        if item == key:
+            return i
+    return -1
+    
+Below is an example of Binary search
+
+def binary_search(list, key):
+    """Returns the position of key in the list if found, -1 otherwise.
+
+    List must be sorted.
+    """
+    left = 0
+    right = len(list) - 1
+    while left <= right:
+        middle = (left + right) // 2
+        
+        if list[middle] == key:
+            return middle
+        if list[middle] > key:
+            right = middle - 1
+        if list[middle] < key:
+            left = middle + 1
+    return -1
+
+APPLYING BINARY SEARCH IN TROUBLESHOOTING
+In troubleshooting we can apply this idea when we need to go through and test a long list of hypothesis. Whe doing this, the list of hypothesis contains all possible causes of the problem. And we keep reducing the problems by half until only one option is left. The list of elments could be entries in a file, extentions enabled, boards connected to a server, or even lines of code added to a faulty release. And with each iteration, the problem is cut in half.
+This approach is sometimes called 'bisecting'.
+In an ealier video, we gave an example of a new verison of a program that failed to start when the old config directory was present. If the directory contained a bunch of different files in it, we could identilfy the one causing th failure by bisecting the list of files.
+Say the old directory contained 12 different config files, we want to identify which of those twelve is causing the failure. To do that, we can create a copy of the directory with just 6 of those files and then try to start the program again. If it crashes, then the bad file is among those 6 files, if it doesn't, then its among the other 6.
+In the next step, we will pick 3 out of the failing group of 6 if the program crashes a gain, its one of those 3, if it doesn't, then its one of the other 3.
+For the last 3,we can check 2 together, or just go one by one, either way, its 2 checks to get to the failing file.
+So with a total of 4 atemps, we can find out which of the 12 files is causing the problem.
+Since things in IT can sometimes be complex and intertwined, before declaring victory, we want to clarify that the program crashes with that single file present and doesn't crash when that single file isn't present. Once we confirm this, we have reduced the reproduction case of our problem to a single file, instead of a whole directory. After that, we can proceede in the same way with the content of that single file, cutting it in half repeatedly until we find the specific part of the file that is causing the problem.
+The same proces can be applied to a large variety of problems. It's very common for example, to use it to figure out with browser extensions is causing the browser to crash. Disabling half of the extensions then checking if the browser crashes with that subset, and so on, until we find the faulty extension.
+We can also use this technique to discover which pluggin in a desktop enviroment is causing the computer to run out of memory, or which entry in a database is causing the program to raise and exception. 
+We can also apply this to code, when trying to find a bug introduced in a recent version, if we know the list of changes that were made betweem one version and the next, we can keep cutting that list in half until we find the one that caused the failure. When using Git for version control, we can use a Git command called 'bisect'. 'bisect' receives 2 points in time in the Git history and repeatedly allows us try the code at the middle point between them, until we find the commit that caused the breakage
+And this doesn't even have to be your Git repo. If you are open source software thats tracking Git, you can use the bisect command to find which commit caused the software to stop working on my computer.
+For example, if the latest release of the Linux kernel causes the sound card on your computer to stop working, you can use 'git bisect' to find the commit that broke this and report this as a bug to be fixed. The longer the list of items that needs to be checked, the more we'll gain by cuting our problem in half on each iteration.
+When we have to try a bunch of options to find the one causing the failure, we want quick and easy way to check it, even if we are reducing the amount of attempts by bisecting the prblem, we don't want to spend a long time on each check. Sometimes its straight foward, the program starts or it fails, but other times, it might take a lot of manual steps to check what we want to check.
+So depending on what the problem is that we are trying to find, it might make sense to spend some time creating a script that checks for the issue.
+
+FINDING INVALID DATA
+Lets see the bisection in action. We have a prgram that reads data from a CSV file, processes it and imports it into a data base. One of the users of the system tells us that the file they're trying to import fails, with an obscure import error. They've sent us the file so we can try it our selves.
+TO call the command, we'll connect the output of 'cat contacts.csv | ./import.py' but before we run the command, recall that we shouldn't test in production and since this script is going to try to import data into a database, we should run it against the test database instead of the production database. To do this we run the '--server' flag that takes the name of the database server and we will pass test as the parameter.
+
+cat contact.csv | ./import.py --server test
+
+We see that the file fails with an 'Import error' and does not give us much info about the error. Now to know how to apply the bisection, we need to know how big the file is. We will use the 'wc' command that counts characters, words and lines in a file. In particular, 'wc -l' will print the amount of lines in a file
+
+wc -l contacts.csv
+
+So, we can see that our file has 100 line in it. We don't want to look through that list to find our what could be wrong, expecially since we have no idea what that might be. Instead we can only try passing half the file to the script and see if it passes or fails, and keep doing this till we find the problem.
+We can edit the file manually to add or remove the parts thats needed, but that will be tidous.
+We will use the tools available to us to help us do that with less effort.
+We can use the head command to print the first lines in the file, and the tail command to print the last line. We can pass the amount of lines we want to include as a parameter. So,
+
+head -15 contact.csv
+
+will print the first 15 lines, while
+
+tail -20 contact.csv
+
+will print the last 20 lines.
+And as we saw earlier, our command reads the file to import from standared input. So we can use pipes to connect the output of our heads or tails command to the outputs to it.
+Lets try to input the first half of the files now
+
+head -50 contact.csv | ./import.py --server test
+
+It gives us an import error, this means that the first half failed.
+Ok, so, lets split it again. To do that we use another pipe to take only half of the previous number. This way, in each step, we'll add a call to head or tail for the corresponding sides.
+
+head -50 contact.csv | head -25 | ./import.py --server test
+
+This time it succeded, This means that the failure might be in the second quater of the file. Lets verify that.
+
+head -50 contact.csv | tail -25 | ./import.py --server test
+
+This fails again, but thats good it means we are on the right track. Lets split it once again.
+
+head -50 contact.csv | tail -25 | head -13 | ./import.py --server test
+
+Lets split it once more
+
+head -50 contact.csv | tail -25 | tail -12 | head -6 ./import.py --server test
+
+This fails and hence, we are down to 6 entries. Lets split it one more time and look at the three remaining entries
+
+head -50 contact.csv | tail -25 | tail -12 | head -6 | head -3 | ./import.py --server test
+
+This is unsuccesful which is good. Now let us look at this 3 entries remaining.
+
+head -50 contact.csv | tail -25 | tail -12 | head -6 | head -3
+
+Can you see the problem? This is a comma seperated file, this means that each comma is used as a seperator between fields in a file. If a field includes commas, it must be written between quotes, but in the case of the third line we are looking at here, we can see that there is comma instead of a period after the middle initial, and its not written between quotes. The importing script is then confused because there are two many fields in this line.
+So, lets edit the file and fix it.
+
+atom contact.csv
+
+And now lets run our importer again with the fixed file
+
+cat contact.csv | ./import.py --server test
+
+Yay! We've fixed the problem in the file. Using the bisect method, we very quickly found which line out of 100 lines contained the corrupt data, and we fixed it and succesfully imported it.
+The short term remediation here is tell our user about what we found and how to fix it so that they can import the data in the production database. The long term remediation is to figure why the file was generated with a faulty field in the first place and make sure it doesn't happen again.

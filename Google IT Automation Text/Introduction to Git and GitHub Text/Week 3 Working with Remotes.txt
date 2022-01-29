@@ -1,0 +1,857 @@
+INTRO TO MODULE 3-WORKING WITH REMOTES
+In this module we'll learn a lot of things related to GitHub and remote repos.
+We will first talk about what GitHub is and why it matters. We'll then dive into how to work with GitHub and other remote repos. Being able to use remote repos allows us collaborate effectively with others. Using a VCS like Git helps us incorporate the works of a lot of people no matter where they are or where they work.
+By the end of the module we should be able to collaborate with other people on projects via GitHub.
+
+WHAT IS GITHUB
+Earlier, we said that Git is a 'distributed' VCS. 'Distributed' meaning that each developer has a copy of the whole repo on their local machine. Each copy is a peer of the others, but we can host one copy on the server and use it as a remote repo for the other copies. This lets us synchronize work between this server.
+Any of us can create a Git server like this one, and many companies have many internal services. But if you don't want to set up server by yourself and host your repo, you can use an online service like GitHub.
+GitHub is a web-based Git repo hosting service. On top of the version control functionality of Git, GitHub includes extra features like bug tracking, wikis and task management. GitHub lets us share and access repos on the web and lets us copy or clone to our local computer so we can work on them.
+GitHub is a popular choice with a roburst feature set. But its not the only one. Other services that provide the same functionality like BitBucket and GitLab.
+GitHub provides free access to a Git server for public and provate repo. 
+It limits the number of contributors for the free provate repo and offers unlimited provate repo service for a monthly fee.
+We'll be using a free repo for our example.
+A word of caution on how you can manage this repos. If hackers get a hold of your companies IT infrastructure, the can use it to try and break into your network. So, make sure to treat this info as confidential.
+For real configuration and development work, you should use a secure and private Git server, and limit the people authorized to work on it.
+To use GitHub, the first thing to do is create an account if you don't have one already.
+
+BASIC INTERACTION WITH GITHUB
+Once we have our account, we are ready to create our rand new Git repo on GitHub.
+We'll start by clicking the 'create repository' link or 'new' on the left. This will take you to the repo creation wizard.
+The wizard is very straight forward. The first thing to do is set a name for our repo. we'll call it 'health-checks'. After that comes a description of what the repo would be used for. We'll say that it will be used for scripts that check the health of our computers. Then we select if we want the repo public or private. Finally, the wizard can help us get started with some initialization files, like the 'README', '.gitignore', or 'license file'. We'll go with the README for now. Now we have our remote repo set.
+First step is to create a local copy of the repo. We do this using the 'git clone' command, followed by the url of the repo. GitHub lets us conveniently copy the url from our repo, so that we don't have to type it. Next we clone this remote repo. 
+The password provided to git is OAuth token generated in Settings>>Developer settings>>Personal access token. After setting the name of the token, check the appropriate boxes(especially the repo box) and scroll down to the bottom to generate the token. 
+After this we clone the git repo with the command
+
+git clone https://github.com/proakpet/health-checks.git
+
+GitHub will ask for our user name and password. Put in the user name of the remote repo, and for the password, paste the generated token. And just like that, we've downloaded a copy of the remote repository unto the local machine. This means we can perform all the actions we've learnt so far on this repo.
+Since the repo is called health-checks, a directory with that name was automatically created for us and now has the working tree of the repo in it.
+So, lets change to that directory and look at the contents.
+
+cd health-checks
+ls -l
+
+Our repo is empty. It only contains the special README file that GitHub created for us. This file is in a special format called markdown. Lets add a bit more content to the README file.
+
+atom README.md
+
+# health-checks
+Scripts that check the health of my computers
+
+This repo will be populated with lots of fancy checks.
+
+We've changed this file, so we need stage the change and commit it. We'll use our shortcut to do this.
+
+git commit -a -m 'Add one more line to READM.md'
+
+We've modified our README file, but this is all old news. We have a remote repo setup on GitHub so lets use. We can send our changes to the Git remote repo using the 'git push' command. This will gather all the snapshots we've taken and send them to the remote repo. In this case we've taken just one snapshot.
+We'll talk more about what's going on behind the scenes with 'git push' and remote repos in a later videos, but the mechanics are pretty simple.
+
+git push
+
+once again we are asked for username and password.
+When access our project, we see the contents of the README.md file, so if we check our repo on GitHub we should see the updated message. So we've taken the local changes on our computer and pushed them to a remote repo on GitHub.
+Notice that we had to use our password when retrieving things from the repo and when pushing things to the repo. There are a couple of ways to avoid having to do this. One way is to create an SSH key-pair and store the public key in our profile so that GitHub recognizes our compputer. Another option is to use a crediential helper, which caches are credential for a time period so that we don't have to enter it each time. Git already comes with a credential helper backed in, we just need to enable we do that calling the following 
+
+git config --global credential.helper cache
+
+Now that we've enabled our crediential, we'll need to enter the credentials once more. After that they'll cached for 15 minutes. Lets try it with a command used to retrieve new changes from the repo, 'git pull'
+
+git pull
+
+We are prompted for user name and password. We those in to cache it
+
+WHAT IS A REMOTE
+When we cloned the newly created remote GitHub repo, we had our local git repo interact with a remote repo. Remote repos are a big part of distributive nature Git collaboration. The let lots of collaborations contribute to a project from their own work stations, making changes to local copies of the project independent to one another. When they need to share their changes, they could issue Git commands to pull code from a remote repo, or push code into one.
+A locally hosted Git server can run on almost any platform, uncluding linux, MacOs, or even Windows. This has benefits like increased privacy, control and customization. 
+To understand remote repos and Gits distributed nature a bit better, imagine you're working together with some friends to develop a computer game. Each of you have a different portion of the game you're responsible for. One person is designing the levels, another the characters, while others are writing the code for the graphics physics and game play. All these areas will have to come together in a single place for the final product. Although your friends might work on their part themselves, from time to time everyone needs to send out progress update to let each one know what they'v been working on. You'll then need to combine their own work into your portion of the project to make sure that it is compatible. Using Git to manage a project helps us collaborate succesfully. Everyone will develop their own piece of the project in their own local repos maybe even using seperate branches. Ocassionally they'll push finish code into a central remote repo, where others can pull it and incorporate it into their new developments.
+So how does this work? 
+Alongside the local development branches like master(main), Git keeps copies of the commits that have been submitted to the remote repository in seperate branches. If someone has updated the remote repo since the last time you synchronized your local copy, Git will tell you its time to do an update. If you have your own changes at the time you pull down code from the remote repo, you might need to fix merger conflict before pushing your own changes. In this way, Git lets multiple people work on the same project at the same time. When pulling new code, it will merge the changes automatically if possible or tell us to manually perform the integrations if there are conflicts.
+SO when working with remotes, the workflow for making changes has some extra steps.
+We'll still 'modify', 'stage' and 'commit' our local changes. after committing, we'll 'fetch' any new changes from the remote repo, manually 'merge' if neccessary, and only then we'll 'push' our changes to the remote repo.
+Git supports a variety of way to connect to a remote repo. Some of the most common are using the HTTP, HTTPS, and SSH protocols and their corresponding URLs.
+HTTP is generally used to allow read-only access to a remote repo. In other words, it lets people 'clone' the contents of our repo without letting them push new contents to it. Conversly HTTPS and SSH will provide methods of authenticating users, so that we can control who gets permissions to push.
+The distribute nature of the work means that there are no limits to how many people can push code into a remote repo.
+Web services like GitHub offers a bunch of different mechanism to control access to a repo. Some are available to the public, while some are available to enterprise users only
+
+***For now let me assume we use 'git pull' when there is no merge conflict but maybe an update is required, and 'git fetch' when we've made a commit and need to merge those local changes with current commit in remote repo before pushing***
+
+WORKING WITH REOMOTES
+When we call 'git clone' to get a local copy of a remote repo, Git sets up that repo with the default 'origin' name. 
+We can look at the configuration for that remote by running 'git remote -v' in the directory of the repo
+
+cd health-checks
+git remote -v 
+
+Here we see the url associated with the origin remote. There are two URLs, one will be used to fetch date from the remote repo, and the other to push data to that remote repo. They usually at the same place. But in some cases the 'fetch' url could use http for read-only access and the push could use https or ssh for access control. This is fine as long as the content of the repo your read when fetching are the same that you write to when pushing.
+Remote repos have a name assigned to them. By default the name is 'origin'. This lets us track more than one remote in the same Git directory. While this is not the typical usage, it can be useful when collaborating with different teams on projects that are related to each other.
+If we want to get even more info about our remote, we can call 'git remote show origin'
+
+git remote show origin
+
+There's a ton of info that we don't need right now, but we can see the fetch and push urls we saw before, and the local and 
+ too. For now we only have a main branch that exists locally and remotely.
+When we have more branches in the local and remote repo, this information starts becoming complex.
+So, what are this remote tracking branches?
+Whenever we are operating with remotes, Git uses remote tracking branches to keep copies of the data that's stored in the remote repository.
+We can look at the remote tracking branches that our Git repo is tracking using 'git branch -r'
+
+git branch -r
+
+This branches are read-only. 
+We can look at the commit history like we would with local branches, but we can't make any changes to them directly. To modify them, we have to go through the work flow we called out before:
+First we pull any changes to our local repo using 'git pull'.
+Then we make changes to it.
+Next we stage the changes using 'git add'
+Next we commit those changes using 'git commit'
+Next we 'fetch' any new changes, 
+Merge with our commit and finally
+Push to the remote repo.
+We can also use git status to check the status of our changes in the remote tracking branches as well.
+
+git status
+
+Now that we are operating with remotes, 'git status' gives us additional info.
+It tells us that are branches is up-to-date with origin/main branch. Which means that the main branch in the remote repo called origin, has the same commit with our local main branch
+
+FETCHING NEW CHANGES
+While we learning about remotes, our colleague blue-kale added some files to our remote repo. We can always use the GitHub website to browse the changes that were submitted. But we want to learn how to do it by iteracting with the command-line, because we might have to do it this way in our job. 
+So, first lets look at the output of the 'git remote show origin' command
+
+git remote show origin
+
+Look how it says local branch out of date. This happens when there are commits done to the remote repo that our not done locally. Git doesn't keep local and remote repos in sync automatically, it waits till we execute commands to move data around when we are ready. To sync the data, we use the 'git fetch' command. This command copies the commits done in the remote repo to the remote tracking branches, so that we can see what other people have committed. Lets call it now and see what happens.
+
+git fetch
+
+fetch content is downloaded to the remote tracking branches on our repo. So it is not automatically mirrored to our local branches. 
+We can run 'git checkout' on this branches to see the working tree, and we can run 'git log' to see the commit history.
+Lets look at the current commits in the remote repo by running 'git log origin main'
+
+git log origin/main
+
+Looking at this output, we can see that the remote origin/main branch is pointing to the latest commit, while the local main branch pointing to the previous commit we made earlier on. Lets run git status
+
+git status
+
+This tells us that there is a commit we don't have on the main(master) branch. It does this by telling us our branch(main) is behind the remote origin/main branch. If we want to integrate the origin/main branch into our main branch, we perform the merge operation, which merges the remote origin/main branch into our main branch. To do that we call 'git merge origin/main' from our local main branch.
+
+git merge origin/main
+
+Great! We've merged the changes on the origin/main branch of the remote repo into our local branch.
+See how git tells us that the code was integrated using fast-forward? It also shows that two files were added, all_checks.py and disk_usage.py.
+If we look at the log output on our branch now, we should see the new commit.
+
+git log
+
+We can see that our local main branch is up-to-date with our remote origin/main branch.
+We can use 'git fetch' this way to review changes that happen in the remote repo. If we are happy with them, we can use 'git merge' to integrate them into the local branch.
+Fetching commits from a remote repo and merging them into your local repo is such a common operation in git that there is a handy command to do it all in one command. We'll see this in the next video.
+
+UPDATING THE LOCAL REPOSITORY
+Earlier we looked at the basic workflow when working with remotes if we wanted to fetch the changes manually, merge if neccessary, only then can you push changes of our own.
+since fetching and and merging are so common, 'git pull' performs the two in one command. Running 'git pull' will 'fetch' a copy of the remote branch and automatically try to 'merge' it into the current local branch.
+
+git pull 
+
+We see in that the output of 'git pull' is a combination of both the output of 'git fetch' and 'git merge'. First, Git fetched the updated contents from the remote repo including a new branch, and then it did fast-forward to the local main branch. We'll see that the all_checks.py file was updated as well.
+We can look at the changes using the following command
+
+git log -p -1
+
+We see that blue-kale added the 'check_disk_full' function.
+When we called 'git pull' we saw that there was a new remote branch called 'experimental'. Our friend blue-kale said that they've started working on a new feature in that branch. Lets checkout the output of 'git remote show origin' and see what it says about that new branch
+
+git remote show origin
+
+We can see that there is a new remote branch called 'experimental', which we don't have a local branch for yet. To create the local branch for it, we run the following command
+
+git checkout experimental
+
+When we checkout the experimental branch, Git creates a new local branch called experimental, and automatically copied the content of the remote experimetal branch into the local experimental branch. THE WORKING TREE HAS BEEN UPDATED TO THE CONTENTS OF THE EXPERIMENTAL BRANCH. Now we are all set to work on the experimental feature with our colleague.
+In this last example, we got the contents of the experimental branch along with the contents of the main branch when we called 'git pull', which also merged new changes unto the main branch. If we want to get the content of remote tracking branches without automatically merging any contents, into the local branches, we use 'git remote update'. This will fetch the contents of all remote tracking branches so that we will just call 'checkout' or 'merge' as needed.
+
+THE PULL-MERGE-PUSH WORKFLOW
+What if when we go to push our changes there are new changes to the remote repo? To find out, lets start by making changes to our all_checks.py script. In this script, we could have made our code clearer in other to prevent the user from putting in values that are not in Gigabytes already by renaming the 'min_absolute' parameter to 'min_gb' so that its obvious the function expects gigabytes. Another way we can make the code invocation clearer we can use the name of the parameter in the call to the function. By using the names of the parameters, our code invocation is clear and we can even alter the order of the values and our code will still work.
+
+atom all_checks.py
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if percent_free < min_percent or gigabytes_free < min_absolute:
+        return False
+    return True
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    if not check_disk_usage(disk="/", min_gb=2, min_percent=10):
+    print("ERROR: Not enough disk space.")
+    sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Lets stage and commit the changes
+
+git add -p
+
+This is to look at the changes we've made and accept them. Then we'll show a commit message showing that we've renamed min_absolute to min_gb, and that were using parameter names for the invocation.
+
+git commit -m 'Rename min_absolute to min_gb, use parameter names'
+
+We should be set to push this changes into our repo, but we have a collaborator already making changes as well. Lets try and push
+
+git push
+
+It failed because there are changes done on the remote branch which is not in our local branch, so git can't fast forward, As usual, Git gives us some helpful info along the error message, especially the part about intergrating remote changes with git pull. This means we need to sync our local branch with the remote branch before we can push. We can do this with git pull. Lets do this now
+
+git pull
+
+Git tried to automatically merge the local and remote tracking branches to all_checks.py. Lets look at the tree of all branches
+
+git log --graph --oneline --all 
+
+This diagram shows us the different commits and positions in the tree, we can see the main branch, the origin/main, and the experimental branch. The branch indicates that our current commit and the commit in the origin/main branch share a common ancestor. But the don't follow one another. This means that we'll have to do a three-way-merge. To do this, lets look at the actual changes in that commit, by running 'git log -p origin/main'
+
+git log -p origin/main
+
+We see that our colleague tried to reorder the conditional clauses in the function in the order the parameters are passed to the function. He happened to rename the same line that we touched when we renamed the min_GB parameter, which caused a conflict that git could not resolve. Lets fix it manually.
+We see that the problem occured with the conditional, on the first highlighted line, min_absolute was renamed to min_GB. In the second highlighted line, we see the old variable names, with the checks done in a different order. We need to decide what to do with this. For example, we can keep the new order but use min_GB.
+
+atom all_checks.py
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_GB, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_GB or percent_free < min_percent:
+        return False
+    return True
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    if not check_disk_usage(disk="/", min_GB=2, min_percent=10):
+    print("ERROR: Not enough disk space.")
+    sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Git will try to do all automatic merges and keep the ones that fail for us to do manually, in this case we see that the other changes where merged succesfully without any intervention, only the changes that happened in the same line of the file needed our input.
+For larger files, it might make sense to search for the conflicts markers, >>> in the whole file. This help us make sure that there are not unresolved conflicts left. Now that we've finished resolving the conflict, we can finish the merge.
+
+git add all_checks.py
+git commit
+
+The editor message says that it is performing a merge of a remote branch with the local branch. We can add extra info saying that we 'fixed the conditional in the check_disk_usage function to use the variable name and the new order.
+
+git push
+
+We have succesfully pushed to the git remote repo. Lets look at the commit history now
+
+git log --graph --online
+
+We see that the latest commit is the merge followed by the two commits that caused the merge conflict, which are on split path in our graph.
+As we called out before, when Git needs to do a three-way-merge, we end up with a seperate commit for merging the branch into the main tree.
+
+PUSHING REMOTE BRANCHES
+One importance of working with branches is that you can release two or more version out of the same tree, one being the stable version, and the other being the beta version. That way any disruptive changes can be tested on a few users or computer before they are fully released. So lets start a new branch to work on a small refactor of our code.
+
+git checkout -b refactor
+
+Lets open up the file and have a look at it.
+
+atom all_checks.py
+
+We noticed that there's a pattern of repeating code in our all_checks.py script. For each check that we called, we checked if it returned True or False.
+When it returns True, we print an error and exit. If we add a new check, we'll have to repeat this pattern again. On top of a repeated pattern, if a computer has more than one problem, only the error for the first one will be printed. So lets refactor our code to avoid the duplication and print all relevant errors. We'll do it step by step to make each commit self contained.
+The first we do is to create a function that checks if the disk is full without any parameters, so that it matches the pattern. This new wrapper function will pass the parameters for us, and then we'll change the code to call this function instead. We'll also change the error message to something more accurate.
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+    
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    if check_root_full():
+        print("Root partition full.")
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+We've changed the function, let's save and test our code. 
+
+./all_checks.py
+
+Awesome! It worked, lets commit our changes
+
+git commit -a -m 'Create wrapper function for check_disk_full function'
+
+We're now ready for the next step of a our code refactor. Avoid code repeatition, we'll create a list called checks, containing the names of the function that we want to call, and a message to print if the function succeds. After that we add a for loop that iterates over the list of checks and messages. Then we'll call check, and if the return value is True, print the message and exit with an eror code of 1. After doing that, we can delete the old code that we've alrady replaced.
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+    ]
+    for check, msg in checks:
+        if check():
+            print(msg)
+            sys.exit(1)
+    
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+With this change made, lets save once again and test that the script still runs.
+
+./all_checks.py
+
+Awesome! It works. Lets commit our change
+
+git commit -a -m 'Iterate over a list of checks and messages to avoid code duplication'
+
+By now we've refactored our code to avoid code duplication. The current code does the same as the old code. Once we are ready to add new check, we can do that adding the function name and the error message to list of checks.
+The next change we want to do is let the script show more than one error message if more than one check is failing. To do that we add a boolean variable called everything ok before the iteration, which changes variable to False and exits with an error code only after having done all the checks.
+
+atom all_checks.py
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+            
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Lets see if it works.
+
+./allchecks.py
+
+Awesome! It works. Now lets commit our changes.
+
+git commit -a -m 'Allow printing more than one error message'
+
+With that we have three commits in our refactor branch. Before, before we merge any of this into the mainr branch, we want to push the code into our remote repo so that our collaborators can view the code, test it and know whether its ok for merging.
+The first time we push a new branch to the remote repo, we need to add a few more parameter to the git push command. We need to add the '-u' flag to create the branch upstream(this means to create the same branch in the remote repo). We also have to say that we want to push this to the 'origin' repo, and that we are pushing the 'refactor' branch.
+
+git push -u origin refactor
+
+Git gives us a lot of info. Its telling us to create a 'pull request' if we want. But for now we are happy to see that refactor branch has been created in the remote repo.
+Assuming our collaborators says its okay, how should this branch get merged back into the master branch?
+
+REBASING YOU CHANGES
+We mentioned in the last lesson that once out branch has been properly reviewed, it can be merged back into the main branch by us our any of our colleagues. We ca do this using 'git merge' as we've learnt before, or using 'git rebase'.
+Rebasing means changing the base commit that is used for our branch. 
+Recall that when we create a branch out of a certain place in the repos history, Git knows the latest commit that was submitted on both branches. If only one of the branches has new changes when we try to merge them, git will be able to fast-forward and apply the changes. But if both branches have commits when we try to merge them, Git will create a new merge commit for the three way merge. The problem with three way merge is that, because of the split history, it is hard to us to debug when an issue is found in our code, because we need understand where the problem was introduced. By changing the base where our commit split from the branch history, we can replay the new commit on top of the new base. This allows Git do a fast-forward merge and keep history linear. 
+So how do we do it. We run 'git rebase' followed by the branch we want to set as our new base. If we do this, Git will try to replay our commit after the latest commit in that branch. GIT WILL AUTOMATICALLY TRY TO MERGE THE TWO BRANCHES TOGETHER, SUCCESSFULLY IF CHANGES WERE MADE IN DIFFERENT PARTS OF THE FILES, BUT WILL NEED MANUAL INTERVENTION IF CHANGES WERE MADE IN OTHER FILES.
+Lets try this process by rebasing our 'refactor' branch unto the 'main' branch.
+First we'll checkout the main branch and pull the latest changes made on the remote repo.
+
+git pull
+
+This updated the master branch with some changes that our colleague had made. Of course at this point, the changes made in the refactor branch can no longer be merged into the main branch through fast-forward, because there is a new commit in the main that is not present in the refactor. Lets see the current graph of all branches
+
+git log --graph --oneline --all
+
+As we can see, the refactor branch has 3 commit after the common ancestor and the current commit is at the HEAD of the master branch. If we merge our branch, it will cause a three-way-merge, but we want to keep our history linear, so we will do this with a rebase of the refactor against main.
+
+git checkout refactor
+git rebase main
+
+As usual Git gives us a bunch of helpful information. It says that it rewound HEAD and played our work on top of it, and luckily, everything succeded. Lets look at Git log again.
+
+git log --graph --online --all
+
+We are ready to merge our commits back unto the main trunck of our repo, and have this fastforwarded.
+
+git checkout main
+git merge refactor
+
+We have fast forwarded main branch to refactor branch, and we can delete the refactor branch both locally and remotely.
+To delete remotely, we use
+
+git push --delete origin refactor
+
+To delete locally we use
+
+git branch -d refactor
+
+We can now push our changes back to the remote repo
+
+git push
+
+***Note that rebasing refactor on main does not bring main upto speed with refactor, instead, it just makes main the latest ancestor of refactor, we still have to merge by fast-fowarding to bring main upto speed with refactor.
+
+ANOTHER REBASING EXAMPLE
+One common example of rebasing is to rebase the main branch when someone else made changes and we want to keep history linear. This is common enough when you working on a project small enough not to need a seperate branch and your collaborators happen to commit something at the same time. Lets see how this works in practice.
+First we make a change to our script. We'll add a change to warn when there is no working new network. There is a ton of things to check for this, but for now we will just check for the google.com url. To do this we use the socket module, we'll add a new function check_known_network that will return True if it fails to resolve url, and False if it succeeds. The socket.gethostbyname function raises an exception on failure. So we will use a try-except block to wrapp the call to the funciton and return False when the call succeeds, or True when it fails.
+
+atom all_checks
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+import socket
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def check_no_network():
+    """Returns True if fails to resolve Google's URL, False otherwise"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+With this new function defined, we can now add it to our list of checks.
+
+Well just add the name of the network and the message will be 'no working network'
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+import socket
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, false otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def check_no_network():
+    """Returns True if fails to resolve Google's URL, False otherwise"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+        (check_no_network, "No working network."),
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+
+We've made the change, lets sava and commit it.
+
+git commit -a -m 'Add a simple network connectivity check'
+
+We also want to check if any of our teammate made a change to the main branch as well. In previous videos, we showed how to do this using 'git pull' which will automatically try to create a three way merge if neccessary. In this example, we want to look at a different approach, to keep our project history linear. So we'll start by calling 'git fetch' which will put the latest changes into the origin/main branch. But we wont apply them to our local master branch.
+
+git fetch
+
+We have fetche some changes, and if we try to merge we end up with a three way merge. We will now rebase our main against the origin main changed by our colleague to keep history linear.
+
+git rebase origin/main
+
+Oh oh! There is merge conflict here. Git tried to rewind our changes and apply them on top of origin/main branch. The first commit made by our colleague renamed the scripts from all_checks.py to health_cecks.py. Git detected this and automatically merged our changes into the new file name. But when trying to merge our changes with the changes our colleague made to the file, there was merge conflict.
+The output gives us a bunch of instructions on how to solve this instruction.
+We could skip the conflict with 'git rebase --skip', or abort the rebase completely using 'git rebase --abort'.
+In this example we want to the fix the conflict, so we'll start by looking at the current state of the health_checks.py file.
+
+atom health_checks
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+import socket
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, False otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+<<<<<<< HEAD:health_checks.py
+def check_cpu_constrained():
+    """Return True if the cpu is having too much usage, False otherwise"""
+=======
+def check_no_network():
+    """Returns True if fails to resolve Google's URL, False otherwise"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+>>>>>>> cca92c0 (Add simple network connectivity check):all_checks.py
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+<<<<<<< HEAD:health_checks.py
+        (check_cpu_constrained, "CPU load too high."),
+=======
+        (check_no_network, "No working network."),
+>>>>>>> cca92c0 (Add simple network connectivity check):all_checks.py
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+
+Looking at the file we can see from the error markers that while we were making changes to the file by adding a check_no_network funciton, our colleague was making his own changes to the file adding a function to check for the CPU being contrained.
+We want both funciton to be in the file, so lets remove the error markers.
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+import socket
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, False otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def check_cpu_constrained():
+    """Return True if the cpu is having too much usage, False otherwise"""
+
+def check_no_network():
+    """Returns True if fails to resolve Google's URL, False otherwise"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+        (check_cpu_constrained, "CPU load too high."),
+        (check_no_network, "No working network."),
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Lets save and test the code.
+
+./health_checks.py
+
+Yikes! Our colleagur forgot to add the return statement in the check_cpu_constrained function and also forgot to import psutil, so lets fix that.
+
+#!/usr/bin/env python3
+import os
+import sys
+import shutil
+import socket
+import psutil
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def check_disk_full(disk, min_gb, min_percent):
+    """Returns True if there is enough free disk space, False otherwise."""
+    du = shutil.disk_usage(disk)
+    # Calculate the perecentage of free space
+    percent_free = 100 * du.free / du.total
+    # Calculate how many free gigabytes
+    gigabytes_free = du.free/2**30
+    if gigabytes_free < min_gb or percent_free < min_percent:
+        return True
+    return False
+
+def check_root_full():
+    """Return True if the root partition is full, Flase otherwise."""
+    return check_disk_full(disk="/", min_gb=2, min_percent=10)
+
+def check_cpu_constrained():
+    """Return True if the cpu is having too much usage, False otherwise"""
+    return psutil.cpu_percent(1) > 75
+
+def check_no_network():
+    """Returns True if fails to resolve Google's URL, False otherwise"""
+    try:
+        socket.gethostbyname("www.google.com")
+        return False
+    except:
+        return True
+
+def main():
+    checks = [
+        (check_reboot, "Pendint Reboot"),
+        (check_root_full, "Root partition full"),
+        (check_cpu_constrained, "CPU load too high."),
+        (check_no_network, "No working network."),
+    ]
+    everything_ok = True
+    for check, msg in checks:
+        if check():
+            print(msg)
+            everything_ok = False
+
+    if not everything_ok:
+        sys.exit(1)
+
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Lets try it again.
+
+./health_checks.py
+
+Yes we fix the conflict and our script is working again. Now its time to rebase. We will first add the changes made to the health_checks.py file, and rebase.
+
+git add
+git rebase --continue
+
+Awesome. Now let us see git log to know what the graph looks like. We see that we have now applied our changes on top of the other changes without needig a three-way-merge. What we did now to resolve the conflict is very similar with what we did ealier to merge changes. What is different is that the commit is history is linear instead of branching out.
+We're now ready to push our health_check to the remote repo. 
+
+git push
+
+In this example, we see how to use the 'fetch', 'rebase', and 'push' work flow to merge our changes with our collaborators changes while keeping our history linear.
+Keeping linear helps with debugging especially when we are trying to identify which commit first introduced a problem in our project.
+We have now seen two way to use 'git rebase': 
+1. One for merging feature branches back into the main trunk of our code, 
+2. And one for making sure that our commit made in the main branch apply cleaning untop the current state of origin/main.
+It doesn't stop there, we can also use git rebase to change the order of the commits, or even squash two commits into one.
+
+BEST PRACTICES FOR COLLABORATION
+1. Always synchronize your branches before starting any work on your own: That way whenever you start working on code, you know that you're starting with the most recent version and that way you minimize the chances of conflict and rebasing.
+2. Avoid having very large changes that modify a lot of different things. Instead, try to make changes as small as possible as long as they're self contained. For example, if your renaming a variable for clearity reason, you don't want to add code that adds new functionality in the same commit. Its better if you split it to different commits, to make it easier to understand what is going on in the commits. 
+3. If you remember topush your changes often and pull before doing anywork, you reduce the chances of getting a conflict.
+4. We called out already that when working on a big change, it makes sense to have  a separate feature branch. This enables you work on new changes while being able to fix bugs in the other branch. To make the final merge of the feature branch easier, it makes sense to regularly merge changes made on the master branch back onto the feature branch. This way, we'll not end up with a huge number of merge conflict when the final merge comes around.
+5. If you need to maintain more than version of a project at the same time, It is common practice to have the  latest version of the project on the master branch, and the stable version of the project on a seperate branch. You'll merge you changes unto the seperate branch when you declare a stable release. When using this two branches, some bug fixes for the stable version maybe done directly on the stable branch if they're not relevant to the latest version anymore.
+6. Using rebase can help with bugs, but use it caution. Whenever we use a rebase, we are rewriting the history of our branch, the old commits get replaced with new commits, so it will be based on different snapshots than the ones we had before, and they'll have completely different hash sums. This works fine for local changes, but can cause a lot of problems for changes that have been published and downloaded by other collaborators. So as general rule: You shouldn't rebase changes that have been pushed to remote repos. The Git server will automatically reject pushes that attempt to rewrite the history of the branch. It is possible to force Git to implement the change, but you must first know what the implications could be.
+In our rebase example, we rebased the refactor branch, merged it with the main and deleted the refactor branch, That way we didn't push rebase changes to the refactor branch, only to the master branch that hadn't seen those changes before.
+7. Having good commit messages is important. Much more than helping future you, good commit message is important when collaborating with others, since it gives you collaborators more context, and help give them insight on how to solve conflicts when neccessary.
+8. When dealing with complicated merge conflicts, we should try and work backword disabling everything and checking if the source still works, then slowly add pieces on top tillyou get to the problem.
+
+MODULE 3 WRAP UP

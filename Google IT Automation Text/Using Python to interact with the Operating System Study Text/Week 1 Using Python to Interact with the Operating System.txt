@@ -1,0 +1,216 @@
+OPERATING SYSTEM
+The software that manges evertying that goes on in the computer.
+It reads, writes and deletes files from the hardrive.
+It determins how the processes start, interact with each other and how the finish.
+It manages how memory get allocated to the different processes, hownetwork packets are sent and recieved and how each program can access each hardware components.
+
+The are two parts of the OS, the kernel and the  user space
+
+The kernel is the main core of the operating system, It talsk directly to our hardware and manages are systems resources
+
+That is
+-Kernel
+---Disk
+---Memory
+---Network	
+---System's resources
+
+What the user does is to interact the user space instead
+The user space is everything outside the kernel, like the systems program and the user interface.
+
+Linux is an open source operating system, meaning its free to share modify and distribute.
+
+We refere to the different versions of linux as distributions
+
+The fundamental way the linux os works today is based on the unix principle
+
+GETTING YOUR COMPUTER READY
+We may need to install additional module that are not part of the Python Standard Module found in the Python in the Python Standard Library, because the they're a lot of other things we need to do in our script that are not part of the python standard Library. This is where external modules come into play. We can use external modules for generating pdf,  serving web pages, generating compressed files, interacting with emails and a load of other things. 
+
+When developers write modules they think are helpful, they publish it in Python Package Index(PyPI).
+This external modules are generally managed with a command line tool called pip used to install, upgrade or remove any external modules running on your computer.
+
+SETTING UP YOUR ENVIROMENT ON WINDOWS
+Always remember to add python to path. The path variables instructs the operating system to look for executables in certain directories of our system when running command from terminal. 
+
+INTERPRETED VS COMPILED LANGUAGE
+What is an interpreted language, well when we want to write program in tradtional programming language like C, C++, Go, and Rust. the source code is fed into a piece of software called a compiler which translates this code into machine level laanguage which the computer can then execute. This makes compiled code faster to run, but, the compilation process can take a bit of time.  
+While programs writen in interpreted language usually rely on an intermediary program called an interpreter. This programs use the interpreter to execute the instructions specified in the code rather than running them through compiler first. This makes program that run in interpreted language run faster because the developer does not need to wait fo the code to be compiled before executing, and the same code can run on different computers having the interprter without haing to make any changes.
+The trade of is that interpreted language run slower than compiled ones.
+JavaScript, Ruby, Powershell, Python are all examples of interpreted languages.
+Java and C# use a mixed approachthe code needs to be compiled first, but it gets compiled into intermediate code, i.e instead compiling to machine language specific for operating system, it gets compiled to portable code that be executed on different platforms.
+We execute this code using a program that is OS specific, Java Virtual Machine for Java and Common Language runtime for C#
+
+ Say you have program written in C and your running on windows, but you want to run on the linux server, then we must compile the source code on the destination OS. So, to run on linux OS we have to compile on the linux OS preferably one that has the same versions libraries as the destination server.
+ 
+ But if we run the program source code in python instead, and it wont matter if we are running on windows, Mac OS or Linux. We simply write, and test the program locally and copy the script as is. The python interpreter is a compiled executable that is platform specific. but once you have it installed, you can run your script everywhere. 
+ 
+ HOW TO RUN A PYTHON SCRIPT
+ when we create a python file, we can check t content of the file using the cat command followed by the filename. this will show the code leaving inside the file.
+ If we want to run the code leaving inside the file, we use "python3" followed by the file name in this case "hello_world.py".
+ In other to run the file without having to always call python3, we use the shebang by adding the magic text "#1/str/bin/env python3"
+ and then we make the file executable using chmod command i.e is 
+ 
+ "chmod +x hello_world.py"
+ after this we use the ./hellow_word.py
+ the reason we prefix with ./ command is because the filename is not located in any of the directories listed in the PATH variable. This variable tells the operating system where to find programs to execute.
+ The dot "." in the ./ expression tells the os that the file is in the current directory.
+ 
+ 9. YOUR OWN PYTHON MODULES
+ In programming we often reuse code we or some other person has weritten. This is called code reuse. As our script get bigger, we want to be able to reuse more than a dingle function, we might even want to reuse an entire script.
+ 
+ One of the code we might find ourselves using over and over again is a function that sends email.
+ One of the ways to do this is to copy that piece of code whenever you want to run. But then when we want to modify the code, we will do so for every copy of the code we have. Keeping track of everywhere we have this code bocomes tricky and sharing different versions as well.
+The easiest way to go about this is to put the code we wish to reuse in seperate module. This way we have can have our script and our colleague script import our code without creating multiple copies.
+First we need to create our own python module by putting the content we want to to be part of that module in a seprate file. To use the module we will import it using the file name. We can access each function, class and variable defined in the file by using the dot notation. 
+Our areas.py module is really short and simple so it fit nicley in one file. In some case, the code we are working can become more complex and it might make sense to split it into sub modules. In this case we create a directory with the name of the module and seperate .py files for each of the sub-modules. 
+To see what we mean, lets look at a list of files shaped by module installed on this computer. the request module.
+Notice the __init__.py file, this is special file that is read when the module get imported. It is used by the interpreter to check if a directory with python files should be a module. So if we have a module as split into seperate files and we need the interpreter to recognize the directory as a module, we need to create the __init__.py file even if we have nothing to put inside.
+ 10.WHAT IS AN IDE?
+ Integrated Development Enviroment, and usually refer to a code eiditor with some handy extra capability that makes writing script a whole lot easier.
+ One of the readily available features in IDEs is the Syntax Highlighting. This means that the editor recognizes the language we are writing our code in and highlights the pieces of code that make up the syntax of the language e.g vim.
+ Another import feature offered by code editors is code completion e.g atom.
+ 11.BENEFITS OF AUTOMATION
+ Look at Automation like an IT force multiplier, a tool that can increase the effectiveness of an IT team without needing to increase the number of team members. In other words, automation can allow the IT infrastructure to scale, keeping pace with growth and demand. Scalability means that when more work is added to a system, the system can do whatever it needs to complete the work.
+ For ecxample, when a company hires new members, onboarding task may include, creating a user account, a mail box and a home folder, and seeting up the appropriate permissions to control access to various systems and resources. IF the company does not hire new a lot of new emplyees over a given period, someone could manually do this tasks. But as the number of new emplyees increases so does the time it takes to set them all up. If the company hires 10X the number of its new employees in a week, the IT person may find himself doing nothing but new emplyee account setup. This would mean that a bunch of other projects would be put on hold until the set up is complete. They may also make some other mistakes during the onboarding process like mispelling a name, missing a step or giving a user account the wrong the permissions, they then would have to fix this problem which means more work. If the dompany then keeps hring at this pace, they would then need to hire another IT specialist to the work that is being neglected. Basically this doesnt scale well in terms of finiacial resources, mentall investment or reliability, especially if the compay continues to grow. What if the hiring doubles or tripples? Throwing more people at the job quickly becomes impractical. 
+Instead of having one person interact with each separate system to create a new user account, mail box, shared folder, and permissions, It will be more efficient if the IT personnel can write a script to do this. We can then have a computer this task each time a new employee is hired. 
+When given initial info like the new employees name and job description, this script can carry out each step automatically, so umans will only need to intervene when a task fails. The computer will execute each step in the script, in the same order in exactly the same way. We could even improve the script further, instead of having the IT specialist enter a new employees details into the script each time its run, The script could just read the data from the human resources data system. That would make the entire workflow begin automatically on the employees start date.
+Another super benefical benefit of automation is centralizing mistakes. Which means that when we find an error in a script, we can fix that error once and for all.
+ 
+12.PITFALLS OF AUTOMATION
+Any task we can automate comes with a trade-off: is the time and effort it'll take to write the script worth potential automation benefits? 
+A simple heuristic we can use to know if we should automate is to estimate how long it'll take to us to do a certain task, and multiply that and multiply that by how many times we will perform that task in a given time window. If we estimate that it will take less time to automate the task than it will take to do it manually chances are that it is a good candidate for automation. So if
+
+[time_to_automate < (time_to_perform*amount_of_times_done)]
+
+For example, say you generate a daily report for systems usage and it takes you 5 mins a day to do it. If automating this task takes you 1 hr, then in 12 day we have save the 60 mins it took to create the automation. This would be a great use of time as it will free up the 5 mins everday to do something else.
+If instead it takes you 10 hours to do the automation, it will take you a 120 days or 24 working weeks to start sving time on the task.
+Usually the decision to automate is not so straight forward. If the task is complex and performed not frequently it may not be a good idea to automate. But keep in mind that once a task is wrapped in automation anyone can do it.  
+It may be very neccessary to automate a very complex error prone task if its critical that the task be done correctly even if its infrequent.
+A concept called the Pareto Principle can be a useful guideline to help you know which task to automate.
+Pareto Principle: 20% of the system administration tasks that you perform are responsible for 80% of your work. If we can identify and automate that 20%, we can save ourselves a whole lot of time. 
+A system that is automated can become fragile. If underlying systems are changed and automation isn't updated accordingly, workflow can break.
+Imagine an automated back up system that periodically saves the content of a sales database. Lets say the automatic backup program uses the disk identifier like .../dev/sda1 to know where the data to be saved is stored. What happens when a new disk is added to the system and the disk identifier is changed to .../dev/sdb1, The automation will no longer be able to identify the disk it should be backing up and the automation fails. This is process of software process falling out of step is sometimes called bit-rot.
+Bit-rot: The process of sofware falling out of step with the enviroment. The actual bit in the script don't decay or change, it is about the implicit signals that the script relies on that rot.  
+It is important to know how the automation would handle errors. Automated system performs action without human intervention so its easy to set and forget them. If an automated system fails and goes unoticed the consequences can be really bad. 
+Imagine that our backup has failed because the disk identifier has change and no one notices it. Sometime later the sales database server crashes and the data needs to be restored, The IT specialist will be in for a nasty surprise when he discovers that the data system has'nt backed up in a while. 
+False confidence in automation may factor into decision making. For example if the database needs to be upgraded, system administrators maybe more willing to proceed with the potentially risky operation. Since the believe the can recover the data from the back-ups.
+So how can we avoid the silent failures?
+We could build a method of notification our automated systems, this way if the automation fails, a human is notified and investigate. This notification process can be an email, an entry into the internal issue tracker, an update to a dashboard, or even a page to the person who is on call for the service.
+Whatever the method, it is important that notification services the error so that the person can fix the automation.
+Worse automation pifall is when it suceeds with no errors, but performs the wrong task. For example, in our previous example, what if the backup system correctly backing up files, but configured to back up the wrong data?
+A restore of the incorrect data couldlead to data loss or even data corruption, where customers might get charged the incorrect amount or get billed for project the didn't even purchase. For this more subtle class of failures, we can use periodic test to check the behavior of our automated system.
+in our backup system example, we could schedule a regular restore of data from the sales database, and check that the restored data is what you expect would be backed up. This testing process could be automated too, with scripts written to schedule the restore and compare the data against some master data set. Again if any aspect of the restore process fails, the automated system could halt to prevent further data corruption and send notification to a human to investigat the problem.
+Along with flagging the problems, good automation would make debbugging easier by logging the action that it takes. The syslog can be an extremely good source of information when investigating the issue. We say that it is of forensic value. Our scripts could also be configure to write to the syslog. Doing this creates an audit trail of useful trouble shooting information which can help with debugging process.
+ 
+13.PRACTICAL AUTOMATION EXAMPLES
+Lets look at an example of something we can automate using Python.
+Say fore example that we wanted to check the health of our computer, This can call for a lot of different checks: vdrifying that there is enough disk space, that the processor is not overloaded, that it has the latest security update, and that it is running the services its suppossed to. To verify all of this, we need to know how to check its values, and we do so using some of the modules availabel to us. For example, we a use the 'shutil' module and the 'disk_usage' function to check the current available disk space. Lets vheck it out in the interpreter. We will start by importing the 'shutil' module, and then get the disk usage.
+
+import shutil
+
+du = shutil.disk_usage("/")
+print(du)
+
+So we get the total bytes of the disk, the amount that used and the amount that is used.
+We can do this to get the percentage of free bytes
+
+du.free/du.total*100
+
+But what about cpu usage? For this we can use another module called 'psutil', this has a 'cpu_percentage' function which returns a number that shows the percentage of cpu being used. The amount of cpu usage can change a lot since the amount of processes that start and end all the time. So, this function receives an interval of seconds and returns the amount of cpu usage in that interval. Lets try it out, We will start by importing the 'psutil' module, then call the cpu_percent function with .1 seconds
+
+import psutil
+psutil.cpu_percent(0.1)
+
+Now, we can write our healt checking script. We will kick off with a script that will do two health checks. 
+First we will set up our scrip to use the Python intepreter, the shebang(#!/usr/bin/env python3). We know that we will use shutil and psutil, so lets import those two modules. 
+Lets define a check_disk_usage function that will receive a disk to check and return True if its more than 20% free or False if its less.
+Next we define another function called check_cpu_usage. In this case, we check the usage for 1 second. We will say that the machine is healthy if the usage is less than 75%.
+Finally we add the main body of our script, were we will check if either of those two function retrun False.
+
+health_checks.py
+#!/usr/bin/env python3
+import shutil
+import psutil
+
+def check_disk_usage(disk):
+    du = shutil.disk_usage(disk)
+    free = du.free / du.total * 100
+    return free > 20
+
+def check_cpu_usage():
+    usage = psutil.cpu_percent(1)
+    return usage < 75
+
+if not check_disk_usage("/") or not check_cpu_usage():
+    print("ERROR!")
+else:
+    print("Everything is OK!")
+    
+Lets save our script, make it executable and run it 
+
+This Python file consists of a script to check disk and cpu usage. You can see shutil and psutil modules are imported here.
+
+The shutil module offers a number of high-level operations on files and collections of files. In particular, it provides functions that support file copying and removal. It comes under Python's standard utility modules. disk_usage() method is used to get disk usage statistics of the given path. This method returns a named tuple with the attributes total, used, and free. The total attribute represents the total amount of space, the used attribute represents the amount of used space, and the free attribute represents the amount of available space, in bytes.
+
+psutil (Python system and process utilities) is a cross-platform library for retrieving information on the processes currently running and system utilization (CPU, memory, disks, network, sensors) in Python. It's useful mainly for system monitoring, profiling, limiting process resources, and managing running processes. cpu_percent() returns a float showing the current system-wide CPU use as a percentage. When the interval is 0.0 or None (default), the function compares process times to system CPU times elapsed since the last call, returning immediately (non-blocking). That means that the first time it's called it will return a meaningful 0.0 value. When the interval is > 0.0, the function compares process times to system CPU times elapsed before and after the interval (blocking).
+ 
+14.WHAT IS QWIKLABS?
+This is an online learning platform enviroment that takes you through live real world scenarios you might come across as an IT specialist. It works with google clouds consoles to spin up and create VMs (A computer simulated through software). This software simulates all the neccessary hardware and operating system that is running iside the machine. For some hardware simulation, the VM use the portion of the underlying hardware of the simulation. 
+ You can run 8 virtual machine on a single laptop. each with a portion of disk space, memory and CPU time. In other cases it will simulate the hardare by talking to the operating system running on the physical machine.
+ For example, a VM will use an emulated network card to communicate with the outside world. The network packets going through that emulator card would be transmitted between the software that runs the VM and the OS of the physical machine, which will the transmit the packets through the physical network. When we say a service is running the cloud, it means its running a data center or on a remote server.   
+ 
+ THINGS I LEARNED FROM DOING WEEK 1 ASSIGNMENT
+Create a new Python module
+In this section, you are going to write a Python module. A module is a file containing Python definitions and statements. The file name is the module name with the suffix .py appended.
+
+The module you are going to write will be used to test the network connections. We will guide you step by step through this process. Throughout the lab, we will refer to this module as the network module.
+
+Let's start writing this network module. Since, the network module will check whether the network is correctly configured on the computer, we will use the requests module.
+
+What is the requests module?
+Requests is a Python module that you can use to send all kinds of HTTP requests. It's an easy-to-use library with a lot of features ranging from passing parameters in URLs to sending custom headers and SSL verification. You can add headers, form data, multi-part files, and parameters with simple Python dictionaries.You can then access the response data using the same request.
+
+To use the requests module, you first need to install it. Use the following command to install the request module. If you receive any prompts, continue by clicking Y.
+
+sudo apt install python3-requests
+Copied!
+Create a file named network.py. The file should be created in the same directory as health_checks.py, i.e., scripts. If you are not present in the scripts directory, navigate to the scripts directory first and then create the file.
+
+cd ~/scripts
+Copied!
+Use nano editor to create a new file network.py:
+
+nano network.py
+Copied!
+Add a shebang line to define where the interpreter is located. In this case, the shebang line would be /usr/bin/env python3.
+
+#!/usr/bin/env python3
+Copied!
+Import the request module into the file using the import statements.
+
+import requests
+Copied!
+To check whether the local host is correctly configured, we use the socket module.
+
+Now, import the socket module.
+
+import socket
+Copied!
+Next, write a function check_localhost, which checks whether the local host is correctly configured. We do this by calling the gethostbyname within the function.
+
+localhost = socket.gethostbyname('localhost')
+Copied!
+The above function translates a host name to IPv4 address format. Pass the parameter localhost to the function gethostbyname. The result for this function should be 127.0.0.1.
+
+Edit the function check_localhost so that it returns true if the function returns 127.0.0.1.
+
+Now, we will write another function called check_connectivity. This checks whether the computer can make successful calls to the internet.
+
+A request is when you ping a website for information. The Requests library is designed for this task. You will use the request module for this, and call the GET method by passing http://www.google.com as the parameter.
+
+request = requests.get("http://www.google.com")
+Copied!
+This returns the website's status code. This status code is an integer value. Now, assign the result to a response variable and check the status_code attribute of that variable. It should return 200.
+
+Edit the function check_connectivity so that it returns true if the function returns 200 status_code.

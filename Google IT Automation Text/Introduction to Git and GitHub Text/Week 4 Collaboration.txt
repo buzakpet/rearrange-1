@@ -1,0 +1,350 @@
+INTRO TO MODULE 4 COLLABORATION
+In this module, we'll keep exploring the collaboration tools available in Git. We'll learn tools that will allow us to send contributions to projects that we are not a member of, help us improve the quality of our code and track our work better. GitHub is used heavily for open source projects. This our projects that allow anyone to use, copy, and modify their code. Having the code published online means that anybody can learn from what the project is doing and even collaborate on fixes and extra features. It can even help us learn from others, because we can look at our how others solved the problem we are tackling.
+If you're trying to learn a new technology, its a great idea to practice your skills by contributing to a project that uses that technology. To do that, you'll need to know how to interact with the project. This includes how to send bug fixes, how to make sure your fixes are applied, and even how to figureout which fixes are needed.
+
+A SIMPLE PULL REQUEST ON GITHUB
+As we called out, we can use GitHub to look at other peoples code and collaborate with them. Lets see this in action by having to look at one of the projects from our colleague blue-kale.
+
+blue-kale/validations
+
+So our colleague has created a project to include all validations functions. Lets click on the validations.py file in his repo. In it, we can see the code of a function that validates its username. Oh oh! If we look closely at the functions documetation, we notice that there is a typo. We can improve our colleagues code by fixing his typo. We click on the litle pencil icon at the top right, which lets us edit directly from the web interface. After clicking on it, we are told that we are trying to edit a file 'we don't have write access to.' GitHub tells us that it created a fork of this project for us, which we can commit our changes, and if we submit changes to this file, it will create a new branch so that we can send a pull request. But what exactly is a fork?
+Forking A way of creating a copy of the given repository so that it belongs to our user(us). In other words, our user will be able to push changes to the forked copy even when we can't push changes to the other repo.
+When collaborating on projects on GitHub, the typical work flow is, first create a fork of the repo, and then work on the local fork. A forked repo is just like a normal repo. except GitHub knows which repo it forked from, so we can eventually merge our changes back into the main repo by creating a pull request.
+A pull request: is a commit or series of commits that you send to the owner of the repo so that they incorporate it into their tree.
+This is a typical way of working on GitHub because only a few people have commit rights to the repo. But anybody can suggest patches, bug fixes or even new features by sending pull repquest so that people with commit access can apply.
+Typically, the owners of the repo will review the changes before the apply them, checking the match development guidelines for the project, and that the liscense is valid and so on.
+Lets fix the typo in the file is see what the pull request looks like. Now that we are done making changes to the file, we can make a change proposal by scrolling down and feeling in the description of the change. In this case, we fixed the typo in the function documentation. clicking on the 'proposed changes' button will create a commit in our forked repo, so that we can send the change to our colleague. Lets click the 'proposed changes' button.
+We've created a commit on our forked repo, bt we have not yet created a pull request that will send the changes to the owner of the original repo. 
+On the screen, we can see a lot of information about our merge. We can see what repos adn branches are invloved in the creation of the pull request. 
+We can also see that GitHub created a branch called patch-1 for us, and that our change can automatically be merged. No conflicts. 
+This page also allows us review the change before we actually create the pull request. 
+Once we are ready, we click the 'create pull request' button. This opens a text box where we can enter comments about our change. Since our change was simple, theres not much to add. If we were suggesting a more complex change, we could use the text box to add more context to our change.
+The check box at the bottom lets us 'allow edit from maintainers'. This can be usefull, for example, if by the time a project maintainer get around the merging our change there have been more commits and our change needs rebasing or merging, by allowing edits, the maintainer can do it themselves instead of asking us to do it.
+So, lets click 'create pull request'. Cool we've created a pull request with our change.
+
+THE TYPICAL PULL REQUEST WORK FLOW ON GITHUB
+In our last example, we saw how to create pull request directly from GitHub using the web interface to edit files. This works for simple changes like: fixing typos, or adding dicumentation to a function. But definately not a good idea if you want to make larger changes that we want to preview or test. 
+To do that, we'll normally have a local copy of the repo in our computer, and work with the forked repo as a remote. 
+Lets checkout this process by creating a fork of another repo. On top of the validations repo, our colleague blue call has created a rearrange repo, and we want to help them out. 
+We will go to the rearrange repo and create a fork by clicking the fork button. This copy will contain the current state of the repo, including files, and commit history. 
+Once the fork is finished, we are shown a page that corresponds the same repo name but under our user. See how it shows that it's a forked repo by stating the original repo under the name? Now that we've created a forced version of the repo on GitHub, we can create a local copy of the repo on our computer by coping the url and running 'git clone'.
+
+git clone https://github.com/proakpet/rearrange.git
+
+We now have a new directory rearrange with the contents of the repo. Lets enter the local repo and list all files
+
+cd rearrange
+ls -la
+
+Now lets see all the commit history using
+
+git log
+
+Now that we have a local copy of the repo, we can make any changes that we like to it. For example, this project has no README.md file. Lets create that, but first, lets create a new branch(If we did this in GitHub, it will create the new branch automatically for us to make all our changes before creating a pull request). We create a new branch using the command 'git branch <branchname>' or 'git checkout -b <branchname>'
+
+git checkout -b add-readme
+
+We can start editting the README.md file. The .md extention indicates a mark-down, which is a light weight mark-up language. We can use it to write plain text files that are then formated following some simple rules. In this case, we'll start with the title with the modules name, and a brief description saying its used to rearrange names.
+
+atom README.md
+
+Rearrange
+=========
+
+This module is used for rearranging names.
+
+Lets save and commit it.
+
+git add README.md
+git commit -m 'Add a simple README.md file'
+
+To push the change to our forked repo, we need to create the corresponding remote branch called add-readme
+
+git push -u origin add-readme
+
+When we pushed our changes to the remote repo, we got message that we can create a pull request if we want to. Before we do that, lets checkout how our files look when we render. 
+Awesome! It rendered correctly. We are ready to create a pull request for our page, to do that, lets look at the top of our project page. Git tells us that our branch is ahead of the original blue-kale main branch by 1 commit, which is the change we just made. 
+We can start our pull request by clicking on the 'pull request' link. Before creating a pull request, its always good to check that the code will merge succesfully, and GitHub tells us that our change can be automatically merged. 
+If this was not so, we'll need to rebase our changes agains the current branch of the original repo, so that it can be merged, because they would most-likey not take a three-way-merge as it will distrupt their own commit history.
+The windows showing us the text box where we can enter comment about our change. As we mentioned before, we should use this to explain why we are creating this pull request. This lets the person that will approve the pull request know he needs to merge the changes. Are we fixing a bug? Is this a new feature to let the porject support more usecases? How will the project benefit from including our change? Whatever info that would be usefull to the approver is recorded here. We can also use this box to explain how the changes/project was tested. If the problem included automatic testing infrastructure, our pull request can include the test for our changes and state that all the test still past. But if there is no automatic testing, then we ca use this box to explain how we tested the manually. In this case we just 'added a readme file that the project was missing before'.
+We should also check that the changes we are sending looks correct. And its alway good to double check that we are sending the right change. To do that, lets look at the diff that appears at the bottom of the page. So the diff tells us we're good to go. We can now click the 'create pull request bottom'.
+Awesome! We have created our second pull request. The number next to the name of our pull request is the identifier used in GitHub to track issues and pull request. We can use this identifier to access this pull request anytime we need it.
+But why do we need to access a pull request after we send it?
+Its common for project maintainers to comeback with questions or comments, or even ask us to fix our pull request. Imagine if you created an awsome pull request and you get a comment saying its missing some documentation, what do you do?
+
+UPDATING AN EXISTING PULL REQUEST
+When we send a pull request, it is common to receive some comments from the project maintainers asking for some improvements. They imporvement could be to add documentation, or tests, or maybe we need to make sure that changes work for all cases, or that it follows the projects style guidelines. There is nothing wrong about getting this comments. It even shows that the project maintainers are interested in our change.
+To get our changes approved, it is important that we address the comments, for example, if we are asked to include documentation, we go and do it.
+Looks like we got a comment from one of our colleagues. They said that the README is too short and that they would like to see and example.
+We will start by explaining that the function rearranges lastname firstname into firstname lastname, and then we'll add an example saying 'if we call rearrange_name(Turing, Alan) it will return Alan Turing'.
+
+
+Rearrange
+=========
+This module is used for rearranging names.
+Turns "LastName, Firstname" into "Firstname LastName"
+
+# Example
+
+Calling `rearrange_name("Turing, Alan")` will return `"Alan Turing"`
+
+Okay we've flushed out the README file with it. Now we can add our changes and commit them to repo as usual.
+
+git commit -a -m 'Add more information to the REAME'
+
+We'll push the changes to the repo. Now that we've pushed our changes to the repo, lets check our pull request in GitHub.
+In the commits tab we can see our two commits. Our commits now show up as part of the same pull request.
+***Note that we have pushed our changes to the same branch as before, so Git has automatically added it to the same pull request. If we wanted to create a seperate pull request, we would have needed to create a new branch instead.
+If we go to the files changed tab, we see all files affected by the pull request no matter which commit they were changed in.
+Whenever we look at the diff generated by a commit or a chain of commits, GitHub will show a colored diff for changes we've made, not just current but over time. For example, The heading 'Rearrange' was not a current change, yet it appears colored in the diff. It uses green for lines added and red for lines deleted. 
+Also, notice we see only one file even thought there are two seperate commits. What we are seeing is the difference between our repo, and the original repo we created the pull request from(the repo we forked from).
+We can click on the preview function to show the renderd markdown contents.
+GitHub renders our file and highlight the changes.
+Keep in mind that each project in GitHub may function slightly differently, some projects may ask you to have only one commit in your pull request. Other projects may tell you to rebase agains the master branch when you changes is ready to be merged back into the master tree.
+Git allows each project to set their own contribution guidelines. You'll find the link to this guidlines whenver you create a pull request or issue in a project.
+
+SQUASHING CHANGES
+As we called out before, you shouldn't rewrite history after changes have been published, thats because someone else has already synchronize their repo with those contents. This rule is waved with pull request, since its only you that have cloned your fork of the repo.
+So, say the project maintainers asked us to create a single commit that includes both changes and a more detailed description than the one we submitted. We can do that by using the interactive version of the rebase command called 'rebase -i'. As the parameter to the command, we'll pass the main branch.
+
+git rebase -i main
+
+When we call an interactive rebase like this, a text editor opens with a list of all the selected commits from the olderst at the top, to the most recent at the bottom.
+By changing the first word of each line we can select what we want to do with the commit. The default action here is pick, whcih takes the commit and rebases them against the branch we selected, in this case main. Recall that this is what we did in an earlier video when we called it without the -i flag, but now we can change the action to something else.
+The comments in the file tells us all the different commands we can use for our commit. For example, we can reword a commit message keeping the changes as they are, but modifying the commit message. We can also edit the commit to add or remove changes from it.
+We have 2 options for combining commits, 'squash' and 'fixup'. In both cases, the contents of the selected commit are merged into the changes of the previous commit. The difference is what happens to the commit message.
+When we chose squash, the commit messages are added together and an editor opens up to let us make any neccessary changes.
+When we chose fixup, the commit message for that commit is discarded.
+For our example we want to use squash so that we can combine both commits, but also modify the commit description, so lets change the pick command in the second one to squash it into the first one, then we'll save and exit.
+
+pick <commit ID>
+squash <commit ID>
+
+Once tell Git that we want to squash, we are given another file to edit. In this case, its the combined commit message. Git shows us some helpful info in the comment, like which files are modified, and what commits are being combined. Now we want to add more description to our commit message.
+
+
+# This is a combination of 2 commits.
+# This is the 1st commit message:
+
+Add a simple readme file including an example use case
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Jan 20 01:14:22 2022 +0100
+#
+# interactive rebase in progress; onto 14690f9
+# Last commands done (2 commands done):
+#    pick 1bad7fb Add a simple readme file
+#    squash 0d21e83 Add more information to the README
+# No commands remaining.
+# You are currently rebasing branch 'readme' on '14690f9'.
+#
+# Changes to be committed:
+#       new file:   README.md
+#
+
+Awesome! Our rebased worked. Lets check the output of git show to see the latest commit and changes in it. Success, our two commits have been combined into one that contains the whole new file and the right commit message. Note that before this squashing, 'git show' will have showed us two commits and two different changes. Lets see the current status
+
+git status
+
+Git tells us that our local branch 1 commit(which is the rebase we just did). It tells us also that the origin/readme branch has 2 commits(the ones we already pushed to the repo). Lets see the log graph
+
+git log --graph --oneline
+
+We see that the 2 commits pushed to origin/readme branch show up in a different path than the commit in our local readme branch. This is expected whenever we do a rebase the old commits are in the remote repo, and a different commit in our local repo. What would happen when we call 'git push?'
+
+git push
+
+Git does not like us pushing our change because it cannot be fastforwarded. But we don't want to create a merge, we want to replace the old commits with the new ones. We will call 'git push -f' to force git to push the current snapshot into the repo as is.
+
+git push -f
+
+Success. Git tells us that we forced update. Lets look at our history log again in graph format.
+
+git log --graph --online --all
+
+Now its just one commit on top of master. The divergence is gone.
+Lets look at the content of the pull request. Success, we've managed to combine our commits into one using the interactive rebasing.
+
+WHAT ARE CODE REVIEWS?
+GitHub and other Git repo hosting services have tools for doing code reviews on their platform. While this is called code review, we can actually use it to do a review of any text file, including configuration and documentation.
+Code review: Means going through someones else's code, documentation, or configuration and checking that it makes sense and follows the expected patterns.
+The goal of a code review is to imporve the project by making sure that changes are high quality. It also helps us make sure that the contents are easy to understand, that the style is consistent with the overall project, and that we don't forget any important cases.
+Review increase the number of eyes that have checked the code. This increases the code quality and reduces the amount of bugs. It doesn't mean there will be no bugs, but at least the obvious ones will be caught.
+This helps us spread knowledge since the code writers and the code reviewers now know what the code is doing.
+When the person we are working with on a code review are in a different location, or time zone, it makes more sense using a code review tools.
+Code review tools help us comment on someone else's code, this lets us leave feedback on how they can make their code better.
+Common code issues are unclear name which makes the code hard to understand, forgetting to add test or forgetting to handle a specific condition.
+If we writing documentation, our reviewer can help us catch typos and things that are not yet clear.
+On platforms like GitHub, it is common for projects to only require reviews for people that don't have commit access. while the project maintainers can commit directly.
+But doing code reviews improves the codes overall quality. Today, some open source projects and companies require code reviews for everybody. This is not because the they don't trust them, but because the want the highest quality of code, and code reviews are how to get there.
+***Note reviews is not about us being good or bad coders, they're about making our code better, and not only that specific review but in general. 
+By getting feedback, we can continue to improve our code techniques, by reviewing other people's code we can also learn new and different ways of achieving result.
+Like everybody else, after toiling for ours and finally solving it, all I want to do is submit it and be done with it. But this rearly happens. God reviewers always send me back to the drawing board with small errors and nick-picks. This code review point out things we might have missed along the way and ensures that our code makes sense to others.
+
+THE CODE REVIEW WORKFLOW
+We will checkout a typical code review using a reviewing tool.
+Imagine we've just finished a bunch of code changes, now we'll just ask a reviewer to look at our code. The reviewer might say that everything is ok and our change is approved, but usually they'll find something that needs improving. So, they'll add comments to our script explaining what needs to be fixed and how.
+When we ge the review comments, we'll address them by fixing our typos, adding any missing test and so on. After addressing a comment we can address it as resolved so that they will know its been taken care of.
+If there's something that we are not sure about, or think a different approach might be better, we can reply to the commentsand ask our reviewer for more info, without marking the comments as resolved.
+Once comments have been resolved and our reviewer is satisfied with the results, they'll approve the change and we'll be able to merge it.
+What is all the comments I'll receive?
+There's a wide range of things your reviewer can say about your code, sometimes, you might have forgotten to take into account something important, and need to do significant work to fix. Sometimes he might point out something small and not necessarily critical and might just be a suggestion for making it better. This comments are usually prefixed by saying its a 'Nit.'
+Whatever the case, you need to take out time to understand the comments and what you need to do to address it.
+For example, if you've written a code and your reviewer askes you to explain why or how the code is doing something, it might be tempting to answer their question in the comment and mark it as resolved, but this isn't a great idea, because only the reviewer gets to see you answer. Instead its better to take this as an opportunity to make your code clearer. You can do this by using better variable names or splitting a large piece of code into smaller functions. 
+On top of that, you can add comments to the code and documentation to your functions to make sure the how and why are explained. When we get a complain about the style, its a good idea to refer to a style guide that explains the prefered the particular coding style for the project. 
+For example lots of python projects uses the PEP8 style guide. If the project your contributing to doesn't include a style guide, make sure you ask for one.
+There are a bunch of code reviewing systems out there, and while the all follow the same pattern, they don't all work the same way.
+In some code reviewing tool, you'll need one of the project maintainers to approve code before its submitted. In other tools, you'll just need to get a couple of plus ones(+1) from contributors to the project before you can submit.
+The goal is to always ensure that your code has been reviewed by people who are familiar with the project before its submitted.
+
+HOW TO USE CODE REVIEWS IN GITHUB
+Recall that a while back we created a pull request that added a README file. Conveniently our colleague just replied with a few comments. Lets have a look.
+The code review has one overall comment, and line by line highlighting things to get done.
+We can view all changes requested for the file we created by clicking on the 'view changes' button.
+Our reviewer made three comments about our file. The first is to add a period at the end of a sentence. The second asks us to add another ## which will make the render in a smaller font. The last one requires a bit more work since its asking us to include a couple more examples. Lets fix it.
+We'll add a period, second hash tag and add more examples. To do that we the star character(*)-which is another feature of the markdown language that lets us easily create bullet points. So we add more lines with the same format.
+
+Rearrange
+=========
+This module is used for rearranging names.
+Turns "LastName, Firstname" into "Firstname LastName".
+
+## Example
+
+Calling `rearrange_name("Turing, Alan")` will return `"Alan Turing"`
+Calling `rearrange_name("Hopper, Grace M.")` will return `"Grace M. Hopper"`
+Calling `rearrange_name("Voltaire")` will return `"Voltaire"`
+
+Ok! We've addressed all the comments in our code review, lets save our file and commit the changes.
+Since we want this commit to be part of the previous commit, we ammend it
+
+git commit -a --amend 
+git status
+
+Just like before, we see that our change has divulged from the origin/readme branch. recall that --amend modifies commits, so its not safe to do with commits pushed to the repo. Using ammend is the same as creating a new commit and using 'rebase -i' to 'fixup' a change. So the change get replaced by an entirely new commit. with a commpletely different commit ID. So the reason for the divergence is that Git undoes the previous commit for readme branch which previously put origin/readme and readme branch pointing to a single commit. This undoing first sets the readme branch back to the origin/main and main and the performs the new commit different from the origin/readme.
+This means to push it we have to force it again.
+
+git push -f
+
+Recall that using git push is ok for pull request branches, because no body else would have cloned it. In fact, nobody else can fork and clone it from you.
+Don't do this with public repos.
+We've done what we're asked, lets go back to our conversation in pullrequest and resolve the comments.
+We see some coments saying outdated, thats because we've a new versions since we've made the change. But since we've taken care of the request, we can ignore the outdated comments and just resolve the conversation. And by clicking on resolve comments,we've resolved all the comments.
+We can leave a message in our conversation to let our reviewer know that we have resolved all comments and ask them to take another look.
+
+MANAGING COLLABORATION
+The tools provided by GitHub can be very helpful, but some cordination outside the platform is alway going to be needed. For example, the project you're working on mught need a medium or large refactor that would affect multiple lines of code accross several files. 
+Its important to give your colleagues the heades up that this refactor is comming. If possible try to do the refactor when other developers are working on other parts of the project, because this helps avoid large and complicated conflicts. 
+As said before, documenting work is very important, when working together with a large group of people, documenting what you do and why you do it becomes even more important, otherwise you'll spend most of your time answering everybodies questions.
+Also, say there's a problem with your service while on vacation or the person who developed the code is on the other side of the world and probably even sleeping. In this situation, the documentation has to be good enought to help someone else fix the problem.
+The most basic form of this is by writing good code, and clear comments and documentation for functions inside the code.
+On top of that, you'll want to create documentation files to let someone else know how they'll interact with your project, like the README.md file we created earlier.
+If you're a project maintainer, it's important that you reply promptly to pull requests and don't let them stagnate.
+The more time you spend to review a pull request, the more likely that there's a change in the file which will create a merge conflict when you try to pull in the change.
+On top of this, if the person contributing the change is a volunteer thats just trying to help, the loose their motivation to work on the project if the wait too long for feedback.
+Another thing to remember as you maintain a project, especially if its an open source project that others are contributing to, is that its important that you understand any changed you accept, because you never know if the other person would stick around to maintain the code after you merge it in, so you better make sure you can do that.
+Also be careful with which patches you accept or reject. Accepting everything brought your way might make your project grow too much and become unmanagable, or might take into account to many corner cases and cause complicated code thats hard to maintain.
+On the flipside, if you don't accept pull request, you'll discourage contributors and misout on keeping your project active and relevant.
+If you're contributing to a project, you'll want to check out style guide and maeke sure you follow it.
+If you own a project, it might sense to have a style guide so others know what you're expecting from them.
+When it comes to coordinating who does what and when, a common strategy for active software projects is to use an issue tracker.
+Also, when the project is large enough, its important to have other ways of collaborating and interacting with contributors. For many years many projects used Mailing list and IRC channels. Recently new forms of communication hae gained popularity like slack channels, or Telegram groups. Choose the best that suites your needs and that of your collaborators
+
+TRACKING ISSUES
+Deciding who's going to do what is critical when collaborating with others.
+With no coordination, two or more people can spend time working on the same project while nobody works on other critical parts.
+Imagine that you and your colleague said you'll work on building automation software for keeping the computers on the newtwork up-to-date. But instead of dividing the task into smaller pieces and assigning them to different people, you just started randomly working on some part of the infrastructure. The result will probalby total chaos with different pieces of software that won't work well together, and lots of gaps that nobody worked on.
+When working with large groups, physically talking with individuals as to who does what becomes a hastle. Thats when tools like issue tracker or bug tracker can help us coordinate our work better.
+An issue tracker tells us the tasks that need to be done, the state their in and whos working on them. The system also lets us add comments to the issue. This comments can be super helpful, they can give more detail about the problem, explain a way to solve them or detail how to test if its been solved.
+Issue trackers are'nt just usefull for people working on projects, they also lets users report on bugs when the come accross them, even if they don't know how to solve the problem.
+Sometimes users even come across problems we never even thought possible, and having them report this issues through a bug tracker even helps us better.
+Issue trackers also help volunteers that want to help start contributing to the project.
+having a clear visible list of the pending work helps new contributers figure out how to help and where to jump in.
+They're are a bunch of different solutions to tracj bugs or issues. There is a popular bug tracker called Bugzilla, which is used by quite a few open source projects. On the flipside, platforms like GitHub have an issue tracker baked in. So if you're hosting your project there, it can be very handy to track work on your project, like the problems to solve, the features to add, or the use cases to include. Lets check it out.
+We only have one issue saying that we should update our documentation.
+One of our colleague suggested that we should create a new health-check that verifies if they're any critical error messages inside the system logs, like the cronlog or syslog. Errors that appear there might help trouble shoot some interesting problems.
+Lets create a new issue for this problem by clicking the 'new issue' button. For the title of the issue we'll say that we want to check for critical error in system logs, and for the issues description, we'll say that the issue check should go through var/log/kern.log.
+When writing an issue description, its a good idea to put all the information we have about the problem or missing feature and how to solve it. And if new info comes later on, it can be added as additional comments on the same issue. 
+
+Check for critical errors in system logs
+
+Go through /var/log/kern.log and /var/log/syslog and check if there are any critical errors that need attention
+
+Great! We are now ready to submit the new issue. We now have our new issue in the list of issues to solve. The issues in the list all have numbers that identify them, as do pull request as you can recall. So, if you have a pull request with ID 5, you can't have an issue with ID 5.
+GitHub will automatically reference issues and pull request in comments when we mention them using the hashtag number format. For example if we use #2 in a comment, it will automatically reference the issue we just created.
+If your fixing an issue through a pull request, it possible to automatically close the issue directly once the code is merged. To do this, we need to include a string like: Closes: #4 in your commit message, or as a part of description of your pull request. Once the pull request automatically gets merged into the main tree, GitHub will automatically close the issue with a message linking it to the new commit. Lets try this out by updating the documentation like #1 issue requested.
+This issue seems a bit straight forward. We need to update the README file, by changing the name of the scripts form all_checks to health_checks. We also need to explain a bit more how the scripts works.
+Before we start working on it, lets get the issue assigned to us. Check the section to your right, under the 'asignees', click 'assign yourself'.
+Assigning issues to collaborators lets us know who's working on what. By assigning the bug to yourself, you can let others know you're working on it so they don't need to.
+
+cd health-checks
+
+# health-checks
+Scripts that check the health of my computers
+
+This repo will be populated with lots of fancy checks.
+
+Currently the main scripts is all_checks.py
+
+We can see from the above text of the README.md file that we are still using the old name, but we changed the file name a while ago.
+Lets change our README to the new file name using inverted quotes to show mono space texts. Then we'll add that our scripts prints everything ok if all checks pass and print the corresponding error messages if something fails.
+
+# health-checks
+Scripts that check the health of my computers
+
+This repo will be populated with lots of fancy checks.
+
+Currently the main scripts is health_checks.py
+
+This scripts will print "Everything ok" if all checks pass,
+or the corresponding error messages if some checks fail.
+
+Let save the file and commit our change.
+
+git commit -a
+
+Update README to use the new name of the scripts
+
+Also add more information about how this works.
+Closes:#3
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#       modified:   README.md
+#
+
+Our commit looks good. Lets save it and push to the repo.
+
+git push
+
+Now let us go back to the issue we were addressing. We see that our issue is automatically closed with the commit we pushed. We can click on the commit ID to see the full commit. See how the #3 is an automatic link to the #3 issue?
+
+CONTINUOUS INTEGRATION
+Throughout this course we've been making manual changes to our files. Somitimes we ran them manually to test if the still worked after the change. Sometimes we just forgot to do that.
+This is common for any software project whether big or small. So we need to rely on something other than humans to test our code.
+We can write automated test to test to test our code for us then use continuous integration (CI) system to run those test automatically.
+A CI system will build and test our code every time there's a change. This means that it will run whenever there is a new commit in the main branch in our code. It will also run for any changes that come in through pull request.
+If we he CI configured for our project, we can automatically run our test using the code in a pull request. This way we can very that the test will pass after the new changes gets merged back into the tree.
+Once we have our code automatically built and tested, the next automation step is continuous deployment, whcih is somtimes called continuous delivery(CD). This simply mean the new code is deployed often. The goal is to avoid rollouts with a lot of changes between two successive versions of a project, but instead do incremental updates with only few changes at a time. This allows errors to be caught and fixed early.
+Typical configurations include deplying a new version whenever a commit is merged into the main tree, or whenever a branch is tagged for release.
+There is a large world of tools and platforms related to CI/CD -this is what the whole system is usually called. One popular option is Jenkins which can be used to automate lots of different types of projects.
+Some repo hosing services like GitLab provide their infrastructure for doing CI. GitHub does not offer an integrated solution instead. Instead, the popular alternative is to use Travis, which communicates with GitHub and ca access the info from GitHub projects to know which integration to run.
+No matter which tools, there are a bunch of concepts to deal with when creating CI/CD.
+1.The first is the concept of Pipelines: This specify the steps that need to run to get the result you want.
+For a simple Python project, the pipeline can be just to run the automated test.
+For a web service written in Go, the pipeline can be compile the program, run the unit test and the integration test, and finally deploy the code to a test instant.
+2.Another concept that turns up when doing CI/CD is artifacts: This is a name used to describe any files that are generated as part of the pipeline. This typically include the compiled version of the code, but can include other generated files like pdfs for the documentation or OS specific packages for easy installation.
+On top of this, you might want to keep the logs of the pipeline, buid and test stages to review if things fails.
+When setting up CI/CD, we have to be careful about how we manage secrets.
+If our pipeline includes deploying the new version of the software to a test server, we will need to somehow give the software that is running the pipeline access to our test server. There are a lot of way to do this, like exchanging SSH keys, using application specific API tokens. For some piplelines, it might be unavoidable to use more than one of this methods. But be aware that you are giving access to the test servers to the owners of the service thats running the pipeline for you.
+So two things to remember:
+First: Make sure the authorized entities for the test servers are not the same entities authorized to deploy on the production servers. That way, if there is any kind of compromise the pipeline your production server is not affected.
+Second: Always have a plan to recover your access in case your pipeline gets compromised.
+If you want to set up Travis for your githb projects the website is www.travis-ci.com using your GitHub account, then enable the projects that you want to continuously integrate. After that you'll need to add a configuration file to the project written in YAML format the states the language your project is written in and which steps to take for the pipeline. This file can be very simple if you project files are typical configuration for the language you're using. But it can also become very complex if you want to run a complicated pipeline with lots of stages and steps outside the default.

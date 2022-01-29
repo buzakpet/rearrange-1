@@ -1,0 +1,539 @@
+INTRO TO MODULE 6: BASH SCRIPTING
+In this module we will broaden our understanding on what the linux os has to offer. We will do a run down of the most common linux commands. We will see how we can connect the input and output streams to files or even to other programs.
+We will also deep our toes into scripting in another programing language called bash. Being able to script in bash will be a useful complement to our python script.
+Imagine we wanted to convert all image files in one directory from png to jpeg file format, there is a command called convert that we can use to do this.
+We can do this in Python by going through all the files using 'os.listdir' and calling 'convert' using 'subprocess.run', but this would be more complex than scripting in bash. 
+We will see how to write basic bash code like conditionals or loops etc.
+We will see how it is comparable to Python syntax but not the same.
+
+BASIC LINUX COMMANDS
+mkdir -- create a new directory
+cd -- to change into that directory
+
+This commands dont print anything to the screen, infact, a lot of commands don't print anything to the screen when the succeed, the only print something when the fail.
+
+pwd -- print working directory
+cp -- copy existing file
+
+cp ../spider.txt .
+
+What does all this dots mean? The first two dots means the parent directory, the previous directory in the absolute path, while the dot after the name of the file refers to the current directory. So this command is copying the spider.txt file from the previous directory to this directory(mynewdir)
+
+touch -- creates an empty file. For example
+
+touch myfile.txt
+
+Will create a new file called myfile.txt in the current directory we are working in.
+
+ls -l
+
+We called the ls command using the -l command line argument. REMEMBER COMMANDLINE ARGUMENT CHANGES THE BEHAVIOR OF COMMANDS, MAKING IT DO WHAT WE WANT. By passing -l, we get a bunch of other information distributed in a bunch of columns. 
+Without no arguments, ls will just list the files contained in the directory.
+What are this columns?
+The first columns idicates the permissions of the file. 
+The second column is the number of i nodes to that point to the file.
+The third and fourth columns indicate the owner and group to whom the file belongs.
+The fifth column is the size of the file.
+The sixth column is the date of last modification
+The seventh column is the name of the file
+
+ls -la
+
+The -a flag (commandline argument) shows hidden files which are the ones that start with a dot, which in this case are the shortcuts we called earlier, '.' shortcut for the current directory and '..' for the parent directory.
+The size of this directories are related to the amount of files in them.
+
+mv -- To rename or move a file.
+cp -- to create a new copy of a file
+
+mv myfile.txt emptyfile.txt
+cp spider.txt yetanotherfile.txt
+
+Each of this commands uses the same format. The first parameter is the old file, the second parameter is the newfile.
+
+ls -l 
+
+shows u two copies of the file with the same size.
+
+rm -- delete files.
+
+We can go one by one, or we can delete everything all at once using the '*'
+
+The star is a placeholder that gets swapped out by all the filenames in our directory.
+So our directory is once again empty. Lets get rid of the current directory. To do this we have to move to the previous directory. We do that using cd ..
+
+cd ..
+
+now we can delete the directory using rmdir. THIS WILL WORK ONLY ON EMPTY DIRECTORY, AND IT WOULDN'T WORK IF THERE WAS ANY FILES IN IT.
+
+rmdir mynewdir/
+
+then we call ls of the removed dir
+
+ls mynewdir
+
+An error shows to tell us that the directory does not exist anymore
+
+REDIRECTING STREAMS
+Lets talk about what we can do with I/O streams in bash.
+We have considered the standard I/O streams. By default the input comes from the keyboard, at the text terminal, and the output and error are shown on the screen. This is the case not only for python scripts, but for all system commands.
+We can change this default using the process called redirection.
+Redirection: The process of sending a stream to a different destination. This process is provided to us by the operating system and can be really useful when we want to store the output of a command in a file instead of just looking at it on a screen. 
+To redirect the STDOUT of a program to a file, we use the the '>' symbol. For example, take the following Python program that just prints a single line of text using the print function.
+
+cat stdout_example.py
+
+if we just run this program without redirection, the output would be sent display, using the STDOUT normally.
+
+./stdout_example.py
+
+But if we use the '>' to redirect the text, something else happens entirely
+
+./stdout_example.py > newfile.txt
+
+When we run it this way, the STDOUT for the stdout_example.py script is redirected to the file called new_file.txt. If this new_file.txt does not exist, the terminal creates one.
+
+cat new_file.txt
+
+As we can see, the output of our file ended up in the file after the '>' symbol.
+Beware, just as we saw with the 'w' file load with the open funtion; Each time we perform a redirection of STDOUT  the destination is overwritten! So we need to be super careful that we are not overwriting a file with valuable content.
+If we want to rather append the redireted output to a file, we use '>>' sign. 
+
+./stdout_example.py >> new_file.txt
+
+cat new_file.txt
+
+We can see the appended STDOUT.
+In a similar way, we can also redirect the STDIN. Instead of using the keyboard to send data into the program, we can use the '<' to read the contents of a file.
+Lets try this out with a new version of the streams.py file that we saw in an earlier example.
+
+cat streams_err.py
+
+./streams_err.py < new_file.txt
+
+In this case, we don't see the input on the screem in STDIN portion. This is expected because the input was read from a file, so it only appears in the STDOUT portion where WE SEE THAT IT READ JUST ONE OF THE TWO LINES. THIS IS ALSO EXPECTED BECAUSE THE INPUT FUNCTION ONLY READS UNTIL IT ENCOUNTERS A NEWLINE CHARACTER.
+It can also be useful to redirect STDERR to capture err and diagnostic messages from a program. This can be accomplished using the character combination '2>' similar to how we redirected STDOUT before.
+Lets execute our stream example again, this time redirecting our err output to a seperate file.
+
+./streams_err.py < new_file.txt 2> error_file.txt
+
+This time we don't see any error messages on the screen, thats because we redirected it to error_file.txt. Lets see if we find anything in that file.
+
+cat error_file.txt
+
+What does the number 2 represent in '2>'? It represents the file descriptor of the STDERR stream. We can think of a file descriptor as a kind of variable pointing to an I/O resource, in this case the STDERR stream. 0 and 1 are the file descriptors for STDIN and STDOUT respectively.
+One of this is exclusive to Python. We can operate the same way with all other commands. FOR EXAMPLE, WE CAN CREATE A FILE USING THE ECHO COMMAND AND REDIRECTING ITS OUTPUT TO THE FILE THAT WE WANT TO CREATE.
+
+echo "These are the contents of the file" > myamazingfile.txt
+
+cat myamazingfile.txt
+
+PIPES AND PIPELINES
+Apart from the redirecting from and to files, there is another powerful way of redirecting streams called Piping. Using pipes, we could connect multiple scripts, commands or other  programs together into a data processing pipline. 
+Pipes: Connect the output of one program to the input of another in order to pass data between programs, taking the output of one and making it the input of another.
+Pipes are represented by the pipe character '|' 
+Pipes allow us to create new commands by combining the functionality of one command with the functionality of another without having to store the contents in an intermmediate file. Here is an example.
+
+ls -la | less
+
+would have normally been done like 
+
+ls -la > temp.txt
+less temp.txt
+
+Here, the output of the ls -l command is connected to the input of the less command which is a terminal paging program. This can be useful when you want to look at the contents of a directory containing lots of files.
+The output of the ls -l is piped to less, which displays them one page at a time.
+We can scroll up or down using pageup, pagedown or arrow keys, and when we are done looking at the files we can quit with 'q'.
+It is possible to connect a lot more than two programs using pipes.
+
+cat spider.txt | tr ' ' '\n' | sort | uniq -c | sort -nr | head
+
+we have a bit of complex piping. Lets break it down.
+We first use 'cat' to get the contents of our spider.txt file, those contents are then sent to a command called 'tr' which get its name from the word 'translate'. It takes the characters in the first parameter in this case a space(' ') and transforms them into a character in the second parameter, in this case, a newline character('\n'), basically putting each word in its own seperate line. Next, we parse the result to the 'sort' command. This then sorts the result alphabetically. The sorted results are then parsed to the 'unique' command, which displays each match once, and the '-c' flag prefixes each word with the number of times it occurs. This output is parsed via pipe to the 'sort' command. The '-nr' flag which sorts results numerically in the reverse order, from most to least hits. The output is then parsed to the head command which prints the firsr 10 lines to STDOUT.
+We can use our Python scripts in piplines too. PYTHON CAN READ FROM STDIN USING THE 'stdin' FILE OBJECT PROVIDED BY THE 'sys' MODULE. THIS IS A FILE OBJECT OBTAINED LIKE THE ONE WE GOT USING THE OPEN FUNCTION, AND IS ALREADY OPEN FOR READING.
+Lets say we want to write a script that reads each line of the input and then prints the line with the first character in uppercase? To do this we take advantage of the capitalized string method. It looks something like this
+
+capitalize.py
+#!/usr/bin/env python3
+
+import sys
+
+for line in sys.stdin:
+    print(line.strip().capitalize())
+
+In this script, we are iterating over the contents of the sys.stdin file. Remember that when we iterate a file object, we go through it line by line. For each of the line of the file, we first use the strip method to remove the \n character at the end. Then capitalize to make the first character of the line uppercase, and then we print out to STDOUT.
+Lets use this script to capitalize a file in our computer called haiku.txt
+
+cat haiku.txt
+
+Now let use a pipline to capitalize our haiku.txt by combining the output of the cat command with our capitalized script.
+
+cat haiku.txt | ./capitalize.py
+
+The cat command sends the content of haiku.txt file to STDOUT which it redirects to our script using a pipe.
+Our capitalize script uses the sys.stdin file object to interate through each line of STDIN, printing the capitalized version to STDOUT.
+** We do not need a pipe to get the contents of the haiku.txt file into STDIN of our script, instead we use the redirection operator we saw earlier like this.
+
+./capitalize.py < haiku.txt 
+
+Usually if we just need to get something from STDIN into your script, using a redirection is enough, But if we want this to be part of a bigger pipeline of commands then we need to combine them with pipes. For example, if we only want to capitalize a line that match a certain pattern, we could first call 'grep', and then connect to it with a pipe to our scripts.
+
+SIGNALLING PROCESSES
+When dealing with the operating system, we usually have a bunch of different processes that we use to accomplish what we want, and like any well oiled machine we generally need this process to communicate with each other. For example, we might have a program that starts a background process and want it to terminate after a time out.
+One way of accomplishing this is through the pipelines we learnt earlier. Another way to accomplish this is by the use of signals. 
+Signals: Tokens delivered to running processes to indicate a desired action.
+Using a signal, we can tell a program whether to pause or terminate, we can also cause it to reload its configuration or to close all open files. 
+Knowing how to send this signals lets us interact with processes and have more control of how the behave. 
+They're a bucnh of different ways to execute this commands. For example, lets use the 'ping' command in our terminal.
+
+ping www.example.com
+
+The ping command is now running sending ICMP packets to a machine over the network once per second, and it will keep running forever unless we interrupt it. To do this we use the ctrl+C combination. When we interupt it, the program doesn't just end abruptly, first it prints a summary of what it did and what the results where.
+What happens behind the scenes is that the process recieves a signal that we want it to stop. After that signal is recieved, the process does whatever it needs to finish cleanly. The signal that controls SIG sents is called SIGINT.
+Another keyboard combination we can use to send is Ctrl+Z.
+
+ping www.example.com
+
+We interrupt it with Ctrl+Z
+
+Here the process does not finish cleanly, we get an info saying that it 'stopped'. Whats going on? The signal that we sent SIGSTOP. This signal causes the program to stop without actually terminating. But we can make it run again with the command 'fg'. The 'fg' command lets our program run again and will keep going unless we interrupt it with Ctrl+Z, Ctrl+C or some other signal. 
+We can use 'kill' to send other signals. By default 'kill' will send a signal called SIGTERM, that tells the program to terminate. Since kill is a seperate program, we need to run it on a seperate terminal, and we also need to know the process identifier or PID of the process we want to send the signal to.
+To find the PID we want to send the signal to, we use the 'ps' command which will list the current running processes. Depending on what options that we pass, it will show different subset of processes with different amounts of detail. for this example, we will use 'ps ax', which will list all the running processes in the current computer. Then we will use the 'grep' command to only keep lines that containthe name of the process we are looking for.
+Lets try this out. We will run ping on one terminal, find its PID and kill it from another terminal.
+
+ping www.example.com
+
+Opening another terminal
+
+ps ax | grep ping
+
+We see that the PID for ping is 4619. We can now use this identifier to send the signal that we want using the 'kill' command.
+
+kill 4619
+
+We've now sent the SIGTERM signal and the process is terminated. Notice that we didn't get the nice summary in the end. The process just finished.
+Many long running programs will reload their configuration from disk if we send them a signal. This way we can let the program know that there is an important change in the configuration and it can apply it without the program stopping to reread it.
+Programs that run webservices might also recieve a signal to tell them that the should finish dealing with any current open connections and then terminate cleanly once finished.
+understanding this processes and signals helps us to interact with the systems that we are in-charge of and make them behave as we want.
+
+CREATING BASH SCRIPTS
+BASH IS NOT ONLY A PROGRAM THAT RUNS COMMANDS, ITS ALSO A SCRIPTING LANGUAGE.
+Why do we need to script in Bash?
+Sometimes we need to debug a computer that is not behaving correctly. There are lot of commands that can tell us what is going on in there to help with our debugging such as:
+ps -- which will list all the current running processes
+free -- shows us the amount of free memory
+uptime -- tells us how long a computer has been on.
+
+Any time we want to debug the computer, we can run this commands one by one, followed by as many commands as we need to run. But that sounds tedious.
+What if we can run a single command that gather all this commands in just one shot?
+We can do this by creating a bash script that can call all this commands one after the other. Lets start with the simple version of a script like that.
+
+gather_info.sh
+#!/usr/bin/env bash
+
+echo "starting at: $(date)"
+echo
+
+echo "UPTIME"
+uptime
+echo
+
+echo "FREE"
+free
+echo
+
+echo "WHO"
+who
+echo
+
+echo "Finishing at: $(date)"
+
+This script is calling three main commands, 'uptime', 'free', and 'who' which list the users currently logged into the computer. It uses the echo to print some other useful info and print empty lines between each command. 
+We also call the 'date' command to print the current date. To call this command we use a special notation by putting it inside parenthesis after the '$'. This indicates that the output of the command('date' command) should be passed to the 'echo' command and be printed to the screen.
+Lets run the script.
+
+./gather_info.sh
+
+It works perfectly. We can add more and more commands to it to make our information gathering get everything that is relevant for debugging.
+As our script is written, there is one command per line. This is common practice, but it is not the only way. We can also write the commands on the same line using semi-colons to seperate them.
+
+#!/usr/bin/env bash
+
+echo "starting at: $(date)"; echo
+
+echo "UPTIME"; uptime; echo
+
+echo "FREE"; free; echo
+
+echo "WHO"; who; echo
+
+echo "Finishing at: $(date)"
+
+./gather_info.sh
+
+It still works perfectly
+
+USING VARIRABLES AND GLOBS
+Bear in mind that bash is fully a scripting language, not just a way fo executing commands one after the other. We can assign variables, do conditional operations, execute loops, define function etc.
+Lets start with variables. Bash lets us store info in variables and retrieve them. WE SAY ENVIROMENT VARIABLES PREVIOUSLY: THIS ARE VARIABLES THAT ARE SET IN THE ENVIROMENT IN WHICH THE COMMAND IS EXECUTING. WE MENTIONED THAT SET THIS VARIABLES USING THE '=' SIGN, AND WHEN WE WANT TO ACCESS THE VALUE OF A VARIABLE IN BASH, WE PREFIX THE NAME OF THE VARIABLE WITH '$' SIGN. 
+On top of the predefined eviroment variables we can also define our own variables for our scripts. We do this by assigning a value to the name of the variable we want to define.
+
+example=hello
+echo $example
+
+Note that the can be no spaces between the name of the variable and the equal sign, and between the equal sign and the value.
+If we try to define a variable and leave a space at one side or the other, the shell would complain that it cannot find the command with the name we are assigning.
+
+example = hello
+
+Remember that any variable you define in your script or command line is local to the enviroment where you defined it. If you want commands from that enviroment to also see the variable you need to export them using the 'export' key word.
+Note that assigning a value to a variable is different from data or code that is inside a script(a file), hence we cannot 'cat' it to see the values, we can only 'echo' using the '$' to access the content of the variable
+
+Lets modify our scripts to gather info and add a variable to it. We will add lines in between each of the command to make it nicer.
+To do this, we will define a variable called line, and we will put a bunch of dashes in it.
+
+#!/usr/bin/env bash
+line="------------------------------"
+echo "starting at: $(date)"; echo $line
+
+echo "UPTIME"; uptime; echo $line
+
+echo "FREE"; free; echo $line
+
+echo "WHO"; who; echo $line
+
+echo "Finishing at: $(date)"
+
+Now instead of leaving empty lines, we will print this variable to seperate our command.
+
+There, we have set and used a variable in the script. Perfect!
+Let us move over to globs. GLOBS ARE CHARACTERS THAT ALLOW US TO CREATE LIST OF FILES. The '*' and '?' are the most common globs. Using this globs lets us create sequences of file names that we use as parameters to the commands we call in our scripts. 
+In Bash using '*' in command line will match all file names that follow the format that we specify. For example.
+
+echo *.py
+
+The shell turns it into a list with all the file names that end with .py in the current directory. We can also put the '*' at the end of an expression to get the list of all files that start with a certain prefix.
+
+echo c*
+
+Here we get all the files in the current directory that start with the letter c. WE CAN ALSO USE * WITH NO PREFIX OR SUFFIX THAT WOULD MATCH ALL THE FILES IN THE CURRENT DIRECTORY.
+
+echo *
+
+Alternatively, the '?' symbol can be used to match EXACTLY ONE CHARACTER, instead of many characters, and we can repeat it as many times as we need. For example, we can get files with 5 characters by using the 5 '?' together.
+
+echo ?????.py
+
+We could call other commands and pass this list. If you want to use this functionality in python, it is available through the glob module.
+
+CONDITIONAL EXECUTION IN BASH
+For conditionals, in bash, the conditions used for braching is based on the exit status of commands. We can check the exit status of commands using '$?', and in bash recall the an exit status of 0 means success. This logic is used by the if operator in Bash. To create a conditional, we are going to call a command, and if the exit status of that command is 0, then the condition would be considered True.
+Say we want to verify that the /etc/hosts file contains an entry for 127.0.0.1, knowing that grep would return an exit status of 0 when it finds at least 1 match and different than 0 when it doesn't find a match, we can use it to do this verification.
+
+check_localhost.sh
+#!/usr/bin/env bash
+
+name=/etc/hosts
+
+ if grep "127.0.0.1" $name; then
+   echo "Everything OK"
+ else
+   echo "ERROR! 127.0.0.1 is not in $name"
+ fi
+
+Surrounding the string we want grep to check with double quotation marks ensures that it works even if there are spaces between.
+Lets take a look at this code. We start with the 'if' keyword followed by the 'grep' command that we use to check for success. Are the end of the command we have the semi colon followed by the word then. After that comes the body of the conditional. We are using indentation as in python which is a good style choice and makes the code more redeable but not mandatory in bash. It is possible to write this in one line. But this is much nicer. We have an else block for when the condition does not run successfully. Finally we end the if block with the 'fi' keyword.
+Note, we must end the conditional part of the if block with '; then', and we must end the if block with 'fi'
+Lets run our script and see what it does.
+
+./check_localhosts.sh
+
+The if block runs and everything executes correctly. 
+The first line printed to the terminal is the output generated by the 'grep' command, because by default grep prints the lines that matches the pattern that we give it. The second line in the output is the one that is generated by our script.
+So, the grep command called by our script found the line in the file and exited with an exit value of 0, and so our script said that everything is ok. If grep did not find that line, it would exited with a different value and we would have had a different message.
+We can check other conditions like: if a file exists, if two strings are equal, if a number is less than another number etc. To help us evaluate this conditions is a command called 'test'
+Test: A command that evaluates the conditions received and exists with zero when they're true and with one when they're false.
+Lets check an example. 
+
+if test -n "$PATH"; then echo "Your path is not empty"; fi
+
+We are using the -n command to check if a string variable is empty or not. In this case, PATH is not empty so we get the message. Using the test like this happens so commonly that there's another way of writing it which looks a lot like other programming languages. Something like this.
+
+if [ -n "$PATH" ]; then echo "Your path is not empty"; fi
+
+In this case the command we are calling is the '[' which is an alias to the 'test' command. To call it succesfully, we also need to include ']'. When using this syntax remember that there needs to be a space after the opening bracket and before the closing bracket.
+
+WHILE LOOPS IN BASH SCRIPTS
+Bash offers similar looping pattern as in Python. We can iterate while a condition is true using a while loop, and iterate over a list of elements using a for loop.
+Lets look at a simple while loop in bash.
+
+while.sh
+#!/usr/bin/env bash
+
+n=1
+while [ $n -le 5]; do
+  echo "Iteration number $n"
+  ((n+=1))
+done
+
+In this script, we are using the variable n to print messages counting from   1-to-5. The condition for the while loop uses the same format as the condition for an if block. In this example, we check if the value of n is less than or equal to 5 using the '-le' operator. The loop starts with the 'do' keyword and finishes with the 'done' keyword. TO INCREMENT THE VALUE OF n, WE USE A BASH CONSTRUCT OF DOUBLE PARENTHESIS THAT LETS US DO ARITHMETIC OPERATION WITH OUR VARIABLES.
+Lets execute this and see what happens.
+
+./while.sh
+
+When using loops in bash scripts, its common to have a loop that retries commands a number of times until it succeeds. This is really useful with commands that use network connections or that access resources that might be locked. This commands fails for external reasons and are likely to pass when tried a time or two. 
+To simulate a command that sometimes succeeds or sometimes fails, we have a small Python Script that would return an exit value picked at random for a range that we give it.
+
+random-exit.py
+#!/usr/bin/env python3
+
+import sys
+import random
+
+value = random.randint(0, 3)
+print("Returning: " + str(value))
+sys.exit(value) ## Why don't we use a function and then 		## return the rnndom value?
+
+
+
+This script is using random.randint to generate a value between 0 and 3 then it prints the selected value and exits with it. Which value we get depends on the call.
+Lets simulate a command that sometimes fails and sometimes succeeds. Lets look at our bash script that would retry the command.
+
+retry.sh
+#!/usr/bin/env bash
+
+n=0
+
+command=$1
+
+while ! $command && [ $n -le 5 ]; do
+  sleep $n
+  ((n=n+1))
+  echo "Retry #$n"
+done;
+
+This script is a bit more complex than the earlier one. Here we are getting the value of a command line argument using the $1. This is what we use in bash to access the first command line argument. In Python we get the same info using sys.argv[1]. We store the parameter in variable called command, then we execute the while loop either till the command succeeds or the end variable reaches a value of 5. In other words, if the received command fails, we will retry up to 5 times. In the body of the while loop, we first sleep a few seconds, then increment the variable and print the number of retry attempts.
+Why do we call the sleep command? The idea here is that if the command we are calling if failing due to cpu usage, network or resource exhortion, it might make sense to wait a bit before retrying again. So the more we try the more we wait. We need to let the computer catch a breather and recover from what is making it fail. 
+To test this out we will need to call our retry script with a random-exit command as our parameter. 
+
+./retry.sh ./random-exit.py
+
+We can see how our scripts keep executing until the command that we pass returns 0. 
+This example is real world use case for while loops in bash
+
+FOOR LOOPS IN BASH SCRIPTS
+Both in Python and Bash, for loops are used to iterate over a sequence. for loops help us perform an operation on each of the elements in the sequence. 
+In Python sequences are data structures like, list, tuple, dictionaries. In bash, we construct this sequence just by listing elements with spaces between. In other words, sequence in bash is just elements with spaces between them.
+For example.
+
+fruits.sh
+#!/usr/bin/env bash
+
+for fruit in peach orange apple; do
+  echo "I like $fruit!"
+done
+
+The for loop uses the same do done syntax, that the while loop used before. Now lets execute the script and see if it works.
+
+./fruits.sh
+
+So it works just fine, but not doing anything useful. We pointed out ealier that we can use globs ('*', '?') to create list of files. This list are separated by spaces, so we can use them in our loops to iterate over a list of files that matches a critaria, lika all the files that end in .pdf, all the files that start with img etc.
+Lets see this in a practical example. 
+Imagine that we are migrating our companies website from webserver to another. Your web content is stored in a bunch of files that all end in upper HTM, and the new server requires that the all end in lower case html. We could manually rename them one by one using the mv command, but that can get really old really fast. We will likely end up making mistakes after the first few commands. Instead we could do the same thing with a short bash script. First let us check out our files.
+
+cd old_website
+
+ls -l
+
+This will list all the HTML files with the old .HTM extension.
+SO, HOW DO WE EXTRACT THE PART BEFORE THE EXTENSION? THERE IS A COMMAND CALLED BASENAME THAT CAN HELP US WITH THAT.
+
+basename index.HTM .HTM
+
+THIS FUNCTION TAKES THE FILE NAME WITH THE EXTENTION AND RETURNS THE FILE NAME WITHOUT THE EXTENSION. Now we are ready to write our script to change the extension.
+
+atom rename.sh
+
+rename.sh
+#!/usr/bin/env bash
+
+for file in *.HTM; do
+  name=$(basename "$file" .HTM)
+  mv "$file" "$name.html"
+done
+
+For each file, we want to call basename to keep the part of the file we care about. We store that in variable called 'name'. Next we use $() to call the command and keep the output. We surround the file name with double quotes so that it will work even if the file name has spaces between its name. This is actually a good practice to avoid errors that could arise with file names or values that have spaces between them. Now we will call the mv command with the old and new names. In this case we use double quotes for both parameters to makes sure that it works correctly for file names with spaces. We finish our loop with a done keyword.
+
+****Whenever we are going to run a script like this which modifies the files in your file system, it is good idea to first run it without actually modifying the file system. This will catch any possible bugs the script might have. So instead of running it as it is right now we will add an 'echo' infront of the 'mv' command. This means that instead of actually renaming, it will print the renaming it actually plans to do. And so below is the modified code.
+
+for file in *.HTM; do
+  name=$(basename "$file" .HTM)
+  echo mv "$file" "$name.html"
+done
+
+This prints the right action the script is supposed to take in renaming the files. Now we can remove the echo and actually rename the files as we wanted to do.
+
+for file in *.HTM; do
+  name=$(basename "$file" .HTM)
+  mv "$file" "$name.html"
+done
+
+This code does not print anything. Lets check that our rename worked by listing the contents of our directory.
+
+ls -l
+
+The result shows that the renaming was succesfully.
+
+ADVANCED COMMAND INTERACTION
+Let us now look at some interesting application for all this bash scripting power that we just learned to put all this new knowlede to action. 
+Remember our syslog file located in /var/log/syslog. This log file holds a lot of information as to what is going on in the computer. So its really important to know how we can get information out of it.
+Lets use the 'tail' command to look at what is going on in the last ten lines of the file right now.
+
+tail /var/log/syslog
+
+The log line we see follow a similar pattern.
+1. The date and time of when the entry was entered into the file
+2. The name of the computer
+3. The name and PID of the process that triggered the event, finally
+4. The actual event that is being logged. 
+
+Say we had a computer that was under significant load and we didn't know why, so we want to check what event are being logged the most to our syslog. To do that, we need to extract the part of the line that has the actual event, without the date and time. We could use a command called 'cut' to help us with that. This command lets us take bits of each line using a field delimeter. 
+In this example we can split the line using spaces. 
+
+tail /var/log/syslog | cut -d' ' -f5-
+
+In this example we are passing '-d' '' to cut, to tell it that we want to use a space as a delimeter and '-F5-' to tell it that we want to print the field number 5 and everything that comes after it. Doing that we remove the date, and the name of the computer kepping only the process and the event message.
+Now that we have the info we need, we can pipe this command to the same pipeline of commands that we have used before to find out the lines that are repeated the most. 
+
+cut -d' ' -f5- /var/log/syslog | sort | uniq -c | sort -nr | head
+
+There are more files in /var/log that we might be interested in. So we can use a for loop to iterate over each of the log files in /var/log and get the most repeated lines in each of them.
+
+cat toploglines.sh
+#!/usr/bin/env bash
+
+for logfile in /var/log/*log; do
+  echo "Processing: $logfile"
+  cut -d' ' -f5- $logfile |sort | uniq -c | sort -nr | head -5
+done
+
+In this script, we process all files that are in log with 'in /var/log'. We then print the name of the file that we processing and then use the group of commands as before to print the top 5 line in each file.
+
+./toploglines.sh
+
+Our script shows us the top 5 lines of each log file in varlog.
+
+CHOOSING BETWEEN BASH AND PYTHON
+By using bash scripts, we can very quickly turn a command that operates on one file to an automated script that handles a thousand files(Yeah. This is self evident in the last example where we took the line of code that operated on syslog file alone and extended it to all log files in the directory /var/log). As we saw with our logfile example, there are a lot terminal command that provides text processing functionality. Plenty of them also support regex allowing us to do some very advance processing of the data in our files. When this command are linked together in a data processing pipeline, it becomes a powerful tool for processing text data. The can give us the info we are looking for quickly without the need to write a full script. But if we abuse this, it can quickly become unreadable. For example
+
+for i in $(cat spider.txt); do B=`echo -n "${i:0:1}" | tr "[:lower:]" "[:upper:]"`; echo -n "${B}${i:1} "; done; echo -e "\n"
+
+This code takes the text in spider.txt file and coverts all the first letters to upper case. We can agree that this code is unreadable. If there's a bug in it, it will be very difficult to figure out how to fix it. When a Bash file command starts becoming this complex, it is better to write a Python script instead, that handles the data in a more readable testable way. 
+A simple code like this would do the trick.
+
+In this example, we take each line of STDIN remove the white space and split it into seperate words. Then we use list comprehension to capitalize each of the words and end up joining them back with spaces and printing the output. 
+Once we have the script, we can execute it as part of the pipeline like this
+
+cat spider.txt | ./capitalize_words.py
+
+So it is a good idea to choose bash when we are operating with system commands as long as what we are doing is simple enough that the script is self explanatory. As soon as it becomes hard to understand what the script is doing, it is better to write it in Python. 
+Bash scripts aren't as flexible or roburst as having an entire Python language available, with as many functions to operate on strings, list, and dictionaries. There is another gotcha when it comes to bash and linux commands. Their availability depends on the platform we are using. Some command in Bash might not by available in Windows. So they can work on a linux machine and not work on a Windows machine.

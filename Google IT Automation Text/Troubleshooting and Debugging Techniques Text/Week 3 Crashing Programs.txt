@@ -1,0 +1,245 @@
+INTRO TO MODULE 3: CRASHING PROGRAMS
+In this module, we'll look at another area of IT that often keeps us busy, the many things that can sause programs to crash unexpectedly.
+We have seen programs do this one way or the other.
+For Example, a program terminates unexpectedly, a device reboots for no apparent reason, the OS hangs and we loose all our unsaved work, programs that terminate with uncaught exeptions, systems that fail to update to the latest version, jobs that silently die, etc.
+Not long ago, I had to debug a program that was crashing every few day. This program pass logs to generate alerts, when it finds suspicious events. When the task crashed, everything being processed was dropped. The task was then restarted and the log files reprocessed. So while no data was lost, the recurrent crashes increased the time to process the data.
+To fix this, I first followed the code to understand what it did, that led me to figure out the problem, the program was starting a bunch of threads but never closing them, so it eventually ran out of memory and crashed.
+I was then able to fix it by making sure that all threads got cleaned up after they've completed their task.
+Generally, the cause of this crashes is that the software ran into an unexpected situation. A state that the developers didn't anticipate, and because this are unexpecetes situations, they can be triggered by a broad range of things. It could be a hardware problem, like a broken RAM chip causes a program to get invalid data when trying to access the memory, there could be a bug in some part of the code which does an unsupported operation, like trying to read an element from an empty list, it could be an issue in the overall system like when a program expects a certain library present or certain directory to exit, but they don't, or, they could be a problem provided by the input of the user, like if we asked a user to enter a number, and the entered in a string instead. The list goes on. So there are a ton of things that can cause a crash.
+Instead of knowing all the things that could cause a crash, we need to learn reduce the scope of the problem, so that we can get to the bottom of it.
+In the next few videos, we'll learn a bunch of different trechiques that we can use to find the root causes and how to fix them, or at least lessen the damage when fixing is impossible.
+We'll first look at how we can understand the problem, we'll then checkout what we can do when we don't have access to change the programs code, and what we can do when we do have access to the source code, even if its not our own code.
+Finally, we'll also look at what to do when the problem isn't just one computer crashing, but a larger incident affecting complex systems.
+We'll also dive into how to document a problem and its solutions, and how to learn from our mistakes by writing postmortems.
+
+SYSTEMS THAT CRASH
+There are ton of different reasons why systems crash. When we come across a program that terminates unexpectedly, we go through our usual cycle of gathering information about the crash, digging in until we find the root cause, and then applying the right fix.
+Say for example that a user asks for your help with a problem on their computer, when you ask for details, the user tells you that the internal billing application crashed when they were trying to generate an invoice for a customer.
+Now, this could be caused by a lot of different things. Now what we want to do is reduce the scope of the problem. Remember that we want to start with the actions that our easier and faster to check.
+As a first step, you start looking at the logs to see if there's any error that will point to whats happening. But you only find an error saying application terminated and no useful info. So yo check if the user can reproduce the problem by doing the same action on a different computer. but when he does it on a different computer, you discover that it can generate the invoice just fine. That means that the problem has to do with the installation or configuration on that specific computer. Great new! You've already reduced the scope to machine specific. Another thing you'll want to check is if this happens reliably. Do all invoice generations fail? Is it confined to one specific product or customer?
+For this example, lets say when you ask the user to try generating other invoices, it works just fine, even for the same customer. Ok, you think maybe this problem is for the specific order for that specific customer on that specific computer. That rather suspicious. But not so fast!
+The user tells you that after creating all the invoices for the day, they try to generate a report, and the appliation crashed again, but then it worked the next time. You check with other users and find out the application isn't crashing when they use it. So what does this mean? The application seems to be crashing randomly but only on that computer.
+TO further reduce the scope, you want to know whether its just that application or the whole system. To check this out, you can try removing the local configuration for the program and using the default config instead, and maybe even reinstalling the application instead. You might also ask the user if they've seen crashes on anyother application.
+For this example, lets say reinstalling the app and running it with a default config still leads to random crashes. And when pressed to remember, the user tells you that they're web browser also crashed last week when they were using the internal web mail.
+At this point, the info pointed to a problem in the overall system either the hardware or the OS installation.
+IF you have a spare computer available, it might make sense to give one to the user at this point so that while the go back to work, you try to figure out the root cause of this problem.
+What can you do to further reduce the scope? By now, there's a high likelyhood of the problem being hardware related. So one thing you can do is try taking the hard drive out of the computer and putting it into a different computer. This works best when you already have a spare case that you know works well so that you can use it test like this. That way, you can quickly check if the problem is with the data in the drive, or the rest of the computer.
+Lets say that after putting the hardrive in the other computer, the applications run with unexpected crashes. This means some hardware component is at fault. The next step is to find out which one.
+Given the random crashes, one thing to check next is the RAM, because of the 'random' in RAM (Lol... :D). Memory chips detoriate over time, and when they do, the computer might write data to some part of the memory and get a totally different value when trying to read it back.
+To check the health of our RAM, we use the memtest86 tool to check for errors. We run this tool on boot instead of the normal OS, So that it can access all of the avialable memory and verify if the data written to memory is the same when it tries to read it back.
+If the RAM is fine, you can check for overheating by checking the sensor data provided by the OS. And if that is not the case, check if there's a problem with external devices like a graphics card or sound card. You can do this by disconnecting or replacing the devices present in the computer and check if the rashes stil occur.
+So what happens when putting the hard drive in a different computer, you still get the same crashes? This means that the problem is in the drive itself or the OS installation.
+As with RAM, our hard drives age, and at some point, the data that our computer reads stops matching what is stored.
+Each OS ships its own battery of hard drive checking tools, and you should familiarize yourself with the ones your OS is working with.
+You'll want to look at the output of the tools that check the disk for bad sectors, and you'll also want to use the smart tools which can help detect errors and even try to anticipate problems before the affect the computers performance.
+And what do we do if the hardrive turns out to be fine? You need to look into the possible OS issues. But before doing that, ask yourself, is it worth it? Looking whats wrong with the installation can take a lot of valuable time, if the installation is easy to replicate, then just reinstalling the OS might be faster and simpler than looking into why it broke.
+So, thats a glimpse of how you an try to diagnose a system thats unstable and behaving in weird ways. But often, you'll be dealing with a specific application thats misbehaving. In this case, its most certainly a bug in this applications code thats not taken into account a situation that, though unexpected, can sometimes occur.
+
+UNDERSTANDING CRASHING APPLICATIONS
+When an application crashes and we don't know why, we want to look for logs that might relate to the failure.
+To look at logs on Linux, we'll open the system log file on varlog or the user log files in .accessionerrors file. On MacOs we generally use Console app to look at logs, and the event viewer on windows.
+So, what kind of data should we look for in this logs? Most logs have a date and a time for each logged, Knowing when the application crahsed, we can look for the log lines around that time and try to find an error message related to the application that crashed. Sometimes the errors will self explanatory like: Permision denied, No such file or directory, Connection refused, Sometimes a cryptic message and you have no idea what it means. 
+Whenever you have an error message, no matter how hard it seems, we can search for it online to try and figure out its meaning. If we are lucky, we might find the official documentation of what that errors means, and what we can do about it. 
+But even that is not available, we'll usually come across post by others who've tackled a similar problem, and this additional info can help us understand what is going on.
+If there are no errors, or the errors aren't useful, we can try and get more info by enabling debug logging. Many applications generate a lot more output when debugging logging is enabled. We might need to enable it from a setting in the applications config file, or a command line parameter to pass when running the command manually.
+By enabling this extra logging information, we can get a better idea of what is actually causing the problem.
+An what do we need to do if there's no logging or error messages at all?
+In that case, we need to use tools that help us see what is going on inside the program. We called out some already...On linux we 'use' strace to what system calls our program is making. We use 'dtruss' on MacOs, 'Process Monitor' is a windows tool that helps us take a peak at what is going on inside a process on windows.
+By tracing the system calls a program is doing, we can see what files and directories its trying to open, what network connections its trying to make, and what info its trying to read or write. This can give us a better idea of what caused the problem. We can find the problem is cause by a resource not being present that the program expects to be present, like we saw with the missing directory example with the earlier module, or we could find that the program tries to interact with the graphics interface, and there isn't any, because its a service running on a server, or the program tries to open a file, but the user running the software does not have the neccessary permissions.
+If the app use to work fine and recently started crashing, its useful to look into what changed inbetween. The first thing is to check if the problem is cause by the new version of the application itself. Maybe there's a bug in the new version that causes the crash, or maybe the way that we are using the application is no longer supported, but thats not the only possible change that could trigger crashes, it could also be that a library or service used by our application changed and the no longer work well together, or it could be that there was a configuration change in the overall enviroment, like if the user isn't in the specific group anymore or if the files the application used are in a different location.
+Whe trying to figure out what changed logs can also be a usefull source of information. In the system log, we can check which programs and libraries where recently updated.
+Checking config changes might be harder	depending on how you manange that configuration. If the settings are managed through a config management system, and the values are stored in a VCS, then you might be able to look at the history of changes and figure out which one triggered the failure.
+We called out earlier how it is important to have a reproduction case for a problem we are trying to solve. When we are trying to debug an App that crashes, finding a reproduction case might help both understand what is causing the crash and figure out what we can do to fix. So its valuable to spend some time figuring out the state that caused the crash. This includes the overall system enviroment, the specific application configuration, the inputs to the application, the outputs generated by the application, the resources it uses, and the services it communicates with.
+When trying to create the reproduction case, it might be usefull to start from a clean slate and slowly put the pieces in place until the crash triggers. This might include trying out the application with the default configuration instead of the local one, or a freshly intalled computer instead of the computer were its crashing. And remember, we want to make the reproduction case as small as possible. This lets us better understand the problem and lets us also quickly check if its present or not when we attempt to fix it.
+Even if we end not being able to fix the issue, having a small and simple reproduction case is extremely helpful when reporting a bug to the programs developers. 
+Summary: To find the root cause of a crashing application, we'll want to look at all available logs, figure out want changed, trace the system or library calls the prgrams makes, and create the smalles possible reproduction case. After doing all of this, we should have some knowledge as to what the root cause is, and maybe even how to fix it.
+The strategy to fixing problems will depend on if we can fix the code or not.
+
+WHAT TO DO WHEN WE CAN'T FIX THE PROGRAM
+One of the great things to do in IT is that we can tell the computer what to do and it will follow our orders. When dealing with unexpected behavior in a software when written by other people though, we might not always be so lucky.
+It could be that we are dealing with proprietory sofware and the source-code isn't available at all, or we might have access to the software, but its written in a language we don't understand and so we can't change it. 
+No matter the reason, what can we do to fix an application that crashes and you can't change the code. You'll need to figure out away of working around the problem and avoiding the crash. The actual work around will depend on the actual issue you are trying to solve.
+Lets do a rundown of some of the available options. Say you figured out the issue was caused by a specific data input that makes the application crash. The crashes only happen when the input isn't in the format the code expects. Some of your systems generated data in XML format which use to work fine with the previous version of the software, but the new version now requires all data to be in a YAML format. In this case, you can write a script that preprocesses the data to make sure that its in the format the program expects. Similarly, if the program is caused by an external service that the program is using and that's no longer compatible, we could write a service to act as a proxy, and make sure that both sides see the request and responses that the expect. This kind of compatibilty layer is called a wrapper.
+Wrapper: A Function or program that provides a compatibility layer between two functions or programs, so they can work well together.
+Using wrapper is very common technique when the expected output and input formats don't match.
+So, when faced with some sort of compatibilty problem, don't be afraid to write wrapper to work around it.
+Another possibity you need to look at is if the overall system enviroment isn't working well with the application. In this case, you might want to check the what enviroment the applications developers recommend, and then modify your systems to match that. This could be running the same version of the OS using the same version of the dynamic libraries, or interacting with the same backend services. Say the App was developed and tested on Windows 7, if you run into problem when trying to run it on Windows 10, You might want to use Windows 7 instead, or if the app was developed and tested for Unbuntu, and you have trouble running it under Fedora, You might want to try running it on Ubuntu instead.
+And what can you do if you can't make the enviroment match? This could happen if for example there's another application which requires a different version of the same library, or you can't change a certain configuration setting because its required to access a different service. In this case, you might want to consider running the application inside a VM, or maybe a container. This are two different things and we won't go into details of the difference. All you need to know right now is that the let you run the affected application in its own enviroment without interferring with the rest of the system. This is what we mean when we want an enviroment to be different from the ones others are using on the same computer.
+Sometimes we can't stop an app from crashing, but we want to make sure the when it does, it starts back again. To do this, we could deploy a watchdog. This is process that checks whether a program is running, and when its not starts the program again.
+To implement this, we need to write a script that stays running in the background and periodically checks if the other programs are still running. Whenever the check fails, the watchdog will trigger the program to restart. Doing this won't avoid the crash itself, but it would ensure that the service is still available. This works well for services that availability matters more than running continuously.
+And no matter how you work around the issue, remember to alway report the bug to applications developers. Don't forget that having a good reproduction case for the issue makes is easier for the developers to know what wrong and maybe fix it. So, when you report a bug, make sure that you include as much information as possible, share a good reproduction case, and answer the questions that we mentioned earlier on:
+What were you tying to do?
+What was the steps you followed?
+What did you expect to happen?
+What was the actual outcome?
+
+INTERNAL SERVER ERROR
+A colleague has alerted us that a page on our webserver isn't working, as we've done before, we need to figure our what this means exactly.
+We asked our colleagur for more details and the told us that the failing webpage is site.example.com/logs. Lets try out whether it would work for us as well
+
+site.example.com/logs
+
+It responded with an error for us as well with a 500 error. a 500 error means that something on the server side of the aplication crashed, but we have no idea what, we'll need to investigate to get more information. Lets connect to the webserver and try to figure out whats up.
+
+ssh werbserver
+
+The first step is looking at logs in /var/log/. We'll use the date command to check the current date.
+
+date
+
+Lets cd in to that directory
+
+cd /var/log/
+
+Lets check if there's any recent logs about our error, and then the 'ls -lt' command, which sorts the files by the last modified date, piping to the head command to keep the top 10 lines.
+
+ls -lt | head
+
+Hmmm! we just triggered the error, but they don't seem to be anything in the logs about it. Just in case, lets check out the last lines in syslog using 'tail'.
+
+tail syslog
+
+Nope, nothing interesting here. We need to figure out how we can get more information, but we don't even know which web serving software used on this computer, but we do know that the web server is running on port 80, the default web serving port. How can we find which software is listining on port 80? We can use the 'netstat' command, which can give us a bunch of info about our network connections depending on the flags we passed. This command accesses a bunch of sockets that are restricted to root, the administrator user on linux.
+So we'll need to call it with sudo, which lets us run commands as root, and then we'll pass a bunch of flags to 'netstat'. We'll use '-n' to print numerical addresses instead of resolving hostnames, 'l' to only checkout the sockets that are listening for a connection, and 'p' to print the process ID to which each sockets belongs, and since we only care about port 80, we'll pipe that to a 'grep' command checking for ':80'
+
+sudo netstat -nlp | grep :80
+
+Great! now we have new information, we see that the process listening on port 80 is called 'nginx', one of the popular webserving applications out there.
+We now want to check the configuration for our site. Configuration files on linux are stored in the 'etc' directory. So lets look at the /ect/nginx
+
+ls -l /etc/nginx/
+
+There's a bunch of fils here, lots of different config options that you can set in the webserver. We are looking for the configurations related to a specific site, so lets look at /etc/nginx/sites-enabled
+
+ls -l /etc/nginx/sites-enabled/
+
+There are 2 files here, one for the default site and and one for the site.example.com site and thats the one we want. Lets open it.
+
+vim /etc/nginx/sites-enabled/site.example.com.conf
+
+Theres not a lot here, but we see at the bottom it say 'uswgi_pass' and the local host address 127.0.0.1' followed by a different number '3031'. It seems like this website isn't served directly from nginx, instead, the software is passing the control of connections to 'uwsgi' which is a common solution used to connect a webserver to programs that generate dynamic pages. Lets see if we can find the confifuration for that one. We'll exit vim with :q, and if there's anything interesting in /etc/uswgi
+
+ls -l /etc/uswgi
+
+Here we only see 2 directories, apps-available and apps-enabled, lets see whats in apps-enable
+
+ls -l /etc/uswgi/apps-enable/
+
+Cool! We found the uwsgi congifuration for our site. Lets check it out.
+
+vim ls -l /etc/uswgi/apps-enable/site.example.com.ini
+
+Nice! This file has a lot more information, we see that the main directory for the application is /srv/site.example.com, that the applications run as the www data user and group(uid = www-data; gid = www-data), that it's running a python3 script called prod.py, that the log is stored in /var/log/site.log, and a bunch of other things.
+Lets see if we can use this extra info and find out whatsup.
+
+:q
+
+Now lets checkout that log file.
+
+ls -l site.log
+
+Weired! The log file has a size of 0, which doesn't seem right. Lets see if we can find out anything else by looking at the python script that executed by uwsgi, /srv/site.example.com/prod.py
+
+vi /srv/site.example.com/prod.py
+
+There's a few different web pages configured in this file. It uses 'bottle' which is a Python module to generate dynamic web pages. At the bottom, we see the config for the web pages that is currently failing. Fortunately, a colleague left a comment saying that we can get helpful debugging info by uncommenting the line that calls bottle.debug. Thats exactly what we need. To uncomment this line, we need to have write access to the file though, and vi is open in read-only mode currently. Lets exit again and open with sudo to be able to modify it.
+
+sudo vim /srv/site.example.com/prod.py
+
+Okay, we've made the change lets save it and reload uwsgi as the instruction said. We'll do this by running 'sudo service uwsgi reload'
+
+sudo service uwsgi reload
+
+Hopefully, we've added debugging info that should tell us what is happening. Lets reload the website and see what happens.
+
+www.site.example.com.logs
+
+Great new! This time, we see a traceback of the error and we see that the issue is that the application is getting a permission denied error when trying to open /var/log/site.log. Remember that we thought it was weired that the file was empty. It seems like the file is somehow broken. Lets look at it again. This time lets check if there are any other files that start with site.
+
+ls -l site*
+
+SO there's a site.log file and a site.log.1 file. Thats pretty common when using log rotate, to rotate the logs and avoid them becoming too big. But there's something afoot here, see how one file belongs to the root user, and the other belongs to the www-data user.
+If you look at the permissions of the file, you might notice that the are set for owner to write them, and owner and group to read them, but the rest of the users can't access them. We also saw earlier that the application is running with the www-data user. So, if site.log belongs to the root user, the application won't be able to either read or write to this log file. THIS SEEMS LIKE WE FOUND THE ROOT CAUSE OF OU ISSUE.
+Lets change the owner of site.log file to fix the immediate problem.
+
+sudo chown www-data.www-data site.log
+
+Lets try reloading our page now.
+
+www.site.example.logs
+
+Yes! It works, although empty now because the application has not been able to write to it. But as we keep reloading, see how it populates with our entries.
+We have fixed the immediate problem, our web page is working once again, but we still need to take care of the long-term remediation. Why was the ownership of the file wrong? We suspect that the might be something wrong with the log rotate configuration but we need to keep looking to find out whatsup with that.
+Summary:
+In this video we looked into whatsup with an application that is failing.
+We checked out a bunch of different tools and ideas that can help us understand whats going on, and get more info until we can find the root cause.
+
+ACCESSING INVALID MEMORY
+If we are able to make the application behave correctly, we'll have a lot more options for dealing with the crash.
+Ofcourse, to apply this fixes, we'll need to know why the crash is even happening. One common reason a program crashes is that it is trying to access invalid memory.
+To understand what this means, lets explain how using the memory works on modern operating systems.
+Each process running on our computer as the OS for a chunck of memory, this is the memory used to store values, and do operations on them during the programs execution(hence this is either direct memory or RAM).
+The OS keeps a mapping table to know which process is assigned which portion of memory. And processes aren't allowed to read or write outside the portions of memory they were assigned.
+So, Accessong invalid memory means that the process tried to access a portion of the system's memory that wasn't assigned to it.
+Now, how does this even happen? During normal working conditions, applications will request a portion of the memory, and then use the space that the OS assigned to them. But programing errors, might lead to a program trying to read or write outside of the valid range. When this happens, the OS will raise an error like segmentation fault or general protection fault. What kind of programming error is ths? 
+It typically happens with low-level languages like C or C++, where the programmer needs to take care of requesting memory that the program is going to use, and then giving that memoty back when its not needed anymore. In this languages, THE VARIABLES THAT STORE MEMORY ADDRESSES ARE CALLED POINTERS. They are just like any other variable and code that can be modified as needed. So, if a pointer is set to value outside the memory range assigned to that process, it will point to invalid memory. If then the code tries to access the memory the pointer points to the application will crash.
+Common programming errors that lead to segmentation faults or segfaults include: forgetting to initialize a variable, trying to access a list elements outside of the valid range, trying to use a portion of memory after having given it back, and trying to write more data than the required portion of memory can hold.
+So what do you do if you have a program that is segfaulting? The best way to understand what is going on is to attach a debugger to the faulty program, this way, when the program crashes, you'll get information about the function where the fault happened, you'll know the parameters that the function received, and find out the address that was invalid, and that might already be enough to understand the problem. Maybe a certain variable is being initialized too late, or the function is trying to read to many items on a list.
+If thats not enough, the debugger can give you more info about what the application is doing and why the memory is invalid.
+For this to be possible, we'll need our program to be compiled with debugging symbols. This means that on top of the information that the computer uses to execute the program, the executable binary needs to include extra info needed for debugging, like the names of the variables and functions being used.
+This symbols are usually stripped away from the binaries that we run to make them smaller.
+So we'll need to either recompile the binary to include the symbols, or download the debugging symbols from the provider of the software if they're available.
+Linux distributions like debian or Ubuntu ship seperate packages with the debugging symbols for all the packages in the distribution. So to debug an app that is segfaulting, we download the debugging symbols for that application, attach a debugger to it and see where the fault occurs. When doing this, we might find that the crash happened inside a call to a library function. This is seperate from the application itself and so and so we need to install the debugging symbols for that library, and we might need to repeat this cycle a few time before we can identify the portion of the code that is buggy.
+Microsoft compilers also generate debugging symbols in a seperate PDB file. Some Windows software providers let users download he PDB files that correspond to their binaries that let them debug failure.
+One of the trickiest things about this invalid memory business is that where usually dealing with undefined behavior.
+Undefined Behavior: The code is doing something that's not valid in the programming language.
+The actual outcome will depend on the compiler used, how the OS assignes memory to processes, and even the version of the libraries in use. A program that runs fine on Windows, may trigger a segfault on a computer running linux and vice ver sa.
+When trying to handle problems involving invalid memory, Valgrind can help us a lot.
+Valgrind: A very powerful tool that can tell us if the code is doing anu invalid operations, no matter if it crashes or not.
+Valgrind lets us know if the code is accessing variables before initializing them, if the code is failing to free up some memory requested, if the pointers are pointing to invalid memory address, and a ton more things.
+Valgrind is available on linux and MacOs, and Dr. Memory is a similar tool that can be used on both Windows and Linux.
+So what do we do when we finally discover the cause of the segfault?
+You'll want to either change the code yourself, or get the developers to fix the problem in the next version. This might sound scary if you've never programmed in the language used by the application, but when you know whats wrong with the code, its usually not that hard to know how figure out how to fix it. If a variable is initilized too late, fixing the problem can be as easy as moving the initialzation to the right part of the code, or if the loop is accessing an item outside the length of the list, you might solve the issue to make sure that there aren't more iterations than needed.
+The concepts thought here can be applied not just to python, but to whatever code your working with. So don't be afraid to put into practice.
+If the program is part of an open source project, you might find out that someone else has already done the work and so you can apply the patch online. If there's no patch and you can't figure out the bug yourself, you can alway get in touch with the developers and ask them to fix the issue and use the resulting patch.
+With high level languages like python, the interpreter would most certainy catch this kinds or problems itself, it will then through an exeption, instead of allowing the invalid memory access reach the OS. But still, those exceptions can bevery annoying, we'll talk about those in our next video.
+
+UNHANDLED ERRORS EXCEPTIONS
+In our last video, we talked about what happens to our program when it tries to access invalid memory. Correctly handling memory is a hard problem, and that is why there's a bunch of different programming languages like python, Java, or Ruby. But that does not mean programs written in this languages can't trigger weired problems.
+In this languages, when a program comes across an unexpected condition that isn't correctl handled in the code, it will trigger errors or exceptions. In Python for example, we could get an index error if we try to access an element outside the end of a list, we might get a type error, or an attribute error if we try to take action on a variable that was not properly initialized, or a division by zero error if we try to divide by zero.
+When the code generates one of this errors without handling it properly, the program will finish unexpectedly. In general unhandled errors happen because the code is making wrong assumptions. Maybe the program is trying to handle a resource thats not present, or the code assumes that the user will enter a value, but the user entered an empty string instead, or maybe the application is trying to convert a value from one format to another and the value does not match the initial expectations. 
+When this failures happen the intepreter that is running the program will print the type of error , the line that cause the error, and the tracback.
+Traceback: Shows the lines of the different functions that were being executed when the problem happened.
+In lots of cases, the error message and the tracebace info already gives us enough to understand what is going on, so that we can move on to solving the problem.
+But sadly, thats not always the case. The fact that a piece of code crashes in one function does not mean that the error is in that function. It is possible that the problem was caused by a function called earlier which set a variable to a bad value. So the function where the code crashes is just accessing that variable.
+So when the error message is not enough, we'll need to debug the code to find out were things are going wrong. Fot that we can use the debugging tools available for the applications laanguage. For python, we can use the 'pdg' interactive debugger, which lets do all the typical debugging actions like exectuting lines of code one by one, or looking at how the variables change values.
+When we are trying to understand what happening with a miss behaving function, on top of debuggers, its common practice to print statements related to the codes execution. Statements like this could show the contents of variables, the return values of function or metadata like length of a list or size of a file.
+This technique is called 'printf debugging'. The names come from the printf function used to print messages to screen in the C language. But we can use this technique in all languages.
+Lets take this one step further. When changing code to print messages to screen, the best appraoch is to add the messages in a way that can be easy enabled or disabled depending on whether we want the debug info or not.
+In Python, we can do this using the loggig module. This module helps us set how comprehensive we want our code to be. We can say whether we want to include all debug messages or info, warning and error messages. And then when printing the message we specify what type of message we are printing, that way we can change the debug level with a flag or configuration setting.
+Say you've figured out why the unexpected exception was thrown, what do you do next? The solution might be fixing the programming like making sure variables are initialized before making sure they are used, or that the code does'nt try to access elements after the end of a list, or it could be that cetain use cases that hadn't been considered needs to be added to the code.
+In general, you'll want to make the program more resilient to failures, instead of crashing unexpectedly, you want the program to inform the user of the problem and tell them what to do.
+Say for example you have an app that crashes with permission denied error, rather than the program finishing unexpectedly, you want to modify the code to catch that error and tell the user what the permission problem is so they can fix it. For example, 'unable to write new file in temp, make sure your user has write permissions on temp'. In some cases, it doesn't even make sense for our program to even run if certain conditions aren't met. In that case, its okay for the program to exit when the error is triggered, but then again, it should do so in a way that tells the use how to fix the problem. For example, if it critical for an application to connect to a database, but the database server isn't responding, it makes sense for the application to finish with an error saying, 'unable to connect to the database server'. It also makes sense to include all details of the attempted connection, like the hostname, the port, or the username used to connect.
+Recap:
+If your program is crashing with an unhandled error, you'll want to first do some debugging to figure out whats causing the issue, once you've figured it out, you want to make sure that you've fixed any programing errors, and that you catch any conditions that might trigger an error. This way you can make sure that the program doesn't crash and leave your users frustrated.
+
+FIXING SOMEONE ELSE'S CODE
+In our IT jobs its pretty common to fix problems and code that we didn't that we didn't write ourselves. It might be because we are working with a program that is open source, or with a program that was develpoed by somebody else who is at the company.
+When this happens, we need to spend sometime getting acquitted with the code so that we can understand whats going on.
+Lets do a rundown of some things that can help us with that.
+1.If the code has comments and the functions are well documented, reading this is a great place to start when trying to figure out what is going on.
+Remember we talked in our python crash course about the importance of developing good habbits when writng code, writing good comments is one of those good habits that pays off when trying to understand code written by others, and also your past self.
+Unfortunately, a lot of code does not include enough comment leaving us to try and understand it without enough context. If this is the case, you can add comments as you figure out the code to tell what its doing. Writin this comments help yo solidy your understanding, and if you contribute those comments back to the original developers, you can help everybody else try and understand the code.
+Another thing that can help to understand someone else's code, is reading the testt associated with the code. Well written text tells us what each function is expected to do. And looking at the existing test can shows us which use cases weren't taken into account.
+But what if there aren't enough test?
+Just as you added comments, you can add tests of your own. Writing test helps you bette see what the code is supposed to do. This can also be really useful when modifying the original code to ensure that changes you make don't break the rest of the functionality.
+But to really understand what is going on, you just have to read through the code.
+How do we even start reading through someones code? This depends on personal preference and the size of the project, if there only a couple hundred lines of code, it is easy to read through all of them. But when there are thousands, or tens of thousand lines of code you can't really read the whole thing. You'll need to focus on the functions or module, that are part of the problem you are trying to fix.
+One possible way to approach this would be to start with the function where the error happened, then the function or functions that call it and so, until you can grasp the context that led to the problem.
+You don't need to be an expert in the language to fix a bug in the program.
+If you come across and error and debug the problem well enought to fix the problem, you might be able to fix the problem even if you've never seen that language before.
+This skill gets better with practice. So it will help to start practicing before you need to fix a problem with a code.
+Take program that you both use and have access to its code, and figure out how it does its specific action, follow the code until understand whats going on.
+For example, you could take the webserver software your using and cheeckout how it passes its configuration files. Or take a look at one Python Module that you like, ike Python request for example and figure out how it processes the data that it receives, or we can look at an open source project that you use and checkout the list of open issues. Try fixing one of the easy issues. To do that, you'll need to find your way around the code, understand what its doing and what to change. By practicing this, we'll improve our ability to quickly figure out what the code does and what needs to be changed, while increasing the projects general quality.
+
+DEBUGGING A SEGMENTATION FAULT.

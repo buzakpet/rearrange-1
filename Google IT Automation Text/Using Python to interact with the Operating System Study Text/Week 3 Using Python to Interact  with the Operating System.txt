@@ -1,0 +1,366 @@
+INTRODUCTION TO MODULE
+In this module we will learn about regular expression. In regular expression we will be able to find and operate on text in a more flexible way than we have done.
+
+WHAT ARE REGULAR EXPRESSIONS?
+A regular expression also known as regex or regexp, is essentially a search querry for text that is ecpressed by a string pattern. In other words, regex allow us to search a text for strings matching a specific pattern. Knowing about regular expression is handy for anyone into text processing, from IT specialist to software engineers, system administration etc.
+We could use command line tools that know how to apply regex like: grep, sed or awk. We can even use regex in text processing tools like code or documents editors. For exmple if we want to extract the process identifier from the code below.
+
+log = "July 31 07:51:48 mycomputer bad_process[12345]: ERROR Performing package upgrade"
+
+which is the number in [] i.e 12345
+We could extract the process ID using the index method
+
+index = log.index('[')
+print(log[index+1]:log[index+6]) 
+
+In the example above, we knew how long the string would be, in this exmaple its 5 characters long. What if the number of characters change in the next problem, then this code would give us a wrong solution. We can use regular expression to extract the process ID in a more roburst fashion. 
+We import the re module to be able to use regular expressions, and use the search() function to find regular expresion inside strings.
+
+import re
+log = "July 31 07:51:48 mycomputer bad_process[12345]: ERROR Performing package upgrade"
+regex = r"\[(\d+)\]"
+result = re.search(regex, log)
+print(result[1])
+
+BASIC MATCHING WITH GREP
+grep is tool for applying regex in linux shell. we will do some basic matching with grep. The simplest of all matching is just to search to see the string is present. grep works by printing out any line that matches the querry that we give it. 
+
+grep thon /usr/share/dict/words
+
+when we run that code, we get all the list of words in that file that has the substring thon. We also see that the output is highlited for us showing us the matching part of the line in a different color. This added visual is something that grep does for us, so that we can see where the match occurs. grep is case sensitive. If we want to the match to occur regardless of case, we will have to pass the -i command lke this
+
+grep -i python /usr/share/dict/words
+
+To get the most out of regualar expressions, we need to learn more of the syntax, we have to know the reserved characters that give meaning to the patterns we have created. It is this characters that allows to do more advanced matching than just checking for a literal string. for example, a dot(.) matches any character, i.e, if we include a dot in our expression, that dot is a wild card that can be replaced by any other character in the result. For example
+
+grep l.rts /usr/share/dict/words
+
+We could use this to find portions of a given text that matches a certain pattern, even when the pattern is not the whole word. We could use this for example to find entries in a log file that matches certain format or to find rows in a csv file that share the same characteristics even if they not the same. 
+Other easy example of special characters we can use in regex are the carat (^) or circumflex and the dollar sign ($) anchor character. This tells us where in the line the regex should match from. The circumflex indicates the begining and the dollar sign indicates the end of the line. 
+
+grep ^fruit /usr/share/dict/words
+
+to find all the lines that end with words, we run the following code on the shell.
+
+grep cat$ /usr/share/dict/words
+
+Remember that the circumflex and the anchor character specifically match the begining and end of a line, not a string. 
+
+SIMPLE MATCHING IN PYTHON
+
+import re
+result = re.search(r"aza", "plaza")
+
+So we called the search function on the re module and told it to use the pattern "aza" on the string "plaza", we then stored the return value of that that function in the result variabe. The r at the begining of the pattern indicates that this is a raw string. This means that python shouldn't interprete any special characters, instead should just pass the string to the function as is. In this example there are no special characters, the raw string and normal string are exactly the same. It is a good idea to always use raw strings for regex in Python.
+
+result = re.search(r"aza", "maze")
+print(result)
+
+The above code returns a None which means it did not find any match.
+
+print(re.search(r"p.ng", "penguin"))
+print(re.search(r"p.ng", "clapping"))
+print(re.search(r"p.ng", "sponge"))
+
+To ignore the case, we parse in the re.IGNRECASE argument, like so
+
+print(re.search(r"p.ng", "pangaea", re.IGNORECAE))
+
+WILDCARDS AND CHARACTER CLASSES ([])
+Dot is a wildcard, i.e, a character we could use to match any character. Using a dot is the broadest possible wildcard because it can match any character. But what if we wanted something more stricter like checking if an answer given by a user contains a valid character, or finding all the user name in a csv file that starts with a vowel. We have to restrict are wildcards to range of characters to do this. For this task, we use another range of regex called Character classes. Character classes are writen inside square brackets [] and let us list the characters we want to let us match inside of those brackets. For example, say we want to match the word python but allow for both lowercase and uppercase "p"?
+
+print(re.search(r"[Pp]ython", "Python"))
+
+Inside the square bracket, we can also define a range of characters using a dash (-), for example we could use [a-z] to state any lowercase letter. So if we wanted to look for the string way proceeded by any letter we write the expression this way.
+
+print(re.search(r"[a-z]way", "The end of the highway"))
+
+The character class was marched by the letter "h"
+
+print(re.search(r"[a-z]way", "What a way to go"))
+
+In the example above we get a None because the string "way" is preceeded by a space and that does not match the range we defined. 
+We could define more ranges like [A-Z] for all upper case letters or [0-9] for all digits. We can combine as many ranges ans symbols as we want like this.
+
+print(re.search("cloud[a-zA-Z0-9]", "cloudy"))
+print(re.search("cloud[a-zA-Z0-9]", "cloud9"))
+
+This two examples shows how we can match any deifined between []. What if we want to match characters that are not in a group? We use a cicumflex (^) insidethe square brackets. Lets create a search pattern that looks for any characters that is not a letter.
+
+print(re.search(r"[^a-zA-Z]", "This is a sentence with spaces."))
+
+Here our pattern matches the first space in our sentence.
+What if we also add a space to the list of characters we don't want to match?
+
+print(re.search(r"[^a-zA-Z ]", "This is a sentence with spaces.")) 
+
+The only thing this would match is the final dot at the end of the sentence.
+If we want to match either one expression or the other we can use the pipe symbol (|). For example, we can have an expression that either matches the word cat or dog, like this.
+
+print(re.search(r"cat|dog", "I like cats."))
+
+Since there is a substring "cat" the pattern matches it.
+What if we have a string with both "cat" and "dog"
+
+print(re.search(r"cat|dog", "I like both dogs and cats"))
+
+Here we have two possible matches for our search, but we only get the first one. If we want to get all possible functions we use the findall function provided by the re module
+
+print(re.findall(r"cat|dog", "I like both dogs and cats."))
+
+This returns both possible matches.
+
+What if we want to match something more than once?
+
+REPETITION QUALIFIERS
+Now let us checkout how to match a character several times. Say we wanted to find the longest word in a string, or we wanted to find the host name in a log file by checking a bunch of alpha numeric characters between brackets, we can do this using another regex concept, repeated matches. We can accomplish something with a .* this means that it matches any character repeated as many times as possible including 0. Example
+
+print(re.search(r"Py.*n", "Pygmalion"))
+
+The above code is read as follows, match "Py" followed by any number of characters followed by "n", but with our .* combination we expanded the range of the match to the whole word.
+
+If we try the same example on Python programming, what would the result be?
+
+print(re.search(r"Py.*n", "Python Programming"))
+"Python Programmin"
+
+The result is so because the .* matches any character including spaces. i.e, the * takes as many characters as possible.
+In programming, we say that behavior is Greedy. We can modify it to make it less greedy. 
+If we only wanted our pattern to match only letters, we should have used the character class instead, like this:
+
+print(re.search(r"Py[a-z]*n", "Python Programming"))
+
+Remember how we said that zero times is also possible, that would let the string "Pyn" also match our pattern
+
+As we pointed out that implementation of regular expressions are not always the same, repetition qualifiers are one way the differ. Some implementation example the one used by grep uses only star qualifiers (*) and we can do a lot with the star qualifier, the one used by python (egrep) command, uses additional two qualifiers, + and ?. The + chatacter and ? that can help us contstruct more complex commands. The + command matches one or more occurences of the characters that comes before it. For example
+
+print(re.search(r"o+l+", "goldfish"))
+
+In this case, there is one occurence of each, and the match pattern shows us the shortest possible string. Also
+
+print(re.search(r"o+l+", "woolly"))
+
+Lets try something that doesn't match
+
+print(re.search(r"o+l+", "boil"))
+
+While our character has an o and l, it has another character between them, therfore it doesn't match the search pattern. 
+The ? mark symbol is another multiplier, It means either 0 or 1 occurence of the character before it.
+
+print(re.search(r"p?each", "To each their own"))
+
+The was not present, but with the ? we marked it as optional, so we still got a match. What happens when the p is present?
+
+print(re.search(r"p?each", "I like peaches"))
+
+ESCAPING CHARACTERS
+What if we wanted our characters to match certain special characters? Say for example we wanted to check that a certain string contained a dot. If we just put a dot there it would match any character.
+
+print(re.search(r".com", "welcome"))
+
+Our intention was to match a string that has a dot in it. Instead we matched a string with a wildcard in it. To match an actual dot, we need to add an escape character. In the case of regular expression an escape character is a backslash (\).
+
+print(re.search(r"\.com", "welcome"))
+
+By escaping the dot, we no longer match the word lcome.
+
+print(re.search(r"\.com", "mydomain.com"))
+
+The above code will match the string ".com". Something to watchout for, it be confusing with backslashes since it can be used to define some special string character. \n is used in python to indicate new line, \t is does the same for tabs. In general, when we see a pattern that includes a backslash, it could be escaping a special regex character or a special string character. Using Raw strings can help us avoid some of this possible confusions, because special characters won't be interpreted when generating the string.The will only be interpreted when parsing the regular expression.
+On top of this, python also uses \ for a few special sequence we could use to represent predefined set of characters, for example \w matches any alphanumeric character including letters number and underscores. For example.
+
+print(re.search(r"\w*", "This is an example"))
+print(re.search(r"\w*", "And_this_is_another"))
+
+The first example the pattern matches the first four letters and breaks down when it meets a space, this is because the \w matches only alpha-numeric characters inculding underscores.
+In the second example, the string contains alpha-numeric characteristics and underscores, so it matches everything.
+There is also \d for matching digits and \s for matching space characters, \b for word boundaries.
+www.regex101.com is a website for testing regex.   
+
+REGULAR EXPRESSION IN ACTION
+Let us combining this special characters to create patterns that we want.
+If we had a list of all the country names in the world and we wanted to find the ones which start and end in 'A'
+
+print(re.search(r"A.*a", "Argentina"))
+print(re.search(r"A.*a", "Azerbaijan"))
+
+The second example also produces a result. This though surprising happened because we didnt specify that we wanted our pattern to match the whole string. We need to make our pattern strcicter by adding the begining and end of the line character, recall that this is the carat symbol (circumflex) and the dollar symbole representing start and end respectively.
+
+print(re.search(r"^A.*a$", "Azerbaijan"))
+print(re.search(r"^A.*a$", "Australia"))
+
+Using regex, we can also construct a pattern to validate if a string is valid variable name in python. It can contain any letter number or underscores, but it cannot start with a number.
+
+pattern = r"^[a-zA-Z_][a-zA-Z0-9_]*$"
+
+#now let us apply this pattern
+
+print(re.search(pattern, "_this_is_a_valid_variable_name"))
+print(re.search(pattern, "this isn't a valid variable name"))
+
+The first example is a valid variable name, the second example isnt a valid variable name and so no match is made.
+
+print(re.search(pattern, "my_variable1"))
+print(re.search(pattern, "10_variable"))
+
+CAPTURING GROUPS
+Most atimes, we want to take the result of the match and do something else with it. For example we may want to extract a host name or a process ID from a log line and use that value for another operation, for this we use Capturing groups(Portions of the pattern that enclosed in parentheses). Lets say that we have a list of peoples full names, this names are stored as lastname, firstname, we can do this using regular expressions using capturing groups.
+First we create a matching pattern that matches a group of letters follwed by a comma, space and then another group of letters. To capture our groups, we put each group of letters between parentheses like so.
+
+result = re.search(r"^(\w*), (\w*)$", "Lovelace, Ada")
+print(result)
+
+Remember that the \w will match letters number and undrscores(_)
+
+The match object has more attributes and methods than the ones shown by print 
+Lets look at the output of the groups method.
+
+print(result.groups())
+
+This will return 'Lovelace', and 'Ada'. This are the two groups captured by the two capturing groups. Because we defined two groups,the groups method returns a tuple with two elements. We can also use indexing to access this groups. The first elements contains the text matched by the entire regular expresion. Each successive elements contain a data that was matched by every subsequent match group. 
+
+print(result[0])
+print(result[1])
+print(result[2])
+
+The element at index 0 gives us the whole string, the element at index 1 gives us the first captured group. likwise the element at index 2.
+So we can construct the name that we want using this indexes.
+
+ "{} {}".format(result[2], result[1])
+ 
+ Lets put this in function that would do the rearrangement for us. We will start by defining a function called rearrange_name, that receives name by parameter, set the pattern to be matched using the regular expression. In the event that there is no match, it will return the name as it is, we achieve this with an if statement.
+ But if there is a match it will return the rearranged name.
+ 
+def rearrange_name(name):
+   result = re.search(r"^(\w*), (\w*)$", name)
+   if result == None:
+      return name
+   return "{} {}".format(result[2], result[1])
+   
+rearrange_name("Lovelace, Ada")
+rearrange_name("Ritchie, Dennis")
+
+The function works just fine with the two test cases provided for it. But what it we give it something more complex?
+
+rearrange_name("Hopper, Grace M.")
+
+The code fails to to rearrange this because of the space and the dot at the end of the string. It does not recognize the middle name because it recognizes only alphabets and numerals. To make this work we need to add the extra characters we need to allow in the names, in this example we want to add spaces and dots (.), for other names we can also include dashes(-).
+
+def rearrange_name(name):
+   result = re.search(r"^([\w. -]*), ([\w. -]*)$", name)
+   if result == None:
+      return name
+   return "{} {}".format(result[2], result[1])
+   
+MORE ON REPETITION
+We have been using the *,+, and ? repetiton qualifiers. What if we wanted a pattern that repeats a specific number of times? This can happen if we are processing a line that has some specific data in a column, or we know that we want a string of some specific length. In cases like that we can manually write the specific pattern as many times as we need it, but it would be hard to read and hard to maintain. This is why python offers numeric repetition qualifiers. This are written between curly brackets and can be 1 or 2 number spcifying a range. For example to match any string of exactly 5 letters we could use an expression like this one.
+
+print(re.search(r"[a-zA-Z]{5}", " a ghost"))
+
+This matches lower case letters exactly 5 times, so all the strings that contain five characters of alphabet would be returned.
+
+print(re.search(r"[a-zA-Z]{5}", " a scary ghost appeared"))
+
+Here there are more matches for our search but we get only 1. Remember what we can do for more matches? We use the findall() function.
+
+print(re.findall(r"[a-zA-Z]{5}", " a scary ghost appeared"))
+
+Now we have that extra match for longer words. What if we want to match all the words that are exactly five letters long? We can achieve this using \b which word limits at the begining and the end of pattern to indicate that we want full words.
+
+print(re.findall(r"\b[a-zA-Z]{5}\b", " a scary ghost appeared"))
+
+We said we can have two number in the range. If we want to match a range of 5 to 10 letters or numbers? We could do something like this
+
+print(re.findall(r"\w{5,10}", "I really like strawberries"))
+
+This ranges can also be open ended, an number followed by a comma {3,} means at least the many repetition with no upper boundaries limmited only by the maximum repetition in the source text.
+
+print(re.findall(r"\w{5,}", "I really like strawberries"))
+
+A comma followed by a number {,13}, means from 0 up to that number or repetition.
+
+print(re.findall(r"s\w{,20}", "I really like strawberries"))
+
+Here we looked for a pattern that starts with s and contains from 0 upto 20 characters. This matches with the word 'strawberries'.
+
+EXTRACTING A PID USING REGEX IN PYTHON
+
+import re
+log = "July 31 07:51:48 mycomputer bad_process[12345]: ERROR Performing package upgrade"
+regex = r"\[(\d+)\]"
+result = re.search(regex, log)
+print(result[1])
+
+We now have all the information we need to understand this code above. The fist \ is an escape character. This mean that the next character which is the square bracket is treated literally as a square bracket for matching purposes.
+After the square bracket comes the first parentheses. Since it isn't escaped, it means it is a special character used as a capturing group. The capturing group parenthesis is wrapped roud the d+ symbol, and we know this would match 1 or more numerical characters. after the capturing group, we have the closing square bracket preceeded by the escape character.
+After calling the search function, we know that since we are capturing groups, we can access the matching data by accessing the value at index 1.
+Lets try this on a different string and 
+
+result = re.search(regex, "A completely different string that also has numbers [34567]")
+
+What if the string did not have a block of number between []
+
+result = re.search(regex, "99 elephant in a [cage]")
+
+The error message shown is that we are trying to extract from a None type object. To make this work we need to have a function that extracts the Process ID when it is available and retruns an empty string when it isnt available
+
+def extract_pid(log_line):
+   regex = r"\[(\d+)\]"
+   result = re.search(regex, log_line)
+   if result == None:
+      return ""
+   return result[1]
+   
+SPLITTING AND REPLACING
+Uptill now we've using just two function from the re module namely: search and findall. There are actually a few more function that are very handy, one of this functions is called split(), it is similar to the split function we've used before for strings, but instead of taking a string as a seperator it can take any regular expression as a seperator. For example we may want to split of text into many sentences, to do that we check not only for dots but for ?, or !. For example
+
+re.split(r"[.?!]", "One sentence. Another one? And the last one!")
+
+In the example above, our delimeters are not include in the resulting list. If we wanted them included in the resulting list we use capturing parenthesis
+
+re.split(r"([.?!])", "One sentence. Another one? And the last one!")
+
+Another interesting function privided by the re module is called sub. Its used for creating new strings by substituting all or part of them for a different string, similar to replace() method for strings, but using regex this time for matching and replacing.
+For example, say we had some logs in our system that included email addresses of users, and we wanted to anonymize the data by removing all of the addresses, we could do that using an expression.
+
+re.sub(r"[\w.%+-]+@[\w.-]+", "REDACTED", "Recieved an email for go_nuts95@my.example.com")
+
+The expression used to identify email addresses has two part, the part before the @ sign and the part after the @ sign. Of course we included many other things there would not be part of an email, like - after the @ sign. If we want to validate that the address is an actuall email, we would need to be a lot stricter. In the example above, we used a regular expression for searching and a plain string for replacing. Lets now look at an example using sub where we use a regex for searching and a regex for replacing
+
+re.sub(r"^([\w -.]*), ([\w -.]*)$", r"\2 \1", "Lovelace, Ada")
+
+For the replacement regex, the \2 refers to the second captured group, while \1 refers to the first captured group. When refering to captured group, a backslash followed by a number refers to the corresponding captured group. This is general notation for a regular expression and is used by many tools that support regexes not just python.
+
+
+WEEK 3 GRADED WXTERNAL TOOLS: QKIKLABS ASSESMENT:WORKING WITH REGULAR EXPRESSIONS
+We intend to find a emails in a directory which contains the old domain and replace them with the new domain name
+Given: 
+user_emails.csv in the directory called data which contains email addresses with the old domain name.
+
+script.py in the scripts direcory which contains the code that will do all the work for us
+
+inside the script.py we will do the flllowing
+
+import csv
+import re
+
+We define a function that takes in a list of addresses, and a domain pattern as input arguments and identify the old domain by checking if it exists in the list
+
+After we confirm that it exist, we define a new function which takes in the address, old domain name and new domain name as input arguments and subsitutes the old domanin name in the address with the new domain name.
+
+We declare the variable for the old domain and new domain which were input arguments to the first and second function.
+
+
+We then write a csv file like the one we found in the data directory, but this time containing a the addresses with the new domain.
+
+To read and write this csv file we need to to pass the directory of the the csv files as input arguments to the function that will do this for us
+
+So we declare two variables: the first contains the directory with the csv files with the addresses containing the old domain name, the second variable contains the directory were the new csv file contianing the addresses with the new domain name wil be stored, and appended to the name of the file (we create the name)
+
+Next we initialize the different list we will pass into the three functions: user_email_list, old_domain_list, and new_domain_list.
+
+Next we open the csv file with the addresses with the old domain names, and pass all the values in the csv into a list using the list funciton in csv.reader saving in a variable called user_data_list, then we append all the email from this list into user_email_list, leaving out info we dont need
+
+We want the old_domain_list to contain emails with the old domain only, so we pass user the user_domain_list into the the function that checks for old domain, if True, then we append that element into the old_domain_list, and call the function that replaces the old domain with the new one saving it in a variable and appending this variable to the new_domain_list. All this is happening inside a for loop to this all for us
+
+Next we define the header for ouptut csv file using the user_data_list which contains all the data read from the user_emails.csv including the header

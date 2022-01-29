@@ -1,0 +1,98 @@
+Must contain alphanumeric characters i.e
+Alphabets
+Numerals
+Underscores
+
+Periods,
+dashes, and 
+plus signs
+
+followed by the following
+period
+character-only top-level domain such as .com, .info
+
+
+Recall that the special character to match aphanumeric characters as well as underscores is \w
+
+we have to use the following escape characters(\)
+wildcards (.)
+repetition qualifiers (*, +)
+begening and end of line characters (^, $), and 
+character classes([])
+
+print(re.search(r"^[\w._+]+\.[.a-z]*$", 'www.respect.org'))
+
+
+How to validate time in 22-hour format using Regex's
+
+1. It should start from 1,2,...9 or 10,11,12
+2. It should ne followed by a colon(:)
+3. It should be followed by two digits between 00 to 59
+4. It should only allow one white space(optional)
+5. It shuld end with 'am', 'pm', or 'AM', 'PM'.
+
+
+r"^1[0-2]|[1-9]:[0-5][0-9](\s)?(?i)(am|pm)"
+
+
+The contains_acronym function 
+checks text for the presence of 2 or more characters or digits surrounded by parentheses,
+Could be in upper case if its a letter
+
+
+The regular expression for contains_acronym function must satisfy the following conditions
+1. We fist escape the first parentheses to include the parentheses in our pattern.
+2. Check if the first character is upper case.
+3. Checks for alphanumeric characters inside the parentheses
+4. Escape the second parenthesis
+
+r"\([A-Za-z\w]+\)"
+
+The check_zip_code function checks if the text passed includes a possible U.S zip code, formatted as follows:
+1. Exactly 5 digits, and
+2. Sometimes followed by a dash with 4 more digits.
+3. Must be preceded by at least one space and
+cannot be at the start of the text
+
+We must satisfy the following conditions:
+1. Check that the sentence does not start with a zip code ^[\w\s]+
+2. Zip code must be preceeded by at least one space \s+
+3. Exactly 5 digits [0-9]{5}
+
+
+We're working with csv for this exercise.
+This csv contains employee info. Each record has a name field, followed by a phone number field, and a role field.
+The phone number field contains U.S phone numbers and need to be modified to international format with '+1-' in front of the phone number.
+Fill in the regular expression, using groups, to use the transform_record function to do that.
+
+Things to do.
+1. Use capturing groups to locate name field
+2. Use capturing groups to locate phone number field
+3. Use caputring groups to locate role field
+
+r"^([\w -]+),([\w -]+),([\w -]+)$", r"\1,+1-\2,\3", record)
+
+The multi_vowel_word finction returns all words with 3 or more consecutive vowels.
+How to go about this:
+***recall that we ca do specific number of repetitions with the number of repetitions inside curly braces{5}. 
+We could also have a range{4,5}
+We could have one open endec range{3,}
+
+For this exercise, we will use an open ended range [aeiou]{3,}
+
+1. We will make sure that we match capture letters before the vowels
+1. We will use character classes to match groups of vowels
+3. We will use an open ended range from 3 and above
+
+The transform_comments function converts comments in Python scripts into those usable by a C compiler.
+It looks for text that begins with a hash mark(#) and replaces it with double slashes(//)
+Replace multiple hash marks with just a double slashes
+
+We use:
+1. capturing groups to capture the hash marks (We dont need capturing groups since we are not replacing with an element from the captured group)
+2. character classes to find multiple hash marks
+3. repetition qualifers to find multiple hash marks
+4. the sub function to replace hash with double slashes
+
+r"([#]+)", r"//"
+

@@ -1,0 +1,521 @@
+INTRO TO MODULE 2 -USING GIT LOCALLY
+Up till now we have talked about what VCS is, why its neccessary and how we can benefit from it in diverse context. We also started learning some basic git command and procedures.
+We will go into much more detail about what we can do with git.
+We'll start by learning some handy shortcuts, and looking into how we can get more info out of our VCS. Then we will experience the through power of Thanos(Git) by seeing how we can undo some of our changes. The ability to revert to previous changes is one of the most useful aspect of VCS. 
+Depending on what needs to be done, there are a bunch of different techniques we can use it git. We can discard changes made to a file, fix a commit that was incorrect and even role back our project to an older snapshot. We'll look into all this techniques and dive into when to use them.
+Finally we'll check out branches. We can use branches to work on an experimental feature of our project without affecting the main project, support seperate versions of a program that can't be merged together and much more. 
+We'll divide into what branches are, when and how to use them and how to deal with merge conflict.
+
+SKIPPING THE STAGGING AREA
+When we covered the basic git wotk flow, we called out that the process is usually to make changes, stage them, and commit them.
+The seperate step between stagging and committing allows us to stage several changes in one commit. But if we know that the current changes are the ones we want to commit, we can skip the stagging step and straight to the commit.
+We do this by using the '-a' flag to the 'git commit' command. This command automatically stages every file that is tracked and modified before doing the commit letting us skip the 'git add' step.
+At first we might think that 'git commit -a' is a short cut for 'git add', but thats not exactly true. 'git commit -a' DOESN'T WORK ON NEW FILES, BECAUSE THOSE ARE UNTRACKED. Instead, 
+git commit -a: is a shortcut to stage any changes to trackead files and commit them in one step.
+If the modified file has never been commited to the repo, we'll still need git add to track it first.
+So, lets make a chage to our example script from an earlier video to try out this new flag. We'll now modifiy are main function and make it call the check_reboot function that we wrote before. If a reboot is pending, we'll print a message and then exit our program with an exit status of 1
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exist("/run/reboot-required")
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+
+main()
+
+Now that we've included the change, we are ready to try out the new '-a' flag. We'll also use the new '-m' flag to add the ommit message directly.
+
+git commit -a -m 'Call check_reboot from main, exit with 1 on error'
+
+Success! This short cuts are useful when making small changed that we know we want to commit directly without keeping them in the stagging area without having to write long comples descriptions.
+Keep in mind that when you use the '-m' flag, you can only write short messages, and can't use the best practice when writing descriptions that we talked about earlier. So its best reserved for truly small changes that don't require extra context or explanation.
+When we use the '-a' flag, we skip the stagging area, meaning that we can't add anything changes before we commit. So we need to be sure that we have included everything we need to include in that commit.
+In the end using a shortcut like '-a' is just like using a regular commit work flow. The commit will show up in the log along with the message just as usuall. Let check it out.
+
+git log
+
+see how our latest commit was added to the top of the list of commits, and notice how the HEAD indicator has now moved to the latest commit? So, what is this HEAD and where is it HEADING?
+Git uses the HEAD alias to represent the current checked-out snapshot of your project. This lets you know what the contents of your working directory(working tree) should be. In this case, the current snapshot is the latest commit in the project.
+We'll soon learn about branches and in that case, HEAD can be a commit in a different branch of the project. We could even use Git to go back in time and have HEAD represent an old commit from before the latest changes were applied.
+In all cases, HEAD is used to indicate what the currently checked out snapshot is. This is how Git marks your place in the project. Think about it as a bookmark that you use to keep track of where you are. Even if you multiple books to read, the book marks helps you pick up were you left off.
+When you run command diff, branch, or status, Git would use the HEAD bookmark as a basis for whatever operation its performing. We'll see HEAD used when we learn to undo things and perform role back. 
+As a shortcut, it is generally easy to think of HEAD as a pointer to the current branch, although it can be more powerfull than that.
+
+GETTING MORE INFORMATION ABOUT OUR CHANGES
+We've seen how 'git log' shows us the list of commits made in the current Git repo. By default it prints the commit message, the author and the date of the change. This is useful, but if we are combing through a history of changes in a repo to find the cause of the latest outage, We will probably need to look at the actual lines that changed in each commit. To do this, we use the '-p' flag. The 'p' comes from 'patch', because using this flag gives us the patch that was created(generates diff in patch format). Lets try it out.
+
+git log -p
+
+The format is equivalent to the 'diff -u' output that we saw in an earlier video. It shows added line with pluses(+) and removed lines with dashes(-). 
+Because the text is now longer than what fits on the screen, git automatically uses a paging tool that allows to scroll using page up, page down, and the arrow keys. We still have one commit below the other, but now each commit takes up a certain amount of space depending on how many lines are added or removed in that commit.
+Using this option, we can quickly see what changes were made to each file in our repo.
+If we don't want to scroll down until we find the commit that we are actually looking for, another option is to use the 'git show' command. This command takes a commit ID as a parameter and will display the information about the commit and the associated patch.
+The commit ID is an identifier that we see next to the word commit, comprising a long string of alphanumeric characters.
+Lets check this out by first listing the current commits in the repo and then calling 'git show' for the second commit in the list.
+
+git show 2c61f9fd1b2061940808946186009101b2685091
+
+We've show how we can use 'git log' for listing commits, and 'git log -p' for showing the associated patches.
+Another interesting flaf for 'git log' is the '--stat' flag. This will cause 'git log' to show some stat about the changes in the commit, like which files were changed and how many lines were added or removed. Lets try it with our repo.
+
+git log --stat
+
+What about changes that have not been commited yet. Until now, whenever changes were made to our project, we either stagged them with 'git add' and committed them with 'git commit', or committed them directly using 'git commit -a'. This works fine, but it means we have to know exactly which changes were made. 
+Sometimes it might take a while to commit changes that we've made. Imaging if we added a new complex feature to our script and before committing it, it requires thorough testing to ensure that it works correctly. Check that all test cases are covered and so on and so on. So while doing this we find bugs in our code that we need to fix. Its only natural that by the time we get to the commit step, we don't really remember anything that we've changed. To help us keep track, Git gives us the 'git diff' command. Lets make a new change to our script and try this command out. We'll add another message to the user to say that everything ok.' when succesfull and exit with 0 instead of 1.
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exist("/run/reboot-required")
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+We've made the change, now before stagging, lets checkout what 'git diff' shows us.
+
+git diff
+
+again this format is equivalent to the 'diff -u' format we saw in an earlier video. In this case, we see that only change is the extra lines that we've added.
+If our change was bigger and included several files, we could pass a file by parameter and to see the differences relevant to that specific file, instead of all the files at the same time.
+Something else we can do to review changes before adding them is to use the    '-p' flag with the 'git add' command. If we use this flag, Git will show us the change being added and ask us if we want to stage them or not. This way we can detect if there's any change that we don't want to commit. Lets try it out.
+
+git add -p
+
+We select 'y' to stage the change and its now ready to be committed.
+If we call 'git diff' again, it won't show any differences, since 'git diff' shows only unstaged differences by default. Instead we can call 'git diff --staged' to see the changes that are stagged BUT NOT COMMITTED. We this command, we can see the actual staged changed before committing.
+
+git diff --staged
+
+Lets commit this changes now so that they are not pending anymore. We'll say that we've 'Add a message when everything is ok'
+
+git commit -m 'Add a message when everything is ok'
+
+DELETING AND RENAMING FILES
+Lets say that you decide to clean up some old scripts and remove them from your repo or you've done some refactoring that makes a particular file obsolete. You can remove files from git repo using the the 'git rm' command, whcih will stop the the file from being tracked by git and remove them from the directory. File removal gow through the same general work flow that we've seen, so we'll need to write a commit message as to why you've deleted them. Lets try this out in our checks repo. We first check the content of the file with 'ls -l', then delete the content of the file with 'git rm', then check the cotents with ls again, and finally check the status with 'git status'.
+
+cd checks/
+ls -l
+git rm process.py
+ls -l
+git status
+
+So we see that by calling 'git rm' we deleted the file from the directory and the change was also stagged to be committed in our next commit. Lets do that now, by calling 'git commit' and setting a message saying that we have deleted the unneeded file.
+
+git commit -m 'Delete unneeded process.py file'
+
+Like always, we get a bunch of stats when we do the commit. Check out all the deletions it reported, these are all lines in the file that are no longer there, it states that the file itself was deleted.
+What if you have a file that is'nt accurately named. This can happen for example if you start writing a sript that you thought would do only one thing and then expands to cover more use cases? or conversely if you named your script thinking it would be very generic, but ends up being very specific. You can use 'git mv' to rename files in the git repo. Lets rename our existing script to check_free_space.py and check what git status says.
+
+git mv disk_usage.py check_free_space.py
+
+The status shows us that the script was renamed and displays the old and new names. The change is staged but not committed. Lets commit it.
+
+git commit -m 'New name for disk_usage.py'
+
+The 'git mv' works like the 'mv' command on linux and so can be used for both moving and renaming. So if we had more directories in our git repo, we can use the 'git mv' command to move files between directories. 
+As we have been seing, the output of 'git status' is a super tool to let us know what is going on withour files. It shows us which files have tracked or untracked changes, or which files where added, modified, deleted or renamed.
+It is important that the output of this command stays relevant to what we are doing. If we have a long list of untracked files, we might loose an important change in the noise. If there are files that get aumatically generated by our scripts, or our OS generate artifacts we don't want in our repo, we'll want to ignore them so they don't add noise to the output of 'git status', to do this we use the '.gitignore' file. inside this file we'll specify rules to tell git which files to skip for the current repo. 
+For example if we are working on the OSX OS, we ptobably want to ignore the .DS_STORE file, which is automatically generated by OS. To do this, we create a .gitignore file. 
+
+echo .DS_STORE > .gitignore
+
+recall that the dot(.) indicates hidden files, and won't show up when you use 'ls' command. We've added a '.gitignore' file to our repo, but we've not committed yet. This file needs to be tracked just like the rest of the files in the repo. Lets do that now.
+
+git add .gitignore
+git commit -m 'Add a gitignore file, ignoring .DS_STORE files'
+
+UNDOING CHANGES BEFORE COMMITTING
+Being able to undo changes is one of the powerfull tools of VCS, and there are a bunch of different techniques dending on what you want to achieve.
+For example, you might find yourself in a situation where you've made a bunch of changes to a file but decide that you don't want to commit them. You can change a file back to its earlier state by using the 'git checkout' command folowed by the name of the file you want to revert.
+Lets check out by editing all_checks.py file and remove check_reboot function, save and go back to command line.
+
+atom all_checks.py
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Cool! We've made or change, lets save our script and see what happens. 
+
+./all_checks.py
+
+We see that by deleting that function we've broken the scripts. Lets see what git status has to say about this.
+
+git status
+
+As expected, we see that our file is modified and the changes are not stagged yet. Look closely and see that Git gives us some helpful tips on what to do: We can run 'git add' to stage our changes, or 'git checkout' (or instead 'git restore' in modern versions) to discard them.
+We can remember this command by thinking about it this way, you are checking out the original file from the latest storage snapshot. Lets checkout at the original file, and see what git status has to say about it
+
+git restore all_checks.py 
+
+***Note the above command is the same as 'git checkout all_checks.py'
+
+git status 
+./all_checks.py
+
+So as we see this command will restore the file to the lates storage snapshot, which can be committed or staged. 
+So if we've made additional changes to a file after its staged, we can restore to the ealier staged version. And if you need to check out individual changes instead of the whole file, we do this with the '-p' flag. This will ask you change by change if you want to go back to the previous snap shot or not.
+But what if we've added the changes to the stagging area already?
+If we reliaze that we.ve added something to the staging area that we don't want to commit, we can unstage our changes using the 'git reset' command. 
+Stagging changes we don't intend to commit happens all the time, especially when we use 'git add *' were '*' is file glob pattern used in bash that expand to all the files in a directory. This command will end up adding any changed done in the working tree to the stagging area, when sometimes, thats what we want, it can also lead to some surprises.
+Lets try it out with an example. First, we'll pretend that we are trying to debug a problem in our script, for that we create a temp file with the output of our scripts. Then well add all unstaged changes in our working tree using 'git add *', and finally check the status.
+
+./all_checks > output.txt
+git add *
+git status
+
+We can see that this output file, which was supposed to be a temporary file for debugging is now staged in our repo, but we dont want to commit it. Conveniently, the 'git status' command show us how to unstage it right there in the output command. If we run 'git restore --staged' or 'git reset', we unstage the changes to the current checked out snapshot, ie were HEAD is on. By running the code, we are restoring our change to whatever is in the current snapshot.
+(Digressing a litle, so if we have HEAD represent an old commit, if we run 'git restore -staged', it resets or restores our changes to the commit where HEAD is on).
+Lets try it out
+
+git restore --staged
+git status
+
+The file is now untracked in our wirking tree and no longer stagged.
+You can think of 'reset' or 'restore --staged' as the counter-part to 'add'. With add we can 'add' changes to the stagging area, with 'reset' or 'restore --staged' to remove changes from the stagging area, and we can use 'reset -p' to get git to ask which specific changes we want to reset or restore. 
+Now lets commit our typo fix
+
+git commit -m 'it should be os.path.exists"
+
+With this, we have seen how to revert unstaged and staged changes.
+But what if we have already created a commit with the changes that we want to undo?
+
+AMENDING COMMITS
+In general, we try to make sure that our commits includes all the right changes, but we are all human and we make mistakes. It is not uncommon for developers or IT speialist to realize that there is an error in a recent commit. This is why its important to know how to fix it.
+Lets say yo just committed your latest batch of work, but you forgot to add a file that belongs to the same change, you want to update the commit to include that change, or maybe the files are correct, but you realize your commit message was not just good enough, so you want to fix the description to add a link to the bug your are solving with that commit. What can you do? We can solve problems like this using the '--amend' option of the 'git commit' command. When we run 'git commit --amend', Git will take whatever is in our stagging area and run the 'git commit' work flow to override the previous commit. Lets see this in an example.
+We will go to our scripts directory and create two new files using the 'touch' command, list the content of the directory, add our python script alone and commit it saying we've added two files
+
+touch auto-update.py
+touch gather-information.sh
+ls -l
+git add auto-update.py
+git commit -m 'Added two new scripts'
+
+The message printed by git says that only one file was added, while our commit message says that we added two files because we forgot to add one of them. We can fix this.
+We'll start by adding the missing file and then amending the commit
+
+git add gather-information.sh
+git commit --amend
+
+When we call 'git --amend' an editor opens up and show the previous commit message and the stats about the commit we are working on. When we look down at the comment section of the commit message, we see that the list of files to be committed are two, including the missing file that we just included in the stagging area. Now that the files have been added, we can now improve our initial commit message that was too short. We'll keep the existing message as the first sentence of our commit and add a line of description about the intended pupose of each file.
+
+Added two new scripts.
+    
+gather-information.sh will be used to collect information in case of errors.
+auto-update.py will be run daily to update computers automatically.
+
+We've amended out commit to include both files and a better message. 
+We could also just update the message in the previous commit by running 'git commit --amend' with no changed in the stagging area. 
+***While 'git commit --amend' is used to fix local commits, we shouldn't use it on public commits, meaning those that have been pushed to a public or shared repo. This is because '--amend' rewrites the git history, removing the previous commit and replacing it with the amended one. This will lead to some confusing situations when working with other people and should be avoided.
+
+ROLLBACKS
+Fixing your work is good, but what happens when it has already been snapshoted by Git? Lets say you host a Git repo on a companies server that contains all kinds of useful automation scripts that you and your co-workers use. One morning before coffee, you make a few changes to this scripts and commit the updated files. A few hours later you start to recieve tickets from users indicating that a part of the script is broken, From the problem desicribed, it sounds like the errors is dew to your recent changes. You can look at the code you updated to see if you can spot the bug, but more tickets are pouring in and you want to fix the problem as fast as possible. You've decided its time for a rollback. There are few ways to rollback commits in Git. For now we'll focus on 'git revert' command. 
+In git revert doesn't just mean undo, instead it creates a commit tha contains the inverse of all the changes made in the bad commit in other to cancel them out. 
+For example, if a particular line was added in the bad commit, in the revert commit, the same line will be deleted. This way we get the effect of undoing the changes, but the history of the commit in the project are still consistent, leaving a record of exactly what happened. 
+So 'git revert' will create a new commit that is the opposite of everything in the previous commit. We can revert the latest commit by using the 'HEAD' alias mentioned before. Since HEAD is a pointer to the latest snapshot, by passing 'HEAD' we are telling git to rewind that current commit.
+To check this out we'll first add a faulty commit to our example repo.
+
+cd scripts
+
+atom all_checks.py
+
+#!/usr/bin/env python3
+import os
+import sys
+
+def check_reboot():
+    """Return True if the computer has a pending reboot."""
+    return os.path.exists("/run/reboot-required")
+
+def main():
+    if check_reboot():
+        print("Pending Reboot.")
+        sys.exit(1)
+    if disk_full():
+        print("Disk Full.")
+        sys.exit(1)
+    print("Everything ok.")
+    sys.exit(0 )
+
+main()
+
+Lets save and commit this.
+
+git commit -a -m 'Add call to disk_full function'
+
+Of course the code above is faulty, so this is where users start filling tickets saying that our code is broken, and so we run our scripts to see what happens.
+
+./all_checks.py
+
+Oops! We used a function that we failed to define. So its rollback time.
+
+git revert HEAD
+
+so once we issue the 'git revert' command, we are presented with the git commit text editor interface. We see that git has automatically added some text to it indicating that it is rollback. The first line indicates that its a revert and that its reverting the commit we just did with the message "Add call to disk_full function". The extra description even includes the identifier of the commit that we want to revert. Its a good idea to add more description as to why we are doing the rollback. In this description, we'll explain that the reason for the rollback is because the code was calling a function that was not defined.
+
+Revert "Add call to disk_full function"
+
+Reason for rollback: the disk_full function was not defined.
+
+This reverts commit ce5c2604fa55da1a2df6b432439010388375157a.
+
+After we save and exit, we notice that the output message for 'git revert' command is similar to that of 'git commit'. This is because the 'git revert' command creates a commit for us. And since our revert is a normal commit, we can see both the commit and the reverted commit in the log. Lets look at the last two entries in the log using '-p' and '-2' parameters. As demonstrated before, the '-p' flag lets us see the diff created in patch format, while the '-2' limits the output to the last two entries.
+
+git log -p -2 
+
+We can see that when we call 'revert', Git created a new commit that is the inverse of the previous one. This commit removes the lines that we added in the previous commit. We can see the lines we added in the original commit, the lines preceeded with the plus sign(+). The same lines shows up with minuses(-) indicating that they were removed.
+In this example we reverted the latest commit. But what if we wanted to revert a commit that was done before that?
+
+IDENTIFYING A COMMIT
+So far the HEAD alias has been showing the most recent checkedout commit in our history. In our bad snapshot example, the error also happened to be in the most recently created commit, but sometimes errors might be hard to detect and so we might need to revert commits further back in time. We can target a specific commit by using its commit ID.
+Lets have a look at the latest log entry in our checks repo.
+
+git log -1
+
+The commit ID is the 40 character alphanumeric string after the word commit. 
+This long jumble of letters and number is actually something called a 'hash' which is calculated using an algorithm called SHA1. Essentially what this algorithm does is take a bunch of data as input and produce a 40 character string from the data as the output. In the case of Git, the input is all the information related to the commit and the 40 character string is the commit ID.
+Why use such a long complex string as the ID instead of using simple intergers?
+TO answert this, lets take a look at the reason why Git uses a hash instead of a counter and how that hash is computed.
+Although SHA1 is part of a class of cryptographic has functions, Git doesn't really use this hashes for security. Instead they're used to guarantee the consistency of our repo. Having consistent data means we get back exactly what we expect. This is really useful in distributed systems like Git, because everyone has their own repo and is transmitting their own piece of data. Computing the hash is consistent becuase it is calculated from all the information that makes up a commit. The commit message, data, author, and the snapshot taken of the working tree. The chances of two commit producing the same hash called a 'collision' is extremely small that it won't happen by chance.
+If we use a hash to guarantee consistency you cant change anything in the 'git commit' without the SHA1 hash changing too. Each time we amend a commit with the '--amend' flag, the commit ID will change. This is why ist important not to use '--amend' in public commits. The data intergity offered by a commit ID means that if a bad disk or network link corrupts some data in your repo, or worse, if someone intentionally corrupts data in your repo, Git can use the hash to spot that corruption. It will say that the data you got is not the data expected(because the data expected is coded into the hash, and so when the data you get does not conform to the hash, it spots the error).
+How can we use commit ID to specify a particular commit during a role back?
+Lets look at the last two entries in our repo using the '-2' flag.
+
+git log -2
+
+Say for example that we actually liked the previous name of our scripts and we want to revert this commit to where we renamed it.
+First, lets look at that specific commit using 'git show'
+
+git show 005f43828f53eff9560c40bf513b28f6707a50be
+
+we've copied and pasted the commit ID that we wanted to display and that works. Alternatively, we could provide the first few characters identifying the commit to the command, and git will be smart enough to complete it for you. Lets try it,
+
+git show 005f
+
+Now that we've seen how to identify the commit that we want to revert, Lets call the 'git revert' command with this identify. 
+
+git revert 005f43828f53eff9560c40bf513b28f6707a50be
+
+As usual this will open an editor for us to edit the commit message and add a reason for the rollback, in this case, we'll say that the precious name was actually better.
+
+Revert "New name for disk_usage.py"
+
+Rollback reason: the previous name was actually better :)
+
+This reverts commit 005f43828f53eff9560c40bf513b28f6707a50be.
+
+Note that the commit ID we pass into the 'revert' command is not showing the commit that we are reverting to, but shows the commit that we are reverting
+As we called out before that when we generate the rollback, Git automatically includes the ID of the commit we are reverting. This is usefull when looking at a repo with a complicated history that includes a lot of commits. When we save and exit the editor, git will perform the rollback and generate a new commit ID for the this new comit. See how before the name of our commit the revert command already shows the first 8 characters of the commit ID, lets use git show to look at it.
+
+git show 3a10183
+
+We have reverted a commit that was not a recent one.
+
+WHAT IS A BRANCH
+At the most basic level, a Branch is a pointer to a particular commit. But more importantly, it represents and independent line of development in a project, of which the commit it points to is the latest link in a chain of development history.
+The default branch that git creates for you when a new repo is initialized is called 'master'. All our examples have taken place on this branch so far. 
+The master branch is commonly used to represent the known good state of a project. When you want to develope a feature or create something new in your project, you can create a seperate branch to do your work without worying about messing up this current working state.
+You can think of a git project as an assignment your teacher gives you in a class. You do all of your work on the assignment in a set of notebooks, each notebook represents a different branch, were you do all your rough work on them, but there is one notebook you keep in a tidy state(master branch) and you copy the polished versions of this draft into it.
+When you want to create a new feature or add something, you can create a new branch and do your development there. You can merge back into the master branch when you have something you like, or discard you changes without negative impact to the master if they don't workout.
+As an example, think back to the problematic commit we fixed in an earlier video, we added a call to the disk_full function but forgot to define the function and had to roll it back because our users where seeing errors.
+Knowing what we know now, we could have done that work on a seperate branch, maybe called something like add_disk_full, in that case, we could have iterated on our code there till it was working correctly. Only after the code was ready to be deployed that we merge those changes back into the master branch.
+We will look at how to create new branches and merge their changes into the master branch. We will also go over what to do if we run into merge conflicts.
+
+CREATING NEW BRANCHES
+Branches are essential when working with Git and there are tons of different ways to work with them.
+We can use the 'git branch' command to list, create, delete, and manipulate branches. Running 'git branch' by itself will show a list of all the branches in our repo. Lets try it out in our checks repo
+
+git branch
+
+Just the 'master' branch available there. We can create a new branch by using 'git branch' with the name of the branch we want to create. Lets create a 'new-feature' branch
+
+git branch new-feature
+
+Now Let us list the branches available again
+
+git branch
+
+Our new was created based on the value of HEAD. Remember that this is might not neccessarily be the master branch(This is not the master branch). The list of branches tells us that we are still on the master branch. We can tell because the current branch is indicated in the commands output with an asterisk(*) and a different color.
+To switch to a new branch we use the 'git checkout' command. We saw earlier how to use 'git checkout' to restore a modified file back to the latest commit.
+Checking out branches is similar in that the working tree is updated to match the selected branch including both the files and the git history in '.git' directory.
+It might be helpful to remember that we use 'git checkout' to check out the latest snapshot for both files and for branches. Lets switch to the 'new-feature' branch and list the branches again.
+
+git checkout new-feature
+git branch
+
+Now that we've changed to the new branch, the star has moved to the new-feature. 
+Creating a branch and switching to it immediately is a common task, so there is a shortcut to create a branch and switch to it in a single command. We can use the 'git checkout -b <new-branch>'. Like this.
+
+git checkout -b even-better-feature
+
+We get a message saying that we've switched to a new branch. This creates and switches into that branch in just one command.
+Lets create a new python3 file inside the branch...
+
+atom free_memory.py
+
+#!/usr/bin/env python3
+
+def main():
+  pass
+  
+main()
+
+This file is empty because its only the beginning of our work, as its in a seperate branch its okay for it to not be finished yet.
+
+git add free_memory.py
+git commit -m 'Add an empty free_memory.py'
+
+Lets look at the last two entries in the log
+
+git log -2
+
+We see the last two commits in this branch. Notice how, next to the latest commit ID Git shows that this is where HEAD is pointing to, and that the branch is called even-better-feature. Now, next to the previous commit Git shows that both the 'master' and 'new-feature' branches are pointing to that snapshot of the project. Inthis was, we can see that the 'even-better-feature' branch is ahead of the master branch.
+
+WORKING WITH BRANCHES
+Okay, so we've created new branches different from the master branch and added a commit to one of them. Lets check the current status of our repo 
+
+git status
+ls -l
+
+We see that we are on a clean working tree in the 'even-better-feature' branch, and that the new 'free_memory.py' file is in our working tree. Lets go back to the master branch and list the 2 latest commit there
+
+git checkout master
+git log -2
+
+When we switch to a different branch using 'git checkout', under the hood, Git changes were HEAD is pointing. Thanks to this checkout, HEAD went from pointing at the most recent commit in the 'even-better-feature' branch to the most recent commit of the master branch. The commit from 'even-better-feature' doesn't even show up at all. The latest latest snapshot is the second entry we saw in the 'even-better-feature' branch, showing again that the 'master' branch is behind the 'even-better-feature' branch. When we change branches, Git will change files in our working tree or working directory to the files in whatever snapshot HEAD is pointing to.
+Let look at the current contents of our directory. 
+
+ls -l
+
+We see that free_memory.py isn't there. This shows that when we change branches, git changes the files in the working tree and the commit history to reflect the current snapshot of our project in that branch we are checking out.
+When we check out a new branch and commit on it, those changes will be added to the history of that branch. Since free_memory.py was committed on another branch other than the 'master', it doesn't show up in the history or working directory of the 'master'.
+One thing to note is that each branch is just a pointer to a specific commit in a series of snapshots. 
+Its very easy to create new branches because there isn't any data to be copied around. When we switch to another branch, we checkout a different commit and Git both updates HEAD and the contents of our working tree.
+What if we wanted to delete a branch that we don't need again? We can do that using 'git branch -d'.
+Lets first list the branches in our repo and delete the 'new-feature' branch.
+
+git branch
+git branch -d new-feature
+git branch
+
+This show that 'new-feature' has been deleted.
+IF there are changes in the branch that we want to delete, that haven't been merged back into the master branch, Git will let us know with an error.
+
+git branch -d even-better-feature
+
+Git also gives us the command to run if we are sure that we want to delete them, even with the unmerged changes. Next we will merge the changes in our new branch back to the master branch.
+
+MERGING
+A typical work flow for managing projects in Git is to create a seperate branch for developing any new feature or changes, once the feature is in good shape, we merge the seperate branch back into the main trunk of code.
+Merging: The term that Git uses for combining branch data and history together.
+We'll use the 'git merge' command which lets us take the independent snapshot and history one branch and tangle them into another. Lets try this out with our example branch from the last video.
+First we'll check that we are in the 'master' branch, then we will call 'git merge' on even-better-feature to merge it back to the master branch.
+
+git branch
+git merge even-better-feature
+
+Now we've merged the even-better-feature to the master branch, and now we've brought the master branch up to speed which we can see by looking at 'git log'
+
+git log 
+
+As we are on the master branch, HEAD points at master. We can see that master and even-better-feature are pointing at the same commit.
+Git uses two different algorithms to perform a merge: fast-forward and three-way-merge.
+The merge we just performed is an example of a fast-forward merge.
+This kind of merge occurs when all the commits in the checked out branch (master) are also in the branch that's being merged(even-better-feature). If this is the case, we say that the commit history of both branches does not diverge. In this cases, all Git has to do is update the pointers of the branches of the checked out branch(master) to the same commit as the branch we are merging(even-better-feature) and no actual merging has to take place.
+On the other hand a three-way-merge is performed when the history of the merging branches has diverged in some way, and there isn't a nice linear way to combine them via fast-forwading. This happens when a commit is made on one branch after both branches split. In our case, this would have happened if we created a commit on the master branch after the both split. When this occurs, Git will tie the branch histories together with the new commit, and merge the snapshots at the two branch tips with the most recent common ancestor, the commit before the divergence.
+To do this succesfully, Git tries to figure out how to combine both snapshots. The changes were made in different files, or different parts of the same file, Git will take both changes and put them together in the result.
+If instead the changes were made on the same part of the same file, Git will not know how to merge those changes and the attempt will result in a MERGE CONFLICT.
+
+MERGE CONFLICT
+From time to time, we might find that both branches we are trying to merge have edits to the same part of the file. This will result in something called a merge conflict. Normally Git can automatically merge files for us, but when we have a merge conflict, it will need a litle help to figure out what to do.
+To see how this happens, lets edit the free_memory.py file in the master branch, and replace the pass statement with a comment about what the main function should do.
+
+atom free_memory.py
+
+#!/usr/bin/env python3
+
+def main():
+    """Checks if there's enough free memory in the computer."""
+
+main()
+
+Lets commit our change to the master branch.
+
+commit -a -m 'Add comment to main()'
+
+Next lets checkout the even better feature branch and make a change in the same place. In this case, we'll replace a call to pass with a call to print, saying that everything is ok.
+
+git checkout even-better-feature
+atom free_memory.py
+
+#!/usr/bin/env python3
+
+def main():
+    print("Everything is ok.")
+
+main()
+
+git commit -a -m 'Print everything ok'
+
+Now we are prime for disaster with our file all set up for a merger conflict.
+Lets go back to our master branch and try to merge the even-better-feature branch back into it.
+
+git checkout master
+git merge even-better-feature
+
+Git tells us that it automatically tried to merge the two versions of the free_memory.py file, but it didn't know how to do it. We can use 'git status' to get more info about whats going on.
+
+git status
+
+As usual, Git gives us a lot of additional info. It tells us that we have files currently unmerged, and it tells us to fix the conflict, or abort the merge if we decided it was a mistake. It also tells us to run 'git add' on each unmerged file to mark that the conflict has been resolved.
+To fix the conflict, lets open up free_memory.py in our text editor.
+
+atom free_memory.py
+
+Thankfull Git has added some info to our files to tell us which part of the code is conflicting. The unmerged content of the file at HEAD(in this case HEAD points to master) is the doc string stating what the main() function should do. And the unmerged content of the file in the even-better-feature branch is the call to the print function. SO its up to us to decide what to keep or if we should change the content of the file all together. In this case, we'll keep both statements and delete the merger markers.
+Now that we've fixed the conflict. we'll mark it as resolved by running 'git add' on the file and call the 'git status' to see how our merge is doing.
+
+git add free_memory.py
+git status
+
+Git now tells us that all conflicts have been resolved. We now need to commit it to finish the merge
+
+git commit
+
+the comments that 'git commit' shows us is different from other commits. Thats because this is a merge, and Git tells us so. It also tells us which file has conflicts which have now been resolved. The commit already has the first paragraph description saying its merging the even-better-feature' branch. This description was automatically created when we called the 'git merge' command. We will add unto this description. We will say that we are keeping the lines from both branches.
+
+Kept lines from both files
+
+And the merge conflict is officially resolved.
+TO see what the commit history ooks like now, we'll use a couple of handy options to the 'git log' command. '--graph', for seeing the commits as a graph, '--oneline' to only see online per commit.
+
+git log --graph --online
+
+This fotmat helps us better understand the history of our commit and how merges have occured. We can see the two commit that we added to the two seperate branches, and also we can see those two commits merged at the top, pme comming from the master branch and the other comming from the even-better-feature branch. We can see that master is pointing to the merge commit, but even-better-feature is pointing to the previous one.
+In the real world, resoving merge conflicts won't be this easy
+If you want to throw the merge away, use 'git merge --abort'. This is will stop the merge and reset the file in work working tree to the previous commit before the merge happened.

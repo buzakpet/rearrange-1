@@ -1,0 +1,579 @@
+WHAT IS OBJECT ORIENTED PROGRAMMING
+If we were to discribe an apple, wt will you say? We might start off by saying an apple is a type of fruit and how ther are lot of different types of apples, each with its own different color, flavor and name. When we are explaining concepts to the computer, it might be helpful to approach things in a similar way. A computer does not know what an apple is, infact, a computer does not even know what a fruit can be. If you want your computer to know this things we have to discribe them in our scripts. What we have discussed so far like; loops, conditionals, list, dictionaries, etc. are not to translate real life concepts to the computer like; whats and apple, what is a user account, etc.
+To make it easier for computers to understand this new concepts, Python uses a programing pattern called Object-oriented programming.
+Object-oriented programming: A flexible, powerful paradigm where classes represent and define concepts, while objects are instances of classes.
+In our apple example, we can have a class called Apple that defines the characteristics of an apple. We can then have a bunch of instances of that apple class, which are the individual objects of that class.
+We have actually been using objects already without actually realizing it. All the numbers, lists, strings dictionaries etc, we have been using ara all objects, and each of them was an instance of a class representing a concept.
+The core concepts of object oriented programming comes down to attributes and methods associated with a type: The attributes are the characteristics associated to a type, and the methods are the functions associated to a type of class.
+In the apple class, the attributes are the colors and the flavor.
+What then is the method? Well it depends on what we want to do with the apple: we could have a cut() method that cut the apple into 4 slices, or, an eat() method that reduces the amount of apple with every bite.
+Lets think of a more IT focused example, like a file in out computer. A file has lots of attibutes: It has a name, size, the date it was created, permissions to access it, it contents etc. 
+There are actually so different file attributes that python has multiple classess to deal with files.
+A typical file object focuses on the file contents, so this object has a bunch of methods to read and modify whats inside the file.
+
+CLASSES AND OBJECTS IN PYTHON
+Remember when we use the type function to check what type a certain variable was?
+
+type(0)
+
+type("")
+
+When we use the type function as we just did here, Python tells us which class the value or variable belongs, to and since its a class, it has a bunch of attributes and methods associated with it.
+For the string class above, the only attribute is the content of the string, but what about the methods associated with this class? Well we recall methods such as .upper(), which converts the string to upper case, or, .isnumeric(), which checks if the contents of the string are all numeric or not etc., and a host of others.
+Each new string we've used in python up till now has been a different instance of the string class. with all the same methods, but the content was different. This meant that the result of calling those methods were different also.
+To get the computer to list all the methods and attributes of a class we use the dir() function. The interprete will print to the screen a LIST of all the attributes and methods
+
+dir("")
+
+The first bunch we see there are special methods that begin and end with double underscore example: '__init__'. This methods are not usually called by those weird names, instead they're called by some of the internal python function. For example, the '__len__' function is actually called by the 'len' function to find out the length of a string, or the '__ge__' is used to compare if one string is greater than or equal to another string when using the greate than equal to operator (>=).
+The other bunch gives us the names of the other methods.
+The function we use to check what all this function perform is the 'help()' funtion
+
+help("")
+
+When we use help on a value or a varialbe, we are shown all the documentation for the corresponding class. In this case, we are looking at all the documentation for the 'str' class, i.e the class of the string object.
+The documentation starts with the special method, and when we scroll down it reaches the ones we have already seen.
+The documentation tells us the type of parameters the method recieves and the type of return value. It also includes an explanation on what the methods does.
+For the 'count()' method, we can see that it recieves the substring to be counted, and it also has options start and end arguments tha indicate which slice of the string would be looke at. We know they're optional because they're written between square brackets.
+In general, being able to read and understand the methods documentation is super important when writing code. 
+When we are done with documentation we type 'q' to quit.
+We might not need to do this when writing a simple script, but as programs grow in function and complexity, OOP will help you get the most out of the language, including defining your own classes.
+
+DEFINING NEW CLASSES
+Lets look at how we can represent a concept in Python code. Lets start at our apple example. We could use this basic code to define an apple class.
+
+class Apple:
+  pass
+  
+This does not look like much, but with this few lines we have defined our first class. Lets analyse the syntax. In Python, we use the 'class' reserve keyword to tell Python that we are starting a new class. We follow this with the name of the class and then a colon(:).
+The Python style guideline recommend that classes should start with a capital letter, so we will be using that convention.
+Class definition follow the pattern of other blocks we've seen earlier, like functions, loops, or conditional branches. After the line of the class definition comes the body of the class which is indented the right.
+In this case, we have not added anything to the body so we use the 'pass' keyword to show that the bosy is empty. We can also use the 'pass' keyword as a place holder for any empty block.
+So, how can we extend our definition of the Apple class? Well it would probably have the same attributes that represent the information we want to associate with an apple, like color and flavor. We can add it like this.
+
+class Apple:
+  color = ""
+  flavor = ""
+  
+Here we are defining two new attributes, color and flavor. We define them as strings because that is what we expect this attriutes to be. Now that we have our Apple class and some attributes, lets see our Apple class in action.
+
+jonagold = Appple()
+
+Here, we are creating a new instance of our Apple class and assigning it to a variable called jonagold. So the syntax for creating a new instance of a class is to call the name class as if it were a function. Now that we have our Apple object, lets set the value of the attributes.
+
+jonagold.color = "red"
+jonagold.flavor = "sweet"
+
+We've just the attributes as string values. To check if it works, lets try printing them to the screen
+
+print(jonagold.color)
+print(jonagold.flavor)
+
+The syntax used to access the attributes is called dot notation from the dot we used in the expression.
+Dot notation: Lets you access any of the abiities the object might have (called methods) or information it might store(called attributes). 
+THE ATTRIBUTES AND METHODS OF SOME OBJECTS CAN BE OTHER OBJECTS, AND CAN HAVE ATTRIBUTES AND METHODS OF THEIR OWN. For example, we could use the upper() method to turn the string of the 'color' attribute to uppercase.
+
+print(jonagold.color.upper())
+
+Look what we did here, we use the method upper() on the attribute 'color', this means that the attribute 'jonagold.color' is also an object of the string class.
+We can create a new instance of the Apple class with different attributes
+
+golden = Apple()
+golden.color = "Yellow"
+golden.flavor = "Soft"
+
+INSTANCE METHODS
+The key to understanding methods is this: 
+Methods: FUNCTIONS THAT OPERATE ON THE ATTRIBUTES OF A SPECIFIC INSTANCE OF A CLASS.
+When we call the append method on a list, we are adding element to the end of that specific list and not to any other list. When we call lower to a string, we are making the contents of that specific string lower case and not another.
+TO undrstand how this happens, lets a take a closer look by defining our own methods.
+
+class Piglet:
+  def speak(self):
+    print("oink oink")
+    
+From the above example, we start defining a method with the 'def' keyword, just like we would for a function. Also, note how it is indented to the right inside the Piglet class? That is how we define a funtion as a method of a class. This function is recieving a parameter called 'self'. THIS REPRESENTS THE INSTANCE THAT THE METHOD IS BEING EXECUTED ON.
+
+hamlet = Piglet()
+hamlet.speak()
+
+But this code will make the piglet say the same thing for all instance of the class. So lets make the method do something depending on the attribute of the instance.
+
+class Piglet():
+  name = "Piglet"
+  def speak(self):
+    print("Oink! I'm {}! Oink!".format(self.name))
+    
+This time we started the body of the class by defining an attribute called name with a default value of 'piglet'. We can change that value later, but it is good idea to make sure the value is initialized. 
+We see that this new speak method used the value 'self.name' to know what name to print. This is means that it is accessing the value 'name' from the current instance of the Piglet class.
+If we put in 'name' alone without 'self.name', the interpreter throws a NameError back at use.
+*** NOTE WHEN WE DEFINE, OR CALL A VARIABLE INSIDE OF A METHOD IN A CLASS, IT MUST INCLUDE 'self', BEFORE THE NAME OF THE VARIABLE ELSE AND ERROR WOULD BE RETURNED. THIS IS BECAUSE THE VARIABLE MUST BE CALLED FOR THAT PARTICULAR INSTANCE OF THE CLASS. THIS IS ACHIEVED WITH THE 'self'.
+
+hamlet = Piglet()
+hamlet.name = 'Hamlet'
+hamlet.speak()
+
+In this example, the speak method printed the name 'Hamlet', which is the name that we set. 
+What if create a new instance of the same class, but with a different name? It should generate a different output.
+
+petunia = Piglet()
+petunia.name = "Petunia"
+petunia.speak()
+
+We have now created two instances of the Piglet class, each of them with their own name. When calling thier method, each of them prints their own name and not the other.
+Instance Variables: Variables that have different values(attributes) for different instance of the same class. Just like the name variable in this function.
+Since methods are just functions that belong to specific class, the can work as anyother function, so the can recieve more paramters and return values if needed. Lets see what this looks like.
+
+class Piglet:
+  years = 0
+  def pig_years(self):
+    return self.years * 18
+    
+In this example, we have created a method that converts the age of our piglet to pig years, So the value that the method returns should chage when we change the 'years' attribute of our instance. Lets create an instance and check how this method works. 
+
+piggy = Piglet()
+piggy.years = 2
+piggy.pig_years()
+
+So we see that as the value of the year attribute changes, so does the return value of the pig_years method also.
+
+CONSTRUCTORS AND OTHER SPECIAL METHODS
+Up till we now. we've been creating classes with empty or default values in their attribute, and then setting the attribute values after we've created the object. This works but it is not ideal. Working this way means we have to write a seperate line for each attribute we want to set, and that can make it really easy for us to forget to set important values. So, lets set those values as we create our instance, this way we know that our instance has all the important values from the moment we create it. To do this, we have to use a special method called constructor.
+
+class Apple:
+  def __init__(self, color, flavor):
+    self.color = color
+    self.flavor = flavor
+    
+The constructor of a class is the method that is called when we call the name of the class. It is always name '__init__', recall that all methods that start and end with two underscores(__func__) are special methods. Here we have defined the constructor, one very important method.
+*** recall that, WHEN WE DEFINE, OR CALL A VARIABLE INSIDE OF A METHOD IN A CLASS, IT MUST INCLUDE 'self', BEFORE THE NAME OF THE VARIABLE ELSE AND ERROR WOULD BE RETURNED. THIS IS BECAUSE THE VARIABLE MUST BE CALLED FOR THAT PARTICULAR INSTANCE OF THE CLASS. THIS IS ACHIEVED WITH THE 'self'
+This method, on top of the self variable recieves two other important parameters, color and flavor, and then the constructor sets those values recieved as the values of the current instance. Let's see how that works
+
+jonagold = Apple("red", "sweet")
+
+Great! Lets check that all the attributes are set correctly.
+
+print(jonagold.color)
+
+Perfect! So by adding a constructor method that sets the attributes, we can create the class and have its attibutes set when it is created.
+Note that when we use a constructor like this, we must set the values when we call the name of the class. If we don't set the values the interpreter would throw a TypeError at us.
+Constructors are not the only special methods we can write. When we use the 'str' or print function to convert an object to a string, we actually use a super useful special method. Lets go ahead and define one, But before we do, lets see what happens when we don't define it.
+
+print(jonagold)
+
+We just tried to print our Apple instance and got a very weird message. We have the word Apple and object in there, but what's the meaning of the other values we see there? Well,when we don't specify a way to print an object, Python uses the default method that prints the position where the object is stored in the computers memory. Infact, whenever we try to print something and Python print a random string of numbers and letters, you are most likely using the default method, which is the position in the computers memory.
+So, how do we tell Pyhon to print something that makes sense for us? We use the special '__str__' method which returns the string that we want to print. Let's see what this looks like.
+
+class Apple:
+  def __init__(self, color, flavor):
+    self.color = color
+    self.flavor = flavor
+  def __str__(self):
+    return "This apple is {} and its flavor is {}".format(self.color, self.flavor)
+    
+By defining the special __str__ method, we are telling Python what we want to display when the print function is called with the instance of our class.
+
+jonagold = Apple("red", "sweet")
+print(jonagold)
+
+So we can see that the __str__ method let's us print a friendly message instead of a bunch of numbers. 
+
+DOCUMENTING FUCTIONS, CLASSES, AND METHODS
+The world of classes and methods can be a little puzzling when learning your way around and thats why the help function can come in handy. Recall that we use the Python help function to find documentation about classes and methods. 
+We can also do this on our own classes methods and functions. Let's check this out.
+
+help(Apple)
+
+When we asked for help on our class, we got a list of methods defined in the class. In this example, the defined methods are the constructor and the conversion to string. But this documentation is too short and does not explain a whole lot.
+We want our methods, classes and function to give us more info when we or someone else uses the help function. We can achieve this by adding a docstring.
+Doctstring: A brief text that explains what something(classes, methods, functions etc) does. Lets see this in action
+
+def to_seconds(hours, minutes, seconds):
+  """Return the amount of seconds in the given hours, minutes, and seconds"""
+  return hours*3600+minutes*60+seconds
+  
+SO after we define the function, we define the funciton, second line of code contains our docstring. We acheived this by typing a string between tripple quotes("""description goes in here""") indented to the right as the body of the function.  Next, we right the code for our function.
+So we have created our function with the docstring in its body, Lets see how we can use the help function to see it.
+
+help(to_seconds)
+
+We can add docstring to classes and methods too. Lets use our Piglet class to see what this would look like.
+
+class Piglet:
+  """Represents a piglet that can say their name."""
+  years = 0
+  name = ""
+  def speak(self):
+    """Outputs a message including the name of the piglet."""
+    print("Oink! I'm {}! Oink!".format(self.name))
+  def pig_years(self):
+    """Converts the current age to equivalent pig years."""
+    return self.years * 18
+    
+Now we have a bunch of helpful info. Here, we have added docsting for the class, and two of the methods. Remember that the docstring always has to be indented at the same level of the block it is documenting.
+Docstrings are very helpful in figuring out how to use a function you've never uwed before. Also, if you are reading a piece of code written by somebody else, it helps us understand the code much better because the classes, methods and functions are clearly documented.
+
+INHERITANCE
+Just as people have parents grand parents and so on, objects have ancestory. 
+The principle of inheritance lets programmers build relationship between concept and group them together. This allows reduce code duplication by generalizing our code. For example, how can we develope our apple representation to include other types of fruits as well? Well one thing we know about an apple is that its a fruit, so we can define a seperate fruit class. We know that all fruits have a color and taste.
+What if we move our 'color', and 'flavor' attribute into the fruit class?
+
+class Fruit:
+  def __init__(self, color, flavor):
+    self.color = color
+    self.flavor = flavor
+
+Here, we have a fruit class with a constructor for the color and flavor attributes. Now, we can easily write our Apple class and throw another flavor into the mix too.
+
+class Apple(Fruit):
+  pass
+  
+class Grape(Fruit):
+  pass
+  
+In Python, we use parenthesis in the class declaration to show an inheritance relationship. For our new Fruit classes we've used that syntax to tell our computer that both the Apple class and Grape class inherits from our Fruits class. Becuase of this, the automatically have the same constructor which sets the color and flavor attributes. 
+We can think of the Fruit class as the parent class and the Apple and Grape class as the Siblings. Lets see this in action.
+
+granny_smith = Apple("green", "tart")
+carnelian = Grape("purple", "sweet")
+
+To check if this actually worked, lets print the attribute values.
+
+print(granny_smith.flavor)
+print(carnelian.color)
+
+With the inheritance technique, we could use the Fruit class to store information that applies to all kinds of fruits and give apple or grapes specific attributes in their own classes.
+For example we can have an attribute to track how much of an apple is left after it has been eaten. Ofcourse this applies to both attributes and methods. If a class has an attribute or method defined in it, inherited classes would have the same attributes and method defined in them. But we can get them to behave differently depending on what we change. 
+To explore this, lets go back to our Piglet class and change it so that there is a base Animal class. 
+
+class Animal:
+  sound = ""
+  def __init__(self, name):
+    self.name = name
+  def speak(self):
+    print("{sound} I'm {name}! {sound}".format(name=self.name, sound=self.sound))
+    
+class Piglet(Animal):
+  sound = "Oink!"
+
+In this code we have defined a general class called Animal, which has an attribute to store the sound that the animal makes. The constructor of the class takes an name that would be assigned to instance when its created. There is also a speak() method that prints the name of the animal together with the sound that the animal makes.
+Then, we have a piglet class that inherits from the Animal class, and we set the sound attribute to 'Oink' in the Piglet class and that is only thing we've modified from the Animal class. The rest things is inherited. Lets see this in action.
+
+hamlet = Piglet("Hamlet")
+hamlet.speak()
+
+Lets define a new class that also inherits from Animal, how about a 'Cow' class?
+
+class Cow(Animal):
+  sound = "Mooooo"
+  
+And to finish, let us create and instance of this class to make it speak.
+
+milky = Cow("Milky White")
+milky.speak() 
+
+Lets look at a more applicable example, that is one we would apply in our day to day job.
+In the system that handles the emplyees at your company, you may have a class called employee, which may have the attributes for things like: full name of person, username used in company systems, the groups the employee belongs to and so on. The employee class may have methods to do a bunch of things like: check if an employee belongs to a certain group, or create an email address based on the name and username attributes. The system could also have a manager class. A manager is an employee but also has additional information associated with it, like: the employees that report to a specific manager. Inheritance lets use reuse code written in one class in other classes. 
+
+COMPOSITION
+We have looked at how inheritance creates ancestory between classes. To check for this ancestory, we use the 'is a' rule. 'An Apple is a Fruit', 'A Piglet is an Animal'. The inherit the attributes and methods of their parent class and so the allow us to reduce code duplication.
+But what if we have relationships where one class isn't the child of the other? Lets look at an example to understand this better... 
+Say we have a package class that represents a software package which can be installed on every machine on our network. This class has a lot of information on the software like: the name, the version, the size, etc. We also have a Repository class that represents all the packages we have available for installation internally. In this class, we want to know how many packages there are, and what's the total size of all the packages. 
+In this case, the Repository isn't a Package and Package isn't a Repository, Instead, the Repository contains Packages. TO MODEL THIS WITHIN OUR CODE, THE REPOSITORY CLASS WILL HAVE AN ATTRIBUTE THAT COULD BE A LIST OR A DICTIONARY, WHICH WILL CONTAIN INSTANCES OF THE PACKAGE CLASS. So in this scenario, we will make use of code in the other classes by calling their methods, and NOT inheriting the class all-together. This is what is called Composition.
+Lets see this in action, we will first create a Repository class that starts with an empty dictionary of packages when created. The dictionary will have the names of the packages as keys and the package objects as values.
+
+class Repository:
+  def __init__(self):
+    self.packages = {}
+    
+Nice! We have our class which starts with an empty dictionary of packages. Now, why are adding the dictionary in the constructor? It is because we want this empty dictionary to be initialized at every new instance of our class, this way, any modification we perform on that dictionary affects only that one instance. If we were to initialize the empty dictionary outside the constructor, whatever we put in there affects every new instance of the class.
+We define ealier a class called Apple and set some basic attributes for it like color and flavor. All instances of the apple class would be initialized with the attributes that we preset for it. If we change the color of one apple from 'red' to 'gold', then we have substituted the old value with the new one. But remember that the action of changeing the color happened for that particular instance. 
+But what if, the apple had a worm in it? and we wanted our apple class to have a list of worms? If we created the list when constructing the class(without the constructor), then all instances will have the same exact list, and if we added a worm to that list when creating the class, then it gets added to all instances of the class when we create them. TO AVOID THIS, WE NEED TO CREATE THE LIST AT THE TIME OF CREATING THE INSTANCE INSTEAD OF AT THE TIME OF CREATING THE CLASS. By doing this each instance will have its own list independant of the others.
+This happens with all attributes that are mutable, because when we modify a mutable attribute, we are not replacing the value with another, we are changing the contents of the original attributes, or, we are modifying the contents of the original attribute. 
+
+<Begin demonstration>
+Lets do something to demostrate this fact. Lets define a new class called 'People', and construct a list called 'complexion' and leave it empty.
+
+class People:
+  complexion = {}
+
+Now let us create an instance of this class and populate the dictionary 'complexion'
+
+africans = People()
+complexion = 'complexion'
+africans.complexion[complexion] = 'black'
+print(africans.complexion)
+
+The output shows us that we have 'black' in the list of complexion for the instnace 'africans'
+Let us create another instance of the class called 'caucasian'
+
+caucasian = People()
+
+Now let us check if the dictionary is empty for this new instnace.
+
+print(caucasian.complexion)
+
+The ouput shows that have 'black' in the dictionay 'complexion' even though we did not add that to this new instnace.
+<End demonstration>
+
+In our Repository case, the package attribute is a dictionary which is mutable. We would be modifing its conents by adding and removing elements in it. IF WE CREATED IT AT THE CLASS LEVEL, ALL INSTANCE OF THE REPOSITORY CLASS WILL USE THE SAME DICTIONARY, and items added and removed will affect all instances at the same time.
+So, remember this rule of thumb: Always initialize mutable attributes inside the constructor. 
+So we have our dictionary, how do we add packages to it? We create a add_package method to it.
+
+class Repository:
+  def __init__(self):
+    self.packages = {}
+  def add_package(self, package):
+    self.packages[package.name] = package
+    
+Let us write a similar method to remove the packages
+
+class Repository:
+  def __init__(self):
+    self.packages = {}
+  def add_package(self, package):
+    self.packages[package.name] = package
+  def remove_package(self, package):
+    del self.packages[package.name]
+
+We said that the packages has a size attribute that holds the size in bytes that the software package requires, So how can we calculate the size of the whole Repository? We need to iterate over the whole paackages contained in the dictionary adding up all their sizes.
+
+class Repository:
+  def __init__(self):
+    self.packages = {}
+  def add_package(self, package):
+    self.packages[package.name] = package
+  def remove_package(self, package):
+    del self.packages[package.name]
+  def total_size(self):
+    result = 0
+    for package in self.packages.values():
+      result += package.size
+    return result
+    
+Let us look at the method we have just written. IT IS A METHOD INSIDE THE REPOSITORY CLASS THAT MAKES USE OF THE VALUES METHOD INSIDE THE DICTIONARY CLASS AND ITS ACCESSING THE SIZE ATTRIBUTES IN THE PACKAGE CLASS. That is the power of composition.
+
+PYTHON MODULES
+if, for, while, functions. classes, integers, floats, strings, lists and dictionaries; are all part of the basic python language because there are used so often. But this is still not enough to get interesting things done, we will need a lot of additional tools to get things done like: being able to send packets over a network, read files from our machine, process images etc. To organize the code we need to perform task like this, Python provides an abstraction called a module.
+Modules: Used to organize functions, classes, and other data together in a structured way. 
+Internally, modules are setup through seperate files containing the neccessary classes and functions. Python already comes with a lot of ready to use modules, and all these modules are contained in a group called the Python standard library. 
+Lets see how we can use them. First, we will use the import keyword to import the 'random' module. This module is useful for generating random numbers or making random choices.
+
+import random
+
+Now that we have imported the module. Lets use a function provided by this module, called randint
+
+random.randint(1, 10)
+random.randint(1, 10)
+random.randint(1, 10)	
+
+This function recieves two parameters and generates a random integer between the two random numbers that we've passed. In this case we are generating a random number between 1 and 10. As we can see, this function returns different values each time its called. The syntax used for calling a function provided by a module is similar to calling a method provided by a class. It uses a dot(.) to seperate the name of the module and the functio provided by that module.
+Lets try using a different module, the datetime module. We use this to handle dates and times. 
+
+import datetime
+
+Now lets get the current date.
+
+now = datetime.datetime.now()
+type(now)
+
+Are we wondering why we are having two datetime? It's because the 'datetime' module provides a 'datetime' class, and the datetime class gives us a method called 'now()'. This now method generates an instance of the datetime class for the current time. We can operate on this instance of the datetime in a bunch of ways. For example.
+
+print(now)
+
+When we call print with instance of the datetime class, we see the date printed in a specific format. Behind the scenes, the print function is calling the '__str__' method in the datetime class which formats it in the way that we see here.
+We can also access the instance throught its attributes and methods, for example we can look at individual parts of the date like the year.
+
+now.year
+
+The 'datetime' module provides more classes than the 'datetime' class. For example, we could use the 'timedelta' class to calculate a date in the future or a date in the past. Lets try this out.
+
+print(now + datetime.timedelta(days=28))
+
+In this case, we are creating an instance of the 'timedelta' class with a value of 28 days, then we add it to the instance of the 'datetime' class that we already had, then we print the result.
+There is a lot more in the datetime and random modules. We can also develop our own modules.
+
+FINAL PROJECT INTRODUCTION
+Now, we are going to put everything we've learnt together to solve a real life problem. We are going to approach this like real world problems we need to solve with a scripts. 
+To do this, we will go step by step using our recommended way for dealing with more advance challenges.
+To start solving our problem, we will first look at the...
+1. PROBLEM STATEMENT: were will get and understanding of what we need to do, and the inputs and output of the scripts we need to write, then, we will do some...
+2. RESEARCH: We will think about how to tackle the problem using the tools already backed into python. Once we know what we need to write and what we can use them to do, we will do some...
+3. PLANNING: We will think about what data types we will use for our solution, and how we are going to operate on them. Finally well do the actuall...
+4. WRITING OF THE SCRIPT and then we will...
+5. CHECK THAT THE CODE DOES WHAT WE EXPECT IT TO DO
+
+When we take this structured approach, we see that there isn't any challenge too hard to solve.
+
+PROBLEM STATEMENT
+You're an IT specialist working in a medium size company. Your manager wants to create a daily report that tracks the use of machines. Specifically she want to know which users are currently connected to which machines and its your job to create this report. 
+In the company, there is a system that collects every event that happens on machines on the network. Of the many events collected, it reports each time a user logs in or out of a computer. With this information, we want to write a script that generates a report of which users are logged into which machines at that time.
+Before we jump into code, we need to know what information we will be using as input, and what information we will have as output.
+We can work this out by looking at the rest of the system where the script will leave. In our report scenario, THE INPUT IS THE LIST OF EVENTS. Each event is an instance of the Event class.
+Event Class: Contains the 'date' when the event happened, the 'name of the machine' where it happened, the 'user' involved, and the event 'type'(This will all occur as attributes of the Event class).
+In this scenario, we care about the login and logout event type.
+We need to know the exact name of the attribute, otherwise we won't be able to access them.
+The attributes are called:
+1. Date
+2. User
+3. Machine
+4. Type
+
+The event types are strings, and the ones we care about are the strings 'login' and 'logout'.
+With this, we should have enough info about the input of our script. Our script will recieve a list of Event objects and will access the Event attributes. We will then use that information to know whether a user is currently logged into a machine or not. 
+Let's talk about the output. We want to generate a report that list all of the machine names, and for each machine, the list of the users that are currently logged in. We then want this information printed on the screen.
+We have been tasked with the duty of generating a report and we can decide how we want that report to look.
+One option would be: to print the name of the machine at the begining of a line, and then list the current users on seperate lines, and indent it to the right, 
+
+websserver.local
+- kay
+- taylor
+-charlie
+
+Or, We could print the machine name followed by a colon, then the user names seperated by comas all on the same line.
+
+webserver.local
+kay, taylor, charlie
+
+mailserver.local
+alexis, ryan, kay
+
+We should get caught up in making the output look bery nice. We should be more interested in how well the scripts solves the problem. So we spend our time on makng the program work, then we concentrate on making it nicer later. So we will go with the second method.
+So, we have identified our problem statement which is to process a list of Event objects using their date, type, machine, and user attributes, to generate a report that will list all users currently logged unto a machine.
+
+RESEARCH
+So we have our problem statement which helps us to understand the problem and focus our approach. We know we have to input a list of event objects, and evaluate this obeject attributes to output the list of all the users currently logged into machine.
+Now its time for step two the research. We are going to consider all the tools available to solve the problem. 
+To find which users are currently logged into machines, we need to check, we need to check when the logged in and when the logged out. If a user logged into a machine and logged out, there are no longer logged in. Bu if they didn't logout then there are still logged in. 
+Knowing this tells us that, to solve this problem correctly, it is vital we process this in a cronological order. If there are not done chronologically, we might get the logout event before the login event, and our code may do unpredictable things, and no one likes unpredictable code. 
+So how do we sort list in python? We will need to do some research.
+If we type 'sort list in Python' in our search engine, we will get a bunch of result that mention list 'sort()' method and the 'sorted()' function. The difference between this two options is that that the 'sort()' method modifies the list it is executed on, while the 'sorted()' function returns a new list that has been sorted. Apart from that, they do the same things.
+Lets see this two things in action.
+
+numbers = [4, 6, 2, 7, 1]
+numbers.sort()
+print(numbers)
+
+We can see here that the elements of the list have been sorted. 
+Lets try a different example now using the sorted function. We will create a list of names.
+
+names = ["Carlos", "Ray", "Alex", "Kelly"]
+print(names)
+print(sorted(names))
+
+Lets print the original list again to be sure that it didn't change.
+
+print(names)
+
+So we see that sorted() function return a new sorted list while the original remains untouched. 
+Nice! We now know how to sort things in Python. For this problem, it is fine to modify the original list, so, we will use the sort method. But this both sorted the list alphanumerically? That is the default approach python takes. What if we wanted to organie our list by a different critaria? If we take a look at the documentation we found online, we see that the sort() method can take a couple of parameters. One of this is called key, and it lets us a function as the sorting key. Lets try it out in our list of names. IStead of sorting alphabetically, we can sort it based on the length of the string. What function can we use to do this? The len() function will be passed as the key.
+
+print(sorted(names, key=len))
+
+We now know how to order elements of a list based on the return value of a function.
+In our report scenario, we know that our elements would be instance of the event class, and we want to order by date. Which is an attribute of the event class. One way to do this is to write a function called 'get_event_date', which returns the date stored in the event object. We could also create this as a method in the event class if we had access to modifying the class. But since we are working with a bigger system that generates this events, we will assume that we cant just add a method to the class, so we will create our own function instead.
+
+PLANNING
+So we have already defined oour problem statement, and then researched options to figure out what tools we have available, and which are best for the job. Now its time to plan our approach.
+So we know that our input will be a list of events, and we will sort them by time. Each event in that list will include a machine name, username, and tell us if event is a login or logout(type), we want our script to keep track of users as the login and out of machine (time). So how can we do this? Lets think about what we can do for each event.
+When we process an event, we see that someone interacted with a machine, if its a login, we want to add it to the group(list or dictionary) of users logged into that machine, if its a logout we want to remove it from the group of users logged in to that machine. 
+In this scenario it makes sense to use a 'set' to store the current users, adding new users at login time and removing them at logout time. But if the current users of a given machine are stored in a set, how do we know which set corresponds to the machine we are looking for? The easiest way to do this is store this information in a dictionary(although what was intially coming to my mind is to create seperate list for each machine and append events to that list if and only if that event occured on that machine, but it does seem to me now that a dictionary is the best bet, with the name of the machine being the key and the events being the values.) We will use the name of the machine as the key and the current users of that machine as the values. So, for each event we process, we will first check in the dictionary and see if the machine is already there. We will check it because it could be the first we are processing an event for that machine. If its not there, we will create a new entry. If its there, we will update the existing entry with the action correponding to the event(type), which means we either add the user if the event type is a 'login', or remove the user if the event type is a 'logout'.
+Once we are done processing the event, we want to print a report of the information we have generated. This is a completely seperate task,so it should be a seperate function. This function will recieve the dictionary we have generated and print the report.
+Its expedient that we have a seperate function from the one that processes the data and the one that prints the data to the screen, because if we want to modify or fine-tune how the report is printed, we know we only need to change the function in charge of printing. Or, if we find a bug in how we are processing data, we only need to chge the processing function. It will also allow us to use the same data processing function to generate a different kind of report, like generating a pdf file for example.
+
+WRITING THE SCRIPT
+Lets go through what we know so far.
+We know that we have to process the events to generate a report,
+We know how to sort the list of event chronologically,
+We know that we will store the data in a dictionary of set which we will use to keep track of whos logged in where, and that
+We have a function creates a dictionary and a seperate one the prints the dictionary.
+Lets start by defining the helper function that we will use to sort the list. This function is what we will use to set our 'key' paramater
+
+def get_date(event):
+  return event.date
+  
+We will use the simple function as the parameter to the sort function to sort the list. We are now ready to start coding our processing function, which we will call current_users. Lets define the function, and then sort our events list using the sort method and passing the get_date function as the key. 
+After that, before we start iterating through our list of events, we create an empty dictionary where we will store the users logged in with the machine name as the key. After that, we will iterate through our list of events, then we check if the machine affected by this event is already in the dictionary of machines, if not, we create an empty set as the value for that machine.
+Next, for the 'login' event(type), we want to add users to the list, and for 'logout' event(type) we want to remove user. 
+Once we're done iterating throught the list of events the dictionary will contain all machines we've seen as keys, with the set containing the current users of the machine as the values.
+***Note that set() was used to have only occurence of the user, as there cannot be more identical elements in a set.
+This function handles the dictionary. We will handle the printing in a different function.
+
+def current_users(events):
+  events.sort(key=get_date)
+  machines = dict()
+  for event in events:
+    if event.machine not in machines:
+      machines[event.machine] = set()
+    if event.type == 'login':
+      machines[event.machine].add(event.user) 
+    elif event.type == 'logout':
+      machines[event.machine].remove(event.user)
+  return machines
+  
+Nice! We now have the dictionary ready and we need to print it. For that we create a new function called generate report.
+In our report we want to iterate over the keys and values in our dictionary. To do this we use the method 'items' that returns both the key and values for each pair in the dictionary.
+Now before we print anything, we want to make sure that we don't print any machine were no user is currently logged in. This could happen if a user logged in an logged out. To avoid that, we tell the computer to print only when the set of users has more than 0 elements.
+Now we said earlier that we want to print the name of the machine followed by the names of users seperated by commas, logged onto that machine. Lets generate the string of logged in users for that machine using the method join.
+
+def generate_report(machines):
+  for machine, users in machines.items():
+    if len(users) > 0:
+      user_list = ", ".join(users)
+      print("{}:\n{}".format(machine, user_list))
+
+Below is the full code all together.
+
+#!/usr/bin/env python3
+
+def get_date(event):
+  return event.date
+
+def current_users(events):
+  events.sort(key=get_date)
+  machines = dict()
+  for event in events:
+    if event.machine not in machines:
+      machines[event.machine] = set()
+    if event.type == 'login':
+      machines[event.machine].add(event.user)
+    elif event.type == 'logout':
+      machines[event.machine].remove(event.user)
+  return machines
+
+def generate_report(machines):
+  for machine, users in machines.items():
+    if len(users) > 0:
+      user_list = ", ".join(users)
+      print("{}:\n{}".format(machine, user_list))
+
+PUTTING ALL TOGETHER
+To check that our code is doing everything we ask it to, we need an Event class.
+class Event:
+  def __init__(self, event_date, event_type, machine_name, user)
+    self.date = event_date
+    self.type = event_type
+    self.machine = machine_name
+    self.user = user
+    
+events = [
+    Event('2020-01-21 12:45:56', 'login', 'myworkstation.local', 'jordan'),
+    Event('2020-01-22 15:53:42', 'logout', 'webserver.local', 'jordan'),
+    Event('2020-01-21 18:53:21', 'login', 'webserver.local', 'lane'),
+    Event('2020-01-22 10:25:34', 'logout', 'myworkstation.local', 'jordan'),
+    Event('2020-01-21 08:20:01', 'login', 'webserver.local', 'jordan'),
+    Event('2020-01-23 11:24:35', 'login', 'mailserver.local', 'chris'),
+]
+
+users = current_users(events)
+print()
+report = generate_report(users)
+print(report)
+
+
+This works just we wanted it to. Our report correctly skipped the one machine that had an empty set.
+In the workd IT, there is a bunch of other things that can happen. What if we come across and event for a user logging out that never logged in.
+
+FINAL PROJECT OVERVIEW
+Lets consider what we will be doing for the final project.
+The goal of the project is create a 'word cloud'. A word cloud is an image that is made up of different sized words
